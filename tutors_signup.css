@@ -1,0 +1,313 @@
+.intro-section {
+    /* background-color: #f9f9f9; */
+    padding: 20px 30px;
+    border: 1.5px solid #4b134f;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.intro-section h2 {
+    font-size: 24px;
+    /* color: #2c3e50; */
+    margin-bottom: 10px;
+}
+
+.intro-section p {
+    font-size: 16px;
+    /* color: #555; */
+    line-height: 1.6;
+}
+
+.intro-section .important-note {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.intro-section h3,
+.intro-section h4 {
+    font-size: 20px;
+    color: #004890;
+    margin-top: 15px;
+}
+
+.intro-section ul {
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+.intro-section ul li {
+    font-size: 16px;
+    /* color: #555; */
+    margin-bottom: 10px;
+}
+
+.best-of-luck {
+    font-style: italic;
+    color: #1aa052;
+    margin-top: 15px;
+}
+
+.tutors-signup-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    /* background: #f9f9f9; */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .tutors-signup-form h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #333;
+    text-align: center;
+  }
+  
+  .tutors-signup-form p {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    color: #555;
+    text-align: center;
+  }
+  
+  .tutors-signup-form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .tutors-signup-form input,
+  .tutors-signup-form select,
+  .tutors-signup-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+  
+  .tutors-signup-form button {
+    width: 100%;
+    padding: 15px;
+    background: #1a73e8;
+    color: #fff;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .tutors-signup-form button:hover {
+    background: #0f5aba;
+  }
+  
+  /* Form container styling */
+.form-container {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    /* background-color: #7b0152; */
+    border-radius: 15px;
+    box-shadow: 0 9px 11px rgba(255, 0, 140, 0.972);
+    font-family: 'Arial', sans-serif;
+}
+/* Form title */
+.form-container h1 {
+    margin-bottom: 1.5rem;
+    font-size: 24px;
+    text-align: center;
+}
+/* Form elements */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+/* Labels */
+form label {
+    font-size: 14px;
+    font-weight: bold;
+}
+/* Inputs, textarea, and select */
+form input,
+form textarea,
+form select {
+    width: 100%;
+    padding: 10px;
+    border: 3px solid black;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+form input:focus,
+form textarea:focus,
+form select:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(26, 229, 33, 0.3);
+}
+/* Textarea styling */
+form textarea {
+    resize: none;
+}
+/* Submit button */
+form button {
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    /* color: #fff; */
+    background-color: #559b57;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+form button:hover {
+    background-color: #88ff3e;
+}
+/* Form footer styling */
+.form-footer {
+    margin-top: 1.5rem;
+    font-size: 14px;
+    text-align: center;
+    /* color: #555; */
+}
+.form-footer a {
+    color: #88ff3e;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s ease;
+}
+.form-footer a:hover {
+    color: #45a049;
+}
+/* Styling for the checkbox group */
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.checkbox-group label {
+    font-size: 14px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.checkbox-group input[type="checkbox"] {
+    width: 5px;
+    height: 14px;
+    cursor: pointer;
+}
+.checkbox-group input[type="checkbox"]:checked {
+    accent-color: #4CAF50; /* Green color for checked state */
+}
+form input[type="file"] {
+    display: block;
+    margin-top: 8px;
+    padding: 5px;
+    font-size: 14px;
+}
+form small {
+    color: #888;
+    font-size: 12px;
+    display: block;
+    margin-top: 4px;
+}
+
+.confirmation-message {
+    text-align: center;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #4caf50;
+    background-color: #e8f5e9;
+    border-radius: 5px;
+}
+
+.confirmation-message p {
+    font-size: 16px;
+    color: #2e7d32;
+}
+
+.confirmation-message strong {
+    font-weight: bold;
+}
+
+/* Responsive Styles for Smaller Screens */
+@media screen and (max-width: 768px) {
+    .tutors-signup-form {
+        padding: 15px;
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .tutors-signup-form h1 {
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+    }
+
+    .tutors-signup-form p {
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+
+    .tutors-signup-form input,
+    .tutors-signup-form select,
+    .tutors-signup-form textarea {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .tutors-signup-form button {
+        padding: 12px;
+        font-size: 1rem;
+    }
+
+    .form-container {
+        width: 70%;
+        margin: 2rem auto;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 9px 11px rgba(255, 0, 140, 0.972);
+        font-family: 'Arial', 'sans-serif';
+    }
+
+    form input,
+    form textarea,
+    form select {
+        width: 90%;
+        padding: 8px;
+        color: rgba(0, 67, 17, 0.765);
+        border: 3px solid red;
+        border-radius: 5px;
+        font-size: auto;
+        transition: border-color 0.2s ease;
+    }
+}
+
+/* Further Adjustments for Very Small Screens */
+@media screen and (max-width: 480px) {
+    .tutors-signup-form {
+        padding: 10px;
+    }
+
+    .tutors-signup-form h1 {
+        font-size: 1.5rem;
+    }
+
+    .tutors-signup-form p {
+        font-size: 0.8rem;
+    }
+
+    .tutors-signup-form button {
+        
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+}

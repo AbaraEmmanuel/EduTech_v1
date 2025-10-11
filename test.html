@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Tutor</title>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode .container {
+            background: #333;
+            color: white;
+        }
+
+        .tutor-card {
+            width: 100%;
+            background: #f4f4f4;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark-mode .tutor-card {
+            background: #222;
+            color: white;
+        }
+
+        .tutor-card img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        .tutor-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .tutor-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .availability {
+            font-size: 14px;
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .available {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .busy {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .dropdown {
+            display: none;
+            padding-top: 10px;
+        }
+
+        .dropdown.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .book-btn, .chat-btn {
+            background: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .book-btn:hover {
+            background: #0056b3;
+        }
+
+        .chat-btn {
+            background: #28a745;
+        }
+
+        .chat-btn:hover {
+            background: #218838;
+        }
+
+        .social-icons a {
+            margin: 5px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .dark-mode .social-icons a {
+            color: white;
+        }
+
+        .expand-arrow {
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .expanded .expand-arrow {
+            transform: rotate(180deg);
+        }
+
+        .stars {
+            color: gold;
+        }
+
+                 /* Light/Dark Mode Button */
+                 .mode-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #ffcc00, #ffffff);
+            border: none;
+            border-radius: 50%;
+            color: #000;
+            padding: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .mode-toggle:hover {
+            background: linear-gradient(135deg, #4b134f, #c94b4b);
+            color: #fff;
+            transform: scale(1.1) rotate(180deg);
+        }
+
+        body.dark-mode .mode-toggle {
+            background-color: #444;
+            color: #fff;
+        }
+        .light-mode {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <button class="mode-toggle" id="modeToggle">🌞</button>
+
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="index.html" class="nav-link">EduTech</a>
+        </div>
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="tutors.html" class="nav-link">Tutors</a>
+    </nav>
+
+    <div class="container">
+        <h2 id="selectedSkill">Available Tutors</h2>
+        <div id="tutorsList">
+            <p>Loading tutors...</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+           // Retrieve saved theme from localStorage and apply it
+           const savedTheme = localStorage.getItem('theme') || 'light-mode';
+           document.body.className = savedTheme;
+   
+           // Update the toggle button icon based on the saved theme
+           const modeToggle = document.getElementById('modeToggle');
+           modeToggle.textContent = savedTheme === 'dark-mode' ? '\u263D' : '\u2600'; // Unicode for moon and sun
+   
+           // Toggle theme and save preference to localStorage
+           modeToggle.addEventListener('click', () => {
+               if (document.body.classList.contains('light-mode')) {
+                   document.body.classList.replace('light-mode', 'dark-mode');
+                   modeToggle.textContent = '\u263D'; // Unicode for crescent moon
+                   localStorage.setItem('theme', 'dark-mode');
+               } else {
+                   document.body.classList.replace('dark-mode', 'light-mode');
+                   modeToggle.textContent = '\u2600'; // Unicode for sun
+                   localStorage.setItem('theme', 'light-mode');
+               }
+           });
+       }); 
+   </script>
+   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js"></script>    
+   <script type="module">
+            // Import Firebase modules
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+            import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+            // Firebase setup
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyBnzUWyfIDIlKtNsjlwHhA3JhR5LHhb9qU",
+                authDomain: "edtech-tutors.firebaseapp.com",
+                projectId: "edtech-tutors",
+                storageBucket: "edtech-tutors.firebasestorage.app",
+                messagingSenderId: "87645108821",
+                appId: "1:87645108821:web:ff6957f6cb738dc2bcf2dc"
+            };
+
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.firestore();
+
+            // Fetch tutors
+            async function fetchTutors() {
+                const tutorsList = document.getElementById("tutorsList");
+                const querySnapshot = await db.collection("tutors").get();
+                tutorsList.innerHTML = "";
+
+                querySnapshot.forEach((doc) => {
+                    const tutor = doc.data();
+                    const firstName = tutor.name.split(" ")[0];
+                    const surnameInitial = tutor.name.split(" ")[1] ? tutor.name.split(" ")[1][0] + "." : "";
+                    const available = tutor.available ? "🟢 Available" : "🔴 Busy";
+
+                    const tutorCard = document.createElement('div');
+                    tutorCard.classList.add('tutor-card');
+
+                    tutorCard.innerHTML = `
+                        <div class="tutor-header" onclick="toggleDropdown('${doc.id}')">
+                            <div class="tutor-info">
+                                <img src="${tutor.photo || 'default-avatar.png'}" alt="Tutor">
+                                <div>
+                                    <h3>${firstName} ${surnameInitial}</h3>
+                                    <p>${available}</p>
+                                    <div class="stars">${'⭐'.repeat(tutor.rating || 4)}</div>
+                                </div>
+                            </div>
+                            <span class="expand-arrow">▼</span>
+                        </div>
+                        <div id="dropdown-${doc.id}" class="dropdown">
+                            <p><strong>Bio:</strong> ${tutor.bio}</p>
+                            <button class="book-btn" onclick="bookTutor('${tutor.name}')">Book Now</button>
+                            <button class="chat-btn">Chat with Tutor</button>
+                            <div class="social-icons">
+                                <a href="${tutor.whatsapp}" target="_blank">📱</a>
+                                <a href="${tutor.telegram}" target="_blank">💬</a>
+                                <a href="${tutor.linkedin}" target="_blank">🔗</a>
+                            </div>
+                        </div>
+                    `;
+
+                    tutorsList.appendChild(tutorCard);
+                });
+            }
+
+            window.toggleDropdown = (id) => {
+                document.getElementById(`dropdown-${id}`).classList.toggle('active');
+            };
+
+            window.bookTutor = (name) => {
+                alert(`You booked ${name}`);
+            };
+
+            fetchTutors();
+    </script>
+</body>
+</html>

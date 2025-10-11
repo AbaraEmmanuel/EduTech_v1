@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutor Settings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="notification.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 170px;
+            background: #1f2937;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .sidebar h1 {
+            font-size: 20px;
+        }
+        .sidebar button {
+            background: none;
+            border: none;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            width: 100%;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .sidebar button:hover, .active {
+            background: #2563eb;
+            border-radius: 5px;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            border-radius: 10px;
+        }
+        .section {
+            margin-top: 20px;
+        }
+        .section h3 {
+            margin-bottom: 10px;
+        }
+        .apply-btn {
+            background: #2563eb;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button-neon {
+            background: #141414;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 0 10px #00eaff, 0 0 8px #00eaff, 0 0 10px #00eaff;
+            transition: box-shadow 0.3s ease, transform 0.2s;
+        } 
+
+        .button-neon:hover {
+            box-shadow: 0 0 20px #ffcc00, 0 0 15px white, 0 0 30px #1f2937;
+            transform: scale(1.05);
+        }
+        .modal {
+            display: none; /* Initially hidden */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #222;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+            box-shadow: 0 0 15px #00eaff;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .confirm-btn, .cancel-btn {
+            flex: 1;
+            margin: 5px;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .confirm-btn {
+            background: #00eaff;
+            color: #000;
+        }
+        .confirm-btn:hover {
+            background: #ffcc00;
+            box-shadow: 0 0 10px white;
+        }
+        .cancel-btn {
+            background: #444;
+            color: white;
+        }
+        .cancel-btn:hover {
+            background: #ff3b3b;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Adjust spacing between icon and text */
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .tab .icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        i {
+            font-size: 18px;
+        }
+
+        
+        /* Light/Dark Mode Button */
+        .mode-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #ffcc00, #ffffff);
+            border: none;
+            border-radius: 50%;
+            color: #000;
+            padding: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .mode-toggle:hover {
+            background: linear-gradient(135deg, #4b134f, #c94b4b);
+            color: #fff;
+            transform: scale(1.1) rotate(180deg);
+        }
+
+        body.dark-mode .mode-toggle {
+            background-color: #444;
+            color: #fff;
+        }
+        .light-mode {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .dark-mode .sidebar button {
+            background: #1f2937;
+            /*background: #333;  Darker sidebar */
+        }
+
+        .dark-mode .sidebar button:hover, .active {
+            background: #2563eb;
+            border-radius: 5px;
+        }
+        .dark-mode .content {
+            background: #222; /* Darker content area */
+            color: #fff;
+        }
+
+        .dark-mode button {
+            color: white;
+            background: #444;
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <button class="mode-toggle" id="modeToggle">🌞</button>
+    <div class="sidebar">
+        <h1>Tutor Panel</h1>
+        <button class="tab" onclick="window.location.href='tutor_dashboard.html'">
+            <i class="fa fa-home"></i>  Dashboard</button>
+        <button class="tab active" onclick="window.location.href='settings.html'">
+            <i class="fas fa-user"></i>  My Profile</button>
+        <button class="tab logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>  Logout</button>
+    </div>
+    <div class="content" id="content">
+        <h2>Settings</h2>
+        <div id="settings-content">
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <h3>Are you sure?</h3>
+            <p>Do you want to reset your password?</p>
+            <div class="modal-buttons">
+                <button class="confirm-btn" id="confirmReset">Confirm</button>
+                <button class="cancel-btn" id="cancelReset">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { auth, db } from './firebasetutors.js';
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { showNotification } from './notification.js';  // Import from notification.js
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadTutorData(user.uid);
+            } else {
+                window.location.href = "tutors-sign_in.html";
+            }
+        });
+
+        window.logout = function logout() {
+            signOut(auth).then(() => {
+                window.location.href = "index.html";
+            }).catch((error) => {
+                console.error("Logout error:", error);
+            });
+        };
+        document.addEventListener('DOMContentLoaded', () => {
+            // Retrieve saved theme from localStorage and apply it
+            const savedTheme = localStorage.getItem('theme') || 'light-mode';
+            document.body.className = savedTheme;
+    
+            // Update the toggle button icon based on the saved theme
+            const modeToggle = document.getElementById('modeToggle');
+            modeToggle.textContent = savedTheme === 'dark-mode' ? '\u263D' : '\u2600'; // Unicode for moon and sun
+    
+            // Toggle theme and save preference to localStorage
+            modeToggle.addEventListener('click', () => {
+                if (document.body.classList.contains('light-mode')) {
+                    document.body.classList.replace('light-mode', 'dark-mode');
+                    modeToggle.textContent = '\u263D'; // Unicode for crescent moon
+                    localStorage.setItem('theme', 'dark-mode');
+                } else {
+                    document.body.classList.replace('dark-mode', 'light-mode');
+                    modeToggle.textContent = '\u2600'; // Unicode for sun
+                    localStorage.setItem('theme', 'light-mode');
+                }
+            });
+        });
+        function attachResetPasswordListener() {
+            const resetButton = document.getElementById("resetPasswordButton");
+            if (resetButton) {
+                resetButton.addEventListener("click", () => {
+                    document.getElementById("confirmationModal").style.display = "flex";
+                });
+
+                document.getElementById("cancelReset").addEventListener("click", () => {
+                    document.getElementById("confirmationModal").style.display = "none";
+                });
+
+                document.getElementById("confirmReset").addEventListener("click", async () => {
+                    const user = auth.currentUser;
+                    if (user && user.email) {
+                        try {
+                            await sendPasswordResetEmail(auth, user.email);
+                            showNotification("Password reset email sent! Check your inbox.");
+                        } catch (error) {
+                            console.error("Error sending reset email:", error);
+                            showNotification('Something went wrong. Please try again later.', 'error');
+                        }
+                    } else {
+                        showNotification("No user is logged in.");
+                    }
+                    document.getElementById("confirmationModal").style.display = "none";
+                });
+            }
+        }
+
+
+
+        // Modify loadTutorData to call the function after updating the DOM
+        async function loadTutorData(userId) {
+            const userDoc = await getDoc(doc(db, 'tutors', userId));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                document.getElementById("settings-content").innerHTML = `
+                    <h3>Your Information</h3>
+                    <p><strong>Name:</strong> ${userData.name}</p>
+                    <p><strong>Email:</strong> ${userData.email}</p>
+                    <p><strong>Subjects:</strong> ${userData.subjects.join(', ')}</p>
+                    <p><strong>Bio:</strong> ${userData.bio}</p>
+                    <p><strong>Gender:</strong> ${userData.gender}</p>
+                    <p><strong>Video Link:</strong> <a href="${userData.videoUrl}" target="_blank">View Introduction Video</a></p>
+                    <button class="button-neon" id="resetPasswordButton">Reset Password</button>
+                    <button class="button-neon" onclick="window.location.href='settings_extension.html'">Apply for Change</button>
+                `;
+
+                // Attach event listener after button is added to DOM
+                attachResetPasswordListener();
+            } else {
+                console.error("No such user data found.");
+            }
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tutor Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Styles -->
+  <style>
+    :root {
+      --primary-color: #128c7e;
+      --primary-dark: #075e54;
+      --primary-light: #25d366;
+      --sent-bubble: #dcf8c6;
+      --received-bubble: #ffffff;
+      --background: #e5ddd5;
+      --input-background: #f0f0f0;
+      --text-color: #333;
+      --secondary-text: #666;
+      --shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--background);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      color: var(--text-color);
+    }
+    header {
+      background: var(--primary-dark);
+      color: white;
+      padding: 15px 20px;
+      font-size: 18px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow);
+    }
+    #messagesContainer {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 15px;
+      background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_a4be512e7195b6b733d9110b408f075d.png');
+      background-repeat: repeat;
+      position: relative;
+    }
+    #messages {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-bottom: 60px;
+    }
+    .message {
+      max-width: 75%;
+      padding: 10px 15px;
+      border-radius: 18px;
+      word-wrap: break-word;
+      animation: fadeIn 0.3s ease-out;
+      line-height: 1.4;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    .sent { background: var(--sent-bubble); align-self: flex-end; }
+    .received { background: var(--received-bubble); align-self: flex-start; }
+    .timestamp { font-size: 11px; color: var(--secondary-text); margin-top: 4px; text-align: right; }
+    #inputSection {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--input-background);
+      padding: 10px 15px;
+      position: sticky;
+      bottom: 0;
+      border-top: 1px solid #ccc;
+    }
+    #messageInput {
+      flex: 1;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 20px;
+      background: white;
+      box-shadow: var(--shadow);
+      resize: none;
+      height: 45px;
+      font-family: inherit;
+    }
+    #sendBtn {
+      background: var(--primary-color);
+      border: none;
+      color: white;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .date-separator {
+      text-align: center;
+      margin: 10px 0;
+    }
+    .date-separator span {
+      background: rgba(255,255,255,0.8);
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 12px;
+      color: var(--secondary-text);
+      box-shadow: var(--shadow);
+    }
+    #newMessageBtn {
+      display: none;
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary-light);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 13px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+    }
+    .message-text {
+      margin-bottom: 5px;
+      word-break: break-word;
+    }
+    .message-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--secondary-text);
+    }
+    .actions {
+      display: flex;
+      gap: 5px;
+    }
+    .actions button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--secondary-text);
+      padding: 0;
+    }
+    .actions button:hover { color: var(--primary-dark); }
+    .fade-out { opacity: 0; transition: opacity 0.5s ease-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css">
+</head>
+<body>
+
+<header>
+  <div>Chat with <span id="userName">User</span></div>
+  <button id="deleteChatBtn" style="background:none;border:none;color:white;cursor:pointer;font-size:18px;">🗑️</button>
+</header>
+
+<div id="messagesContainer">
+  <div id="messages"></div>
+  <button id="newMessageBtn">New Message</button>
+</div>
+
+<div id="inputSection">
+  <textarea id="messageInput" placeholder="Type a message..." rows="1"></textarea>
+  <button id="sendBtn">➤</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+import {
+  getFirestore, collection, doc, setDoc, updateDoc, deleteDoc,
+  addDoc, increment, getDoc, query, orderBy, onSnapshot, serverTimestamp, getDocs
+} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/+esm";
+
+const firebaseConfig = {
+      apiKey: "AIzaSyBnzUWyfIDIlKtNsjlwHhA3JhR5LHhb9qU",
+      authDomain: "edtech-tutors.firebaseapp.com",
+      projectId: "edtech-tutors",
+      storageBucket: "edtech-tutors.appspot.com",
+      messagingSenderId: "87645108821",
+      appId: "1:87645108821:web:ff6957f6cb738dc2bcf2dc",
+      measurementId: "G-GTXDL1WX0L"
+    };
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const tutorId = "IPErXUGI30QnZoSDxhgvYo1g6kr2";
+const urlParams = new URLSearchParams(window.location.search);
+const userId = urlParams.get('userId');
+const userName = urlParams.get('userName') || "Student";
+
+document.getElementById("userName").textContent = userName;
+
+const chatId = tutorId < userId ? `${tutorId}_${userId}` : `${userId}_${tutorId}`;
+const messagesContainer = document.getElementById("messagesContainer");
+const messagesDiv = document.getElementById("messages");
+const messageInput = document.getElementById("messageInput");
+const sendBtn = document.getElementById("sendBtn");
+const newMessageBtn = document.getElementById("newMessageBtn");
+const deleteChatBtn = document.getElementById("deleteChatBtn");
+
+let lastDateKey = null;
+let recentlyDeletedMessage = null;
+
+function getNormalizedDate(date) {
+  const d = new Date(date);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+function formatDisplayDate(date) {
+  const today = getNormalizedDate(new Date());
+  const inputDate = getNormalizedDate(date);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (inputDate.getTime() === today.getTime()) return "Today";
+  if (inputDate.getTime() === yesterday.getTime()) return "Yesterday";
+  return inputDate.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+}
+function formatTime(date) {
+  return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function createMessageElement(doc) {
+  const data = doc.data();
+  if (!data.timestamp) return null;
+  
+  const dateObj = data.timestamp.toDate();
+  const div = document.createElement("div");
+  div.className = `message ${data.sender === tutorId ? 'sent' : 'received'}`;
+  div.dataset.id = doc.id;
+
+  div.innerHTML = `
+    <div class="message-text">
+      ${data.text} ${data.edited ? '<small style="font-size:10px;color:gray;">(edited)</small>' : ''}
+    </div>
+    <div class="message-footer">
+      <div class="timestamp">${formatTime(dateObj)}</div>
+      <div class="actions">
+        <button class="editBtn" title="Edit">✏️</button>
+        <button class="deleteBtn" title="Delete">🗑️</button>
+      </div>
+    </div>
+  `;
+  return div;
+}
+
+
+function renderMessage(doc) {
+  const data = doc.data();
+  if (!data.timestamp) return;
+  const dateObj = data.timestamp.toDate();
+  const currentDateKey = getNormalizedDate(dateObj).getTime();
+  if (currentDateKey !== lastDateKey) {
+    lastDateKey = currentDateKey;
+    const dateSeparator = document.createElement("div");
+    dateSeparator.className = "date-separator";
+    dateSeparator.innerHTML = `<span>${formatDisplayDate(dateObj)}</span>`;
+    messagesDiv.appendChild(dateSeparator);
+  }
+  const messageElement = createMessageElement(doc);
+  if (messageElement) messagesDiv.appendChild(messageElement);
+}
+
+async function sendMessage() {
+  const text = messageInput.value.trim();
+  if (!text) return;
+
+  sendBtn.disabled = true;
+  try {
+    await addDoc(collection(db, "chats", chatId, "messages"), {
+      sender: tutorId,
+      receiver: userId,
+      text,
+      timestamp: serverTimestamp()
+    });
+    const chatRef = doc(db, "chats", chatId);
+    await updateDoc(chatRef, {
+      lastMessage: text,
+      lastMessageTime: serverTimestamp(),
+      unreadCount: increment(1)
+    }).catch(() => {
+      setDoc(chatRef, {
+        sender: tutorId,
+        receiver: userId,
+        lastMessage: text,
+        lastMessageTime: serverTimestamp(),
+        unreadCount: 1
+      });
+    });
+    messageInput.value = "";
+    messageInput.focus();
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+
+function scrollToBottom(force = false) {
+  if (force || (messagesContainer.scrollHeight - messagesContainer.scrollTop <= messagesContainer.clientHeight + 100)) {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  } else {
+    newMessageBtn.style.display = 'block';
+  }
+}
+
+async function deleteSingleMessage(id) {
+  const messageRef = doc(db, "chats", chatId, "messages", id);
+  const messageSnap = await getDoc(messageRef);
+  recentlyDeletedMessage = { id, data: messageSnap.data() };
+
+  const result = await Swal.fire({
+    title: 'Delete this message?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    confirmButtonText: 'Delete'
+  });
+
+  if (result.isConfirmed) {
+    const messageDiv = document.querySelector(`[data-id="${id}"]`);
+    if (messageDiv) {
+      messageDiv.classList.add('fade-out');
+      setTimeout(async () => { await deleteDoc(messageRef); }, 500);
+    } else {
+      await deleteDoc(messageRef);
+    }
+    showUndoToast();
+  }
+}
+
+async function showUndoToast() {
+  const Toast = Swal.mixin({ toast: true, position: 'bottom', showConfirmButton: true, confirmButtonText: 'Undo', timer: 5000 });
+  const result = await Toast.fire({ icon: 'info', title: 'Message deleted', text: 'Undo?' });
+
+  if (result.isConfirmed && recentlyDeletedMessage) {
+    const ref = doc(db, "chats", chatId, "messages", recentlyDeletedMessage.id);
+    await setDoc(ref, recentlyDeletedMessage.data);
+    recentlyDeletedMessage = null;
+  }
+}
+
+async function editMessage(id, oldText) {
+  const cleanText = oldText.replace(/\s\(edited\)$/, ''); // Remove existing (edited) if present
+  const { value: newText } = await Swal.fire({
+    title: 'Edit Message',
+    input: 'text',
+    inputValue: cleanText,
+    showCancelButton: true,
+    inputValidator: (value) => (!value ? 'Message cannot be empty' : undefined)
+  });
+
+  if (newText && newText !== cleanText) {
+    await updateDoc(doc(db, "chats", chatId, "messages", id), {
+      text: newText,
+      edited: true // ✅ save to Firestore
+    });
+  }
+}
+
+
+
+async function deleteConversation() {
+  const result = await Swal.fire({
+    title: 'Delete entire conversation?',
+    text: "All messages will be deleted!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    confirmButtonText: 'Delete All'
+  });
+  if (result.isConfirmed) {
+    const messagesQuery = await getDocs(collection(db, "chats", chatId, "messages"));
+    const batchDeletes = messagesQuery.docs.map((docItem) => deleteDoc(doc(db, "chats", chatId, "messages", docItem.id)));
+    await Promise.all(batchDeletes);
+    await deleteDoc(doc(db, "chats", chatId));
+    messagesDiv.innerHTML = "";
+  }
+}
+
+function loadMessages() {
+  const q = query(collection(db, "chats", chatId, "messages"), orderBy("timestamp"));
+  onSnapshot(q, (snapshot) => {
+    messagesDiv.innerHTML = "";
+    lastDateKey = null;
+    snapshot.forEach(doc => renderMessage(doc));
+    scrollToBottom();
+  });
+}
+
+// Listeners
+sendBtn.addEventListener("click", sendMessage);
+messageInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+newMessageBtn.addEventListener("click", () => {
+  scrollToBottom(true);
+  newMessageBtn.style.display = 'none';
+});
+messagesDiv.addEventListener("click", (e) => {
+  const button = e.target.closest("button");
+  if (!button) return;
+  const messageDiv = button.closest(".message");
+  const messageId = messageDiv?.dataset.id;
+  const messageText = messageDiv?.querySelector(".message-text")?.innerText;
+  if (button.classList.contains("deleteBtn")) deleteSingleMessage(messageId);
+  if (button.classList.contains("editBtn")) editMessage(messageId, messageText);
+});
+deleteChatBtn.addEventListener("click", deleteConversation);
+
+loadMessages();
+</script>
+
+</body>
+</html>

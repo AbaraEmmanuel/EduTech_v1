@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JaroMind - Explore Your Learning Journey</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="light-mode">
+    <!-- Light/Dark Mode Toggle -->
+    <button class="mode-toggle" id="modeToggle">🌞</button>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <img src="ht9.png" alt="JaroMind Logo" class="logo_img">
+            <a href="/home" class="name">JaroMind</a>
+        </div>
+        <ul class="nav-menu">
+            <!-- <li class="nav-item"><a href="/packages" class="nav-link">Packages</a></li> -->
+            <li class="nav-item"><a href="/courses.html" class="nav-link">Courses</a></li>
+            <li class="nav-item"><a href="/booktutor.html" class="nav-link">Book a Tutor</a></li>
+            <li class="nav-item"><a href="/diffference" class="nav-link">Our Difference</a></li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link">For Tutors &#9662;</a>
+                <ul class="dropdown-menu">
+                    <li><a href="/tutors">For Tutors</a></li>
+                    <li><a href="/tutors_signup">Create Tutor Profile</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="hamburger" id="hamburger">&#9776;</div>
+        <div class="auth-buttons">
+            <a href="/signin" class="button_login">Sign In</a>
+            <a href="/signup" class="button-neon">Sign Up</a>
+        </div>
+    </nav>
+    <div class="sidebar" id="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="/courses.html" class="nav-link">Courses</a></li>
+            <li class="nav-item"><a href="/booktutor.html" class="nav-link">Book a Tutor</a></li>
+            <!-- <li class="nav-item"><a href="/diffference" class="nav-link">Our Difference</a></li> -->
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link">For Tutors &#9662;</a>
+                <ul class="dropdown-menu">
+                    <li><a href="/tutors">For Tutors</a></li>
+                    <li><a href="/tutors_signup">Create Tutor Profile</a></li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link">Learning Plans &#9662;</a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Plan 1</a></li>
+                    <li><a href="#">Plan 2</a></li>
+                    <li><a href="#">Plan 3</a></li>
+                </ul>
+            </li>
+            <div class="auth-buttons">
+                <a href="/signin" class="button_login">Sign In</a>
+                <a href="/signup" class="button-neon">Sign Up</a>
+            </div>
+        </ul>
+    </div>
+    <!-- Main Content Section -->
+    <main>
+        <!-- Hero Section -->
+        <section class="section hero" id="intro">
+            <h1>Welcome to JaroMind</h1>
+            <p>Empowering learners with interactive and personalized education paths for their success.</p>
+            <a href="/packages" class="cta-button">View Packages</a>
+        </section>
+
+        <!-- Features Section -->
+        <section class="section features" id="features">
+            <h2>Why Choose JaroMind?</h2>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <img src="https://i.pinimg.com/736x/98/6c/d9/986cd93e1c9bc33be6fdab7d7f938c94.jpg">
+                    <h3>Innovative Tools</h3>
+                    <p>Access cutting-edge tools that simplify learning and enhance understanding.</p>
+                </div>
+                <div class="feature-item">
+                    <img src="https://www.forbes.com/advisor/wp-content/uploads/2022/05/Image_-_Best_virtual_assistant_services_.jpeg.jpg">
+                    <h3>Expert Tutors</h3>
+                    <p>Learn from top educators passionate about making knowledge accessible.</p>
+                </div>
+                <div class="feature-item">
+                    <img src="https://i.pinimg.com/736x/79/06/c3/7906c30c804e0207a4e0d000e4e5b457.jpg">
+                    <h3>Engaging Content</h3>
+                    <p>Interactive and captivating lessons for all subjects, with a focus on STEM.</p>
+                </div>
+                <div class="feature-item">
+                    <img src="https://i.pinimg.com/736x/61/38/95/613895b44915a34ce2d8abebb6dc034f.jpg">
+                    <h3>Mobile Accessibility</h3>
+                    <p>Stay connected and learn anywhere with mobile-optimized features.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials">
+            <h2>What Our Users Say</h2>
+            <div class="testimonial-wrapper">
+                <!-- Left Column -->
+                <div class="testimonial-column left-column">
+                    <div class="testimonial-item">
+                        <p>"This platform changed the way I learn. Highly recommended!"</p>
+                        <cite>- Jane Doe</cite>
+                    </div>
+                    <div class="testimonial-item">
+                        <p>"A great experience from start to finish. 5 stars!"</p>
+                        <cite>- John Smith</cite>
+                    </div>
+                    <div class="testimonial-item">
+                        <p>"The resources and support are unmatched. Thank you!"</p>
+                        <cite>- Maria Lee</cite>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="testimonial-column right-column">
+                    <div class="testimonial-item">
+                        <p>"I’ve improved so much since joining this program!"</p>
+                        <cite>- Michael Brown</cite>
+                    </div>
+                    <div class="testimonial-item">
+                        <p>"Learning has never been this fun and easy!"</p>
+                        <cite>- Sarah Connor</cite>
+                    </div>
+                    <div class="testimonial-item">
+                        <p>"Their resources are truly amazing!"</p>
+                        <cite>- David Carter</cite>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+                <!-- Schools Section -->
+                <section class="schools" id="schools">
+                    <h2>Schools That Trust Us</h2>
+                    <div class="school-slider">
+                        <div class="school-item">
+                            <img src="https://png.pngtree.com/png-vector/20221215/ourmid/pngtree-school-logo-design-png-image_6524414.png" alt="School 1" class="school-img">
+                            <p>Harvard University</p>
+                        </div>
+                        <div class="school-item">
+                            <img src="https://d1csarkz8obe9u.cloudfront.net/posterpreviews/school-logo-design-template-bdba28b46ac7ad0e26ea0e6e013d2c43_screen.jpg" alt="School 2" class="school-img">
+                            <p>Stanford University</p>
+                        </div>
+                        <div class="school-item">
+                            <img src="https://png.pngtree.com/png-vector/20221215/ourmid/pngtree-school-logo-design-png-image_6524414.png" alt="School 3" class="school-img">
+                            <p>MIT</p>
+                        </div>
+                        <div class="school-item">
+                            <img src="https://d1csarkz8obe9u.cloudfront.net/posterpreviews/school-logo-design-template-bdba28b46ac7ad0e26ea0e6e013d2c43_screen.jpg" alt="School 4" class="school-img">
+                            <p>Oxford University</p>
+                        </div>
+                        <div class="school-item">
+                            <img src="https://png.pngtree.com/png-vector/20221215/ourmid/pngtree-school-logo-design-png-image_6524414.png" alt="School 5" class="school-img">
+                            <p>Cambridge University</p>
+                        </div>
+                    </div>
+                </section>        
+
+        <!-- Call to Action Section -->
+        <section class="section cta">
+            <h2>Start Your Learning Journey Today</h2>
+            <p>Join thousands of learners achieving their goals with JaroMind.</p>
+            <a href="/signup" class="cta-button">Sign Up Now</a>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>JaroMind</h3>
+                <p>Explore personalized learning journeys designed for success.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Social Media</h3>
+                <ul>
+                    <li><img src="facebook-icon.png" alt="Facebook"> Facebook</li>
+                    <li><img src="twitter-icon.png" alt="Twitter"> Twitter</li>
+                    <li><img src="instagram-icon.png" alt="Instagram"> Instagram</li>
+                    <li><a href="linkedin-icon.png" target="_blank">
+                        <i class="fab fa-twitter"></i>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <a href="/tutors-signin" class="tutors-login-btn">Tutors Login</a>
+        </div>
+        <p>&copy; 2025 JaroMind. All Rights Reserved.</p>
+    </footer>    
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Retrieve saved theme from localStorage and apply it
+            const savedTheme = localStorage.getItem('theme') || 'light-mode';
+            document.body.className = savedTheme;
+    
+            // Update the toggle button icon based on the saved theme
+            const modeToggle = document.getElementById('modeToggle');
+            modeToggle.textContent = savedTheme === 'dark-mode' ? '\u263D' : '\u2600'; // Unicode for moon and sun
+    
+            // Toggle theme and save preference to localStorage
+            modeToggle.addEventListener('click', () => {
+                if (document.body.classList.contains('light-mode')) {
+                    document.body.classList.replace('light-mode', 'dark-mode');
+                    modeToggle.textContent = '\u263D'; // Unicode for crescent moon
+                    localStorage.setItem('theme', 'dark-mode');
+                } else {
+                    document.body.classList.replace('dark-mode', 'light-mode');
+                    modeToggle.textContent = '\u2600'; // Unicode for sun
+                    localStorage.setItem('theme', 'light-mode');
+                }
+            });
+        });    
+   
+        document.addEventListener("DOMContentLoaded", () => {
+            const sidebar = document.getElementById("sidebar");
+            const hamburger = document.getElementById("hamburger");
+
+            // Toggle sidebar on hamburger menu click
+            hamburger.addEventListener("click", () => {
+                sidebar.classList.toggle("open");
+            });
+
+            // Close sidebar when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+                    sidebar.classList.remove("open");
+                }
+            });
+        });
+    </script>
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+        (function(){
+        var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+        s1.async=true;
+        s1.src='https://embed.tawk.to/67cb9202d92e9c191a23241e/1ilpj4mmj';
+        s1.charset='UTF-8';
+        s1.setAttribute('crossorigin','*');
+        s0.parentNode.insertBefore(s1,s0);
+        })();
+    </script>
+</body>
+</html>

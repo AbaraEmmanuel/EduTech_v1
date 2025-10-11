@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTech - Pro Plan Payment</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="light-mode">
+    <!-- Light/Dark Mode Toggle -->
+    <button class="mode-toggle" id="modeToggle">🌞</button>
+
+    <nav class="navbar">
+        <div class="navbar-left">
+            <img src="ht9.png" alt="EduTech Logo" class="logo_img">
+            <a href="index.html" class="name">EduTech</a>
+        </div>
+        <a href="index.html" class="nav-link">Home</a>
+        <div class="hamburger" id="hamburger">&#9776;</div>
+        <div class="auth-buttons">
+            <a href="sign_in.html" class="button_login">Sign In</a>
+            <a href="sign_up.html" class="button-neon">Sign Up</a>
+        </div>
+    </nav>
+
+    <div class="sidebar" id="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="packages.html" class="nav-link">Packages</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Our Difference</a></li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link">For Tutors &#9662;</a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">For Tutors</a></li>
+                    <li><a href="#">Create Tutor Profile</a></li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link">Learning Plans &#9662;</a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Plan 1</a></li>
+                    <li><a href="#">Plan 2</a></li>
+                    <li><a href="#">Plan 3</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <main>
+        <section class="section payment">
+            <h1>Welcome to the Pro Plan</h1>
+            <p>Unlock advanced features for just <strong>$30</strong> per month!</p>
+            <p>This plan includes personalized tutor support, advanced learning materials, and access to webinars.</p>
+            <form action="/process_pro_payment" method="POST">
+                <label>
+                    Card Number
+                    <input type="text" name="card-number" placeholder="1234 5678 9012 3456" required>
+                </label>
+                <label>
+                    Expiry Date
+                    <input type="text" name="expiry-date" placeholder="MM/YY" required>
+                </label>
+                <label>
+                    CVV
+                    <input type="text" name="cvv" placeholder="123" required>
+                </label>
+                <button type="submit" class="btn">Pay $30</button>
+            </form>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>EduTech</h3>
+                <p>Explore personalized learning journeys designed for success.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Social Media</h3>
+                <ul>
+                    <li><img src="facebook-icon.png" alt="Facebook"> Facebook</li>
+                    <li><img src="twitter-icon.png" alt="Twitter"> Twitter</li>
+                    <li><img src="instagram-icon.png" alt="Instagram"> Instagram</li>
+                    <li><img src="linkedin-icon.png" alt="LinkedIn"> LinkedIn</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <button class="tutors-login-btn">Tutors Login</button>
+        </div>
+        <p>&copy; 2024 EduTech. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Optional JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Retrieve saved theme from localStorage and apply it
+            const savedTheme = localStorage.getItem('theme') || 'light-mode';
+            document.body.className = savedTheme;
+
+            // Update the toggle button icon based on the saved theme
+            const modeToggle = document.getElementById('modeToggle');
+            modeToggle.textContent = savedTheme === 'dark-mode' ? '\u263D' : '\u2600'; // Unicode for moon and sun
+
+            // Toggle theme and save preference to localStorage
+            modeToggle.addEventListener('click', () => {
+                if (document.body.classList.contains('light-mode')) {
+                    document.body.classList.replace('light-mode', 'dark-mode');
+                    modeToggle.textContent = '\u263D'; // Unicode for crescent moon
+                    localStorage.setItem('theme', 'dark-mode');
+                } else {
+                    document.body.classList.replace('dark-mode', 'light-mode');
+                    modeToggle.textContent = '\u2600'; // Unicode for sun
+                    localStorage.setItem('theme', 'light-mode');
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const sidebar = document.getElementById("sidebar");
+            const hamburger = document.getElementById("hamburger");
+
+            // Toggle sidebar on hamburger menu click
+            hamburger.addEventListener("click", () => {
+                sidebar.classList.toggle("open");
+            });
+
+            // Close sidebar when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+                    sidebar.classList.remove("open");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

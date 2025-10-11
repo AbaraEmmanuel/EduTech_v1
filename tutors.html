@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Tutors | EduTech</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="light-mode">
+    <!-- Light/Dark Mode Toggle -->
+    <button class="mode-toggle" id="modeToggle">🌞</button>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <img src="ht9.png" alt="EduTech Logo" class="logo_img">
+            <a href="index.html" class="name">EduTech</a>
+        </div>
+        <a href="index.html" class="nav-link">Home</a>
+        <div class="hamburger" id="hamburger">&#9776;</div>
+        <div class="auth-buttons">
+            <a href="sign_in.html" class="button_login">Sign In</a>
+            <a href="sign_up.html" class="button-neon">Sign Up</a>
+        </div>
+    </nav>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="packages.html" class="nav-link">Packages</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Our Difference</a></li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link">For Tutors &#9662;</a>
+                <ul class="dropdown-menu">
+                    <li><a href="tutors.html">For Tutors</a></li>
+                    <li><a href="#">Create Tutor Profile</a></li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link">Learning Plans &#9662;</a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Plan 1</a></li>
+                    <li><a href="#">Plan 2</a></li>
+                    <li><a href="#">Plan 3</a></li>
+                </ul>
+            </li>
+            <div class="auth-buttons">
+                <a href="sign_in.html" class="button_login">Sign In</a>
+                <a href="sign_up.html" class="button-neon">Sign Up</a>
+            </div>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <section class="section for-tutors">
+            <h1 class="tutors-title">Empower the Next Generation - Become a Visionary Tutor with EduTech</h1>
+            <p class="tutors-intro">Step into a platform where your passion for teaching meets boundless opportunities. At <span class="highlight">EduTech</span>, we celebrate educators who inspire, innovate, and change lives. Whether you’re a seasoned teacher or a budding mentor, our global platform is your gateway to growth and fulfillment.</p>
+            
+            <div class="benefits">
+                <h2 class="benefits-heading">Why Choose EduTech?</h2>
+                <ul class="benefits-list">
+                    <li><strong>🌍 Global Reach:</strong> Share your knowledge with eager learners across continents, from the comfort of your home.</li>
+                    <li><strong>⏳ Flexible Schedules:</strong> Design a teaching schedule that aligns with your lifestyle. Freedom is yours.</li>
+                    <li><strong>💸 Transparent Earnings:</strong> Enjoy competitive payouts, timely payments, and a clear breakdown of your income.</li>
+                    <li><strong>🤝 Community Support:</strong> Be part of a vibrant educator network, with access to top-notch resources and tools.</li>
+                    <li><strong>🌟 Transform Lives:</strong> Leave an indelible mark on students through personalized, impactful lessons.</li>
+                </ul>
+            </div>
+            
+            <p class="tutors-closing">Your journey as an educator deserves a stage that amplifies your impact. At <span class="highlight">EduTech</span>, we provide that stage. Take the leap, inspire minds, and redefine your career.</p>
+            
+            <a href="tutors_signup.html" class="button-neon apply-now-btn">Start Your Tutoring Journey Today</a>
+        </section>        
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>EduTech</h3>
+                <p>Explore personalized learning journeys designed for success.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Social Media</h3>
+                <ul>
+                    <li><img src="facebook-icon.png" alt="Facebook"> Facebook</li>
+                    <li><img src="twitter-icon.png" alt="Twitter"> Twitter</li>
+                    <li><img src="instagram-icon.png" alt="Instagram"> Instagram</li>
+                    <li><img src="linkedin-icon.png" alt="LinkedIn"> LinkedIn</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <button class="tutors-login-btn">Tutors Login</button>
+        </div>
+        <p>&copy; 2024 EduTech. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Javascript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light-mode';
+            document.body.className = savedTheme;
+            const modeToggle = document.getElementById('modeToggle');
+            modeToggle.textContent = savedTheme === 'dark-mode' ? '\u263D' : '\u2600';
+            
+            modeToggle.addEventListener('click', () => {
+                if (document.body.classList.contains('light-mode')) {
+                    document.body.classList.replace('light-mode', 'dark-mode');
+                    modeToggle.textContent = '\u263D';
+                    localStorage.setItem('theme', 'dark-mode');
+                } else {
+                    document.body.classList.replace('dark-mode', 'light-mode');
+                    modeToggle.textContent = '\u2600';
+                    localStorage.setItem('theme', 'light-mode');
+                }
+            });
+
+            const sidebar = document.getElementById("sidebar");
+            const hamburger = document.getElementById("hamburger");
+            hamburger.addEventListener("click", () => {
+                sidebar.classList.toggle("open");
+            });
+            document.addEventListener("click", (e) => {
+                if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+                    sidebar.classList.remove("open");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

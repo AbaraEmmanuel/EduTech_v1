@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTech - Tutor Signup</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="tutors_signup.css">
+    <link rel="stylesheet" href="notification.css">
+</head>
+<body class="light-mode">
+    <!-- Light/Dark Mode Toggle -->
+    <button class="mode-toggle" id="modeToggle">🌞</button>
+
+    <nav class="navbar">
+        <div class="navbar-left">
+            <img src="ht9.png" alt="EduTech Logo" class="logo_img">
+            <a href="index.html" class="name">EduTech</a>
+        </div>
+        <a href="index.html" class="nav-link">Home</a>
+        <div class="hamburger" id="hamburger">&#9776;</div>
+        <div class="auth-buttons">
+            <a href="sign_in.html" class="button_login">Sign In</a>
+            <a href="sign_up.html" class="button-neon">Sign Up</a>
+        </div>
+    </nav>
+    
+    <div class="sidebar" id="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="packages.html" class="nav-link">Packages</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Our Difference</a></li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link">For Tutors &#9662;</a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">For Tutors</a></li>
+                    <li><a href="tutor_signup.html">Create Tutor Profile</a></li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link">Learning Plans &#9662;</a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Plan 1</a></li>
+                    <li><a href="#">Plan 2</a></li>
+                    <li><a href="#">Plan 3</a></li>
+                </ul>
+            </li>
+            <div class="auth-buttons">
+                <a href="sign_in.html" class="button_login">Sign In</a>
+                <a href="sign_up.html" class="button-neon">Sign Up</a>
+            </div>
+        </ul>
+    </div>
+
+    <main>
+        <div class="intro-section">
+            <h2>Congratulations on Taking the First Step to Becoming a Tutor!</h2>
+            <p>
+                We are thrilled that you are considering joining our esteemed community of tutors. This is a decision you will not regret, as it opens doors to a fulfilling and rewarding experience.
+            </p>
+            <p class="important-note">
+                <strong>Important:</strong> Please fill out the form below with utmost care, as the information you provide will determine your eligibility for admission as a tutor.
+            </p>
+            <h3>Detailed Guidelines for Each Question</h3>
+            <ul>
+                <li>
+                    <strong>Full Name:</strong> Provide your full name, including your first and last names, as they appear on your official documents.
+                </li>
+                <li>
+                    <strong>Email Address:</strong> Ensure that you input your correct email address, as this will be our primary means of contacting you if necessary.
+                </li>
+                <li>
+                    <strong>Subjects:</strong> Select the subject(s) you are interested in teaching. You may choose one or multiple subjects.
+                    <br>
+                    <small>On larger screens (laptop, desktop, etc.), hold down the Ctrl key while clicking to select multiple subjects.</small>
+                </li>
+                <li>
+                    <strong>Biography:</strong> Share a brief yet compelling overview of yourself, including your teaching experience, relevant achievements, and anything else you'd like us to know. Use this opportunity to stand out and be creative!
+                </li>
+                <li>
+                    <strong>YouTube Introduction Video Link:</strong> Create a short video of 2 minutes or less where you introduce yourself. Highlight your qualifications, certifications, achievements, and teaching capabilities. Convince us why you are the perfect fit for our students! Upload the video to YouTube and paste the link in the provided textbox.
+                </li>
+            </ul>
+            <h4>How the Application Process Works</h4>
+            <p>
+                Once you submit your application, our team will thoroughly review it and get back to you within 48 hours. If necessary, we may request additional documentation to verify your qualifications.
+            </p>
+            <p class="best-of-luck">We wish you the very best of luck in your application process!</p>
+        </div>
+        
+        <div class="form-container">
+            <h1>Sign Up as a Tutor</h1>
+            <form>
+                <!-- Existing fields -->
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                
+                <label for="subject">Subjects</label>
+                <select id="subject" name="subject" multiple size="4">
+                    <option value="math">Mathematics</option>
+                    <option value="science">Science</option>
+                    <option value="english">English</option>
+                    <option value="programming">Programming</option>
+                </select>
+                
+                <label for="bio">Biography</label>
+                <textarea id="bio" name="bio" rows="4" placeholder="Tell us a little about yourself"></textarea>
+
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" required>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="prefer-not-to-say">Prefer not to say</option>
+                </select>
+
+            
+                <!-- Video introduction field -->
+                <label for="videoUrl">YouTube Introduction Video Link</label>
+                <input type="url" id="videoUrl" name="videoUrl" placeholder="Enter YouTube link" required>
+                <small>Provide a YouTube link to your introduction video.</small>
+            
+                <button type="submit">Submit</button>
+            </form>            
+            <div class="form-footer">
+                Already have an account? <a href="tutors-sign_in.html">Sign In</a>
+            </div>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>EduTech</h3>
+                <p>Explore personalized learning journeys designed for success.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Social Media</h3>
+                <ul>
+                    <li><img src="facebook-icon.png" alt="Facebook"> Facebook</li>
+                    <li><img src="twitter-icon.png" alt="Twitter"> Twitter</li>
+                    <li><img src="instagram-icon.png" alt="Instagram"> Instagram</li>
+                    <li><img src="linkedin-icon.png" alt="LinkedIn"> LinkedIn</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <button class="tutors-login-btn">Tutors Login</button>
+        </div>
+        <p>&copy; 2024 EduTech. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light-mode';
+            document.body.className = savedTheme;
+            const modeToggle = document.getElementById('modeToggle');
+            modeToggle.textContent = savedTheme === 'dark-mode' ? '\u263D' : '\u2600';
+
+            modeToggle.addEventListener('click', () => {
+                if (document.body.classList.contains('light-mode')) {
+                    document.body.classList.replace('light-mode', 'dark-mode');
+                    modeToggle.textContent = '\u263D';
+                    localStorage.setItem('theme', 'dark-mode');
+                } else {
+                    document.body.classList.replace('dark-mode', 'light-mode');
+                    modeToggle.textContent = '\u2600';
+                    localStorage.setItem('theme', 'light-mode');
+                }
+            });
+
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.getElementById('hamburger');
+
+            hamburger.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            });
+        });
+    </script>
+    <script>
+        document.getElementById('video').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const video = document.createElement('video');
+                video.preload = 'metadata';
+                
+                video.onloadedmetadata = function() {
+                    window.URL.revokeObjectURL(video.src);
+                    if (video.duration > 120) {
+                        alert('The video exceeds the 2-minute limit. Please upload a shorter video.');
+                        event.target.value = ''; // Clear the file input
+                    }
+                };
+                video.src = URL.createObjectURL(file);
+            }
+        });
+    </script>
+    <script type="module" src="firebasetutors.js"></script>
+    <script type="module" src="tutor_signup.js"></script>
+    <script src="notification.js"></script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Differences</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="difference.css">
+</head>
+<body class="light-mode">
+    <button class="mode-toggle" id="modeToggle">🌞</button>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <img src="ht9.png" alt="EduTech Logo" class="logo_img">
+            <a href="index.html" class="name">EduTech</a>
+        </div>
+        <a href="index.html" class="nav-link">Home</a>
+        <div class="hamburger" id="hamburger">&#9776;</div>
+        <div class="auth-buttons">
+            <a href="sign_in.html" class="button_login">Sign In</a>
+            <a href="sign_up.html" class="button-neon">Sign Up</a>
+        </div>
+    </nav>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="packages.html" class="nav-link">Packages</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Our Difference</a></li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link">For Tutors &#9662;</a>
+                <ul class="dropdown-menu">
+                    <li><a href="tutors.html">For Tutors</a></li>
+                    <li><a href="#">Create Tutor Profile</a></li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link">Learning Plans &#9662;</a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Plan 1</a></li>
+                    <li><a href="#">Plan 2</a></li>
+                    <li><a href="#">Plan 3</a></li>
+                </ul>
+            </li>
+            <div class="auth-buttons">
+                <a href="sign_in.html" class="button_login">Sign In</a>
+                <a href="sign_up.html" class="button-neon">Sign Up</a>
+            </div>
+        </ul>
+    </div>
+
+    <section class="differences">  
+        <div class="difference-list">
+            <div class="difference-item">
+                <h2>Innovation</h2>
+                <h3>Leading the Future, Not Following It</h3>
+                <p>We are not just problem-solvers; we are visionaries. By embracing cutting-edge technology and creative thinking, we continuously challenge the status quo to deliver groundbreaking solutions that redefine possibilities.</p>
+            </div>
+    
+            <div class="difference-item">
+                <h2>Unmatched Quality</h2>
+                <h3>Excellence in Every Detail</h3>
+                <p>We believe quality isn’t an act—it’s a habit. From design to execution, we ensure every product, service, and interaction meets the highest standards. No shortcuts, no compromises—just pure dedication to perfection.</p>
+            </div>
+    
+            <div class="difference-item">
+                <h2>Customer-First Approach</h2>
+                <h3>Your Needs, Our Priority</h3>
+                <p>We don’t just serve customers; we build relationships. By actively listening, adapting, and delivering tailored solutions, we ensure every interaction is meaningful, efficient, and exceeds expectations.</p>
+            </div>
+    
+            <div class="difference-item">
+                <h2>Integrity & Trust</h2>
+                <h3>Honesty That Builds Lasting Confidence</h3>
+                <p>We uphold the highest ethical standards in everything we do. Transparency, accountability, and reliability are the cornerstones of our brand, ensuring that trust is not just earned but maintained over time.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>EduTech</h3>
+                <p>Explore personalized learning journeys designed for success.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Social Media</h3>
+                <ul>
+                    <li><img src="facebook-icon.png" alt="Facebook"> Facebook</li>
+                    <li><img src="twitter-icon.png" alt="Twitter"> Twitter</li>
+                    <li><img src="instagram-icon.png" alt="Instagram"> Instagram</li>
+                    <li><img src="linkedin-icon.png" alt="LinkedIn"> LinkedIn</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <button class="tutors-login-btn">Tutors Login</button>
+        </div>
+        <p>&copy; 2024 EduTech. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Javascript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light-mode';
+            document.body.className = savedTheme;
+            const modeToggle = document.getElementById('modeToggle');
+            modeToggle.textContent = savedTheme === 'dark-mode' ? '\u263D' : '\u2600';
+            
+            modeToggle.addEventListener('click', () => {
+                if (document.body.classList.contains('light-mode')) {
+                    document.body.classList.replace('light-mode', 'dark-mode');
+                    modeToggle.textContent = '\u263D';
+                    localStorage.setItem('theme', 'dark-mode');
+                } else {
+                    document.body.classList.replace('dark-mode', 'light-mode');
+                    modeToggle.textContent = '\u2600';
+                    localStorage.setItem('theme', 'light-mode');
+                }
+            });
+
+            const sidebar = document.getElementById("sidebar");
+            const hamburger = document.getElementById("hamburger");
+            hamburger.addEventListener("click", () => {
+                sidebar.classList.toggle("open");
+            });
+            document.addEventListener("click", (e) => {
+                if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+                    sidebar.classList.remove("open");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

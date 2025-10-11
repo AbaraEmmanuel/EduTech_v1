@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Tutor</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --success-color: #4ad66d;
+            --danger-color: #f72585;
+            --light-bg: #f8f9fa;
+            --dark-bg: #212529;
+            --text-light: #f8f9fa;
+            --text-dark: #212529;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+
+        .dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+        }
+
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+        
+        .dark-mode .container {
+            background: #2b2d42;
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.05);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-size: 28px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--accent-color);
+            border-radius: 3px;
+        }
+
+        .dark-mode h2 {
+            color: var(--accent-color);
+        }
+
+        #tutorsList {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .tutor-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode .tutor-card {
+            background: #343a40;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .tutor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .tutor-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tutor-header:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .dark-mode .tutor-header:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .tutor-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 3px solid var(--accent-color);
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 24px;
+        }
+
+        .tutor-info {
+            flex: 1;
+        }
+
+        .tutor-name {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .dark-mode .tutor-name {
+            color: var(--accent-color);
+        }
+
+        .availability {
+            display: inline-block;
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+
+        .available {
+            background-color: rgba(74, 213, 109, 0.2);
+            color: var(--success-color);
+        }
+
+        .busy {
+            background-color: rgba(247, 37, 133, 0.2);
+            color: var(--danger-color);
+        }
+
+        .rating {
+            color: #ffc107;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .expand-arrow {
+            font-size: 16px;
+            color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .dark-mode .expand-arrow {
+            color: var(--accent-color);
+        }
+
+        .expanded .expand-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .dark-mode .dropdown {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .dropdown-content {
+            padding: 0 20px 20px;
+        }
+
+        .tutor-bio {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            color: #6c757d;
+        }
+
+        .dark-mode .tutor-bio {
+            color: #adb5bd;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #3aaf5d;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .dark-mode .btn-outline {
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .social-link {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .social-link:hover {
+            transform: translateY(-2px) scale(1.1);
+        }
+
+        .whatsapp {
+            background-color: #25D366;
+        }
+
+        .telegram {
+            background-color: #0088cc;
+        }
+
+        .linkedin {
+            background-color: #0077b5;
+        }
+
+        .tutor-skills {
+            margin: 10px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .skill-badge {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .dark-mode .skill-badge {
+            background-color: var(--primary-color);
+        }
+
+         /* Light/Dark Mode Button */
+         .mode-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #ffcc00, #ffffff);
+            border: none;
+            border-radius: 50%;
+            color: #000;
+            padding: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .mode-toggle:hover {
+            background: linear-gradient(135deg, #4b134f, #c94b4b);
+            color: #fff;
+            transform: scale(1.1) rotate(180deg);
+        }
+
+        body.dark-mode .mode-toggle {
+            background-color: #444;
+            color: #fff;
+        }
+        .light-mode {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        .dark-mode .spinner {
+            border-top-color: var(--accent-color);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            /* .navbar {
+                padding: 15px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .navbar-left {
+                margin-bottom: 10px;
+            }
+
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+            
+            #tutorsList {
+                grid-template-columns: 1fr;
+            } */
+        }
+    </style>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="light-mode">
+    <button class="mode-toggle" id="modeToggle">🌞</button>
+
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="index.html" class="nav-link">EduTech</a>
+        </div>
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="tutors.html" class="nav-link">Tutors</a>
+    </nav>
+
+    <div class="container">
+        <h2 id="selectedSkill">Available Tutors</h2>
+        <div id="tutorsList">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Firebase using compat versions to avoid module issues -->
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme toggle functionality
+            const modeToggle = document.getElementById('modeToggle');
+            const savedTheme = localStorage.getItem('theme') || 'light-mode';
+            
+            // Apply saved theme
+            document.body.className = savedTheme;
+            modeToggle.innerHTML = savedTheme === 'dark-mode' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+            
+            // Toggle theme
+            modeToggle.addEventListener('click', () => {
+                if (document.body.classList.contains('light-mode')) {
+                    document.body.classList.replace('light-mode', 'dark-mode');
+                    modeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                    localStorage.setItem('theme', 'dark-mode');
+                } else {
+                    document.body.classList.replace('dark-mode', 'light-mode');
+                    modeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                    localStorage.setItem('theme', 'light-mode');
+                }
+            });
+            
+            // Initialize Firebase
+            const firebaseConfig = {
+                apiKey: "AIzaSyBnzUWyfIDIlKtNsjlwHhA3JhR5LHhb9qU",
+                authDomain: "edtech-tutors.firebaseapp.com",
+                projectId: "edtech-tutors",
+                storageBucket: "edtech-tutors.appspot.com",
+                messagingSenderId: "87645108821",
+                appId: "1:87645108821:web:ff6957f6cb738dc2bcf2dc",
+                measurementId: "G-GTXDL1WX0L"
+            };
+
+            const app = firebase.initializeApp(firebaseConfig);
+            const db = firebase.firestore();
+
+            // Get the selected skill from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const skill = urlParams.get('skill');
+            
+            // Set page title safely
+            const pageTitle = skill 
+                ? `Available ${(skill || '').toString().replace(/-/g, ' ').toUpperCase()} Tutors` 
+                : "All Available Tutors";
+            document.getElementById('selectedSkill').textContent = pageTitle;
+
+            // Fetch tutors from Firestore
+            async function fetchTutors() {
+                const tutorsList = document.getElementById("tutorsList");
+                tutorsList.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                `;
+
+                try {
+                    let querySnapshot;
+                    if (skill) {
+                        // Query tutors with specific skill
+                        querySnapshot = await db.collection("tutors")
+                            .where("subjects", "array-contains", skill)
+                            .get();
+                    } else {
+                        // Query all tutors
+                        querySnapshot = await db.collection("tutors").get();
+                    }
+
+                    tutorsList.innerHTML = "";
+
+                    if (querySnapshot.empty) {
+                        tutorsList.innerHTML = `
+                            <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                                <i class="fas fa-user-graduate" style="font-size: 48px; color: #adb5bd; margin-bottom: 15px;"></i>
+                                <h3 style="color: #6c757d;">No tutors available${skill ? ` for ${skill}` : ''}</h3>
+                                <p>Check back later or try another subject</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    querySnapshot.forEach((doc) => {
+                        const tutor = doc.data();
+                        const firstName = tutor.name.split(" ")[0];
+                        const surnameInitial = tutor.name.split(" ")[1] ? tutor.name.split(" ")[1][0] + "." : "";
+                        const initials = firstName[0] + (surnameInitial ? surnameInitial[0] : '');
+                        
+                        // Create skills badges
+                        const skillsBadges = tutor.subjects 
+                            ? tutor.subjects.map(subject => 
+                                `<span class="skill-badge">${subject}</span>`
+                            ).join('')
+                            : '<span>No skills listed</span>';
+
+                        const tutorCard = document.createElement('div');
+                        tutorCard.classList.add('tutor-card');
+                        tutorCard.innerHTML = `
+                            <div class="tutor-header" onclick="toggleDropdown('${doc.id}')">
+                                <div class="tutor-avatar">${initials}</div>
+                                <div class="tutor-info">
+                                    <h3 class="tutor-name">${firstName} ${surnameInitial}</h3>
+                                    <span class="availability ${tutor.available ? 'available' : 'busy'}">
+                                        ${tutor.available ? '<i class="fas fa-check-circle"></i> Available' : '<i class="fas fa-times-circle"></i> Busy'}
+                                    </span>
+                                    <div class="rating">
+                                        ${'<i class="fas fa-star"></i>'.repeat(Math.floor(tutor.rating || 4))}
+                                        ${(tutor.rating || 4) % 1 >= 0.5 ? '<i class="fas fa-star-half-alt"></i>' : ''}
+                                        <span style="color: #6c757d; font-size: 12px;">(${tutor.sessions || 0} sessions)</span>
+                                    </div>
+                                </div>
+                                <span class="expand-arrow"><i class="fas fa-chevron-down"></i></span>
+                            </div>
+                            <div id="dropdown-${doc.id}" class="dropdown">
+                                <div class="dropdown-content">
+                                    <p class="tutor-bio"><strong>About:</strong> ${tutor.bio || 'No bio available'}</p>
+                                    <div class="tutor-skills">
+                                        <strong>Skills:</strong> ${skillsBadges}
+                                    </div>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-primary" onclick="bookTutor('${doc.id}', '${tutor.name}')">
+                                            <i class="fas fa-calendar-check"></i> Book Session
+                                        </button>
+                                        <button class="btn btn-success" onclick="openChat('${doc.id}', '${tutor.name}')">
+                                            <i class="fas fa-comments"></i> Chat
+                                        </button>
+                                        <button class="btn btn-outline">
+                                            <i class="fas fa-info-circle"></i> Details
+                                        </button>
+                                    </div>
+                                    <div class="social-links">
+                                        <a href="${tutor.whatsapp || '#'}" class="social-link whatsapp" target="_blank">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </a>
+                                        <a href="${tutor.telegram || '#'}" class="social-link telegram" target="_blank">
+                                            <i class="fab fa-telegram"></i>
+                                        </a>
+                                        <a href="${tutor.linkedin || '#'}" class="social-link linkedin" target="_blank">
+                                            <i class="fab fa-linkedin-in"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        tutorsList.appendChild(tutorCard);
+                    });
+
+                } catch (error) {
+                    console.error("Error fetching tutors:", error);
+                    tutorsList.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f72585; margin-bottom: 15px;"></i>
+                            <h3 style="color: #f72585;">Error loading tutors</h3>
+                            <p>Please try again later or refresh the page</p>
+                        </div>
+                    `;
+                }
+            }
+
+            // Initialize dropdowns
+            window.toggleDropdown = (id) => {
+                const dropdown = document.getElementById(`dropdown-${id}`);
+                const card = dropdown.closest('.tutor-card');
+                
+                if (dropdown.style.maxHeight) {
+                    dropdown.style.maxHeight = null;
+                    card.classList.remove('expanded');
+                } else {
+                    dropdown.style.maxHeight = dropdown.scrollHeight + 'px';
+                    card.classList.add('expanded');
+                }
+            };
+
+            // Book a tutor function
+            window.bookTutor = function(tutorId, tutorName) {
+                if (confirm(`Book a session with ${tutorName}?`)) {
+                    alert(`Booking request sent to ${tutorName}! They will contact you shortly to confirm.`);
+                }
+            };
+
+
+            window.openChat = function(tutorId, tutorFullName) {
+                // Safely format the name
+                const formatName = (fullName) => {
+                if (!fullName) return "Tutor";
+                const names = fullName.trim().split(/\s+/);
+                return names.length > 1 
+                    ? `${names[0]} ${names[1][0]}.`
+                    : names[0];
+                };
+
+                const displayName = formatName(tutorFullName);
+                window.location.href = `chat.html?tutorId=${tutorId}&tutorName=${encodeURIComponent(displayName)}`;
+            };
+
+            // Fetch tutors on page load
+            fetchTutors();
+        });
+    </script>
+</body>
+</html>
+
+
+<!-- chat link -->

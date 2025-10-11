@@ -1,0 +1,52 @@
+/* Additional styles for Our Difference page */
+
+/* Highlighting key differences */
+
+.difference-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.difference-item {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 10px;
+    padding: 3rem;
+    box-shadow: 0 6px 12px rgb(255, 0, 0);
+    width: calc(33.333% - 20px);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.difference-item:hover {
+    transform: scale(1.05);
+}
+
+.difference-item h3 {
+    color: #e74c3c;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.difference-item p {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .difference-item {
+        width: calc(50% - 20px);
+    }
+}
+
+@media (max-width: 480px) {
+    .difference-item {
+        width: 100%;
+    }
+}

@@ -1,0 +1,45 @@
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50; /* Default to success */
+    color: white;
+    padding: 15px 30px;
+    font-size: 16px;
+    border-radius: 8px;
+    display: none; /* Initially hidden */
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.5s ease;
+}
+
+/* Error Notification */
+.notification.error {
+    background-color: #f44336; /* Red color for errors */
+}
+
+/* Success Notification */
+.notification.success {
+    background-color: #4CAF50; /* Green color for success */
+}
+
+/* Show Notification */
+.notification.show {
+    display: block; /* Make it visible */
+    opacity: 1;
+    animation: slideIn 0.5s ease-out;
+}
+
+/* Animation for sliding in the notification */
+@keyframes slideIn {
+    from {
+        top: -50px;
+        opacity: 0;
+    }
+    to {
+        top: 20px;
+        opacity: 1;
+    }
+}

@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JaroMind - Explore Courses</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --warning-color: #f72585;
+            --light-bg: #f8f9fa;
+            --dark-bg: #121212;
+            --card-light: #ffffff;
+            --card-dark: #1e1e1e;
+            --text-light: #333333;
+            --text-dark: #f5f5f5;
+            --border-light: #e0e0e0;
+            --border-dark: #333333;
+        }
+
+        .light-mode {
+            --bg-color: var(--light-bg);
+            --text-color: var(--text-light);
+            --card-bg: var(--card-light);
+            --border-color: var(--border-light);
+        }
+
+        .dark-mode {
+            --bg-color: var(--dark-bg);
+            --text-color: var(--text-dark);
+            --card-bg: var(--card-dark);
+            --border-color: var(--border-dark);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .courses-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .courses-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .courses-header p {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .dark-mode .courses-header p {
+            color: #aaa;
+        }
+
+        .section-header {
+            margin: 3rem 0 2rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-header h2 i {
+            color: var(--primary-color);
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .course-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-card.expanded {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .course-image {
+            height: 160px;
+            position: relative;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .math-bg {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+        }
+
+        .science-bg {
+            background: linear-gradient(135deg, #4cc9f0, #3f37c9);
+        }
+
+        .english-bg {
+            background: linear-gradient(135deg, #f72585, #b5179e);
+        }
+
+        .history-bg {
+            background: linear-gradient(135deg, #4895ef, #560bad);
+        }
+
+        .ss1-bg {
+            background: linear-gradient(135deg, #7209b7, #3a0ca3);
+        }
+
+        .ss2-bg {
+            background: linear-gradient(135deg, #f72585, #b5179e);
+        }
+
+        .ss3-bg {
+            background: linear-gradient(135deg, #4cc9f0, #4361ee);
+        }
+
+        .course-category {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .course-badge {
+            background-color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-free {
+            color: var(--primary-color);
+        }
+
+        .badge-paid {
+            color: var(--warning-color);
+        }
+
+        .course-content {
+            padding: 1.5rem;
+        }
+
+        .course-content h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .course-content p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .dark-mode .course-content p {
+            color: #aaa;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .dark-mode .course-meta {
+            color: #aaa;
+        }
+
+        .course-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .course-price {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .price-free {
+            color: var(--success-color);
+        }
+
+        .price-paid {
+            color: var(--warning-color);
+        }
+
+        .btn-primary, .btn-secondary, .btn-outline {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        .btn-disabled {
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .btn-disabled:hover {
+            background-color: #ccc;
+        }
+
+        .course-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .course-actions .btn-primary {
+            flex: 2;
+        }
+
+        .course-actions .btn-outline {
+            flex: 1;
+        }
+
+        .course-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            background-color: rgba(67, 97, 238, 0.05);
+            margin: 0 -1.5rem -1.5rem -1.5rem;
+            padding: 0 1.5rem;
+        }
+
+        .course-details.expanded {
+            max-height: 500px;
+            padding: 1.5rem;
+        }
+
+        .subjects-list {
+            margin: 1rem 0;
+        }
+
+        .subjects-list h4 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .subject-tag {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .subject-tag:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .course-features {
+            margin: 1rem 0;
+        }
+
+        .course-features h4 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .features-list li i {
+            color: var(--success-color);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+
+        .dark-mode .empty-state {
+            color: #aaa;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 2rem;
+            grid-column: 1 / -1;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .course-actions {
+                flex-direction: column;
+            }
+            
+            .subjects-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Image overlay for better text readability */
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.1));
+            z-index: 1;
+        }
+
+        /* Ensure text stays above the image */
+        .course-category,
+        .course-badge {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Keep existing gradient backgrounds as fallback */
+        .course-image.math-bg { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
+        .course-image.science-bg { background: linear-gradient(135deg, #4cc9f0, #3f37c9); }
+        .course-image.english-bg { background: linear-gradient(135deg, #f72585, #b5179e); }
+        .course-image.history-bg { background: linear-gradient(135deg, #4895ef, #560bad); }
+        .course-image.ss1-bg { background: linear-gradient(135deg, #7209b7, #3a0ca3); }
+        .course-image.ss2-bg { background: linear-gradient(135deg, #f72585, #b5179e); }
+        .course-image.ss3-bg { background: linear-gradient(135deg, #4cc9f0, #4361ee); }
+    </style>
+</head>
+<body class="light-mode">
+    <button class="mode-toggle" id="modeToggle">🌞</button>
+
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="index.html" class="nav-link">JaroMind</a>
+        </div>
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="courses.html" class="nav-link active">Courses</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <div class="user-menu">
+            <div class="user-avatar">
+                <img id="userAvatar" src="" alt="User Avatar" style="width: 100%; height: 100%; border-radius: 50%; display: none;">
+                <span id="avatarInitial">S</span>
+            </div>
+            <div class="user-info">
+                <div class="user-name">Student</div>
+                <div id="userEmail" style="font-size: 0.8rem; color: #000000;"></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="courses-header">
+            <h1>Explore Our Courses</h1>
+            <p>Choose from complete class curricula or focus on specific subjects. Start your learning journey today!</p>
+        </div>
+
+        <!-- High School Class Lessons Section -->
+        <div class="section-header">
+            <h2><i class="fas fa-graduation-cap"></i> High School Class Lessons</h2>
+        </div>
+        <div class="courses-grid" id="classCoursesContainer">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Loading class courses...</p>
+            </div>
+        </div>
+
+        <!-- Subjects Lessons Section -->
+        <div class="section-header">
+            <h2><i class="fas fa-book-open"></i> Subjects Lessons</h2>
+        </div>
+        <div class="courses-grid" id="subjectCoursesContainer">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Loading subject courses...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme toggle functionality
+            const savedTheme = localStorage.getItem('theme') || 'light-mode';
+            document.body.className = savedTheme;
+
+            const modeToggle = document.getElementById('modeToggle');
+            modeToggle.textContent = savedTheme === 'dark-mode' ? '🌙' : '🌞';
+
+            modeToggle.addEventListener('click', () => {
+                if (document.body.classList.contains('light-mode')) {
+                    document.body.classList.replace('light-mode', 'dark-mode');
+                    modeToggle.textContent = '🌙';
+                    localStorage.setItem('theme', 'dark-mode');
+                } else {
+                    document.body.classList.replace('dark-mode', 'light-mode');
+                    modeToggle.textContent = '🌞';
+                    localStorage.setItem('theme', 'light-mode');
+                }
+            });
+
+            // View Details functionality
+            window.toggleCourseDetails = function(courseId) {
+                const detailsElement = document.getElementById(`details-${courseId}`);
+                const courseCard = detailsElement.closest('.course-card');
+                
+                if (detailsElement.classList.contains('expanded')) {
+                    detailsElement.classList.remove('expanded');
+                    courseCard.classList.remove('expanded');
+                } else {
+                    // Close all other expanded courses
+                    document.querySelectorAll('.course-details.expanded').forEach(el => {
+                        el.classList.remove('expanded');
+                        el.closest('.course-card').classList.remove('expanded');
+                    });
+                    
+                    detailsElement.classList.add('expanded');
+                    courseCard.classList.add('expanded');
+                }
+            };
+        });
+    </script>
+
+<script type="module">
+    import { auth, db } from './firebase.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { doc, getDoc, collection, getDocs, query, where, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    let currentUser = null;
+    let userEnrollments = [];
+
+
+
+    // Wait for DOM to load
+    document.addEventListener('DOMContentLoaded', () => {
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserData(user);
+                await loadUserEnrollments(user);
+                
+                
+                await loadCoursesByType();
+            } else {
+                console.log("No user signed in");
+                window.location.href = 'sign_in.html';
+            }
+        });
+    });
+
+
+    async function loadUserData(user) {
+        try {
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                const firstName = userData.firstName || "";
+                const lastName = userData.lastName || "";
+                const formattedName = firstName
+                    ? `${firstName} ${lastName.charAt(0).toUpperCase()}.`
+                    : user.displayName || "Student";
+
+                document.querySelectorAll('.user-name').forEach(el => {
+                    el.textContent = formattedName;
+                });
+
+                document.getElementById('userEmail').textContent = user.email;
+
+                // Update avatar initial
+                const avatarInitial = document.getElementById('avatarInitial');
+                if (firstName) {
+                    avatarInitial.textContent = firstName.charAt(0).toUpperCase();
+                } else if (user.displayName) {
+                    avatarInitial.textContent = user.displayName.charAt(0).toUpperCase();
+                }
+
+                if (userData.avatar) {
+                    document.getElementById('userAvatar').src = userData.avatar;
+                    document.getElementById('userAvatar').style.display = 'block';
+                    avatarInitial.style.display = 'none';
+                }
+            } else {
+                document.querySelectorAll('.user-name').forEach(el => {
+                    el.textContent = user.displayName || "Student";
+                });
+                document.getElementById('userEmail').textContent = user.email;
+            }
+        } catch (error) {
+            console.error("Error loading user data:", error);
+            document.querySelectorAll('.user-name').forEach(el => {
+                el.textContent = "Student";
+            });
+        }
+    }
+
+    async function loadUserEnrollments(user) {
+        try {
+            const enrolledQuery = query(
+                collection(db, "enrollments"), 
+                where("userId", "==", user.uid)
+            );
+            const querySnapshot = await getDocs(enrolledQuery);
+            userEnrollments = [];
+            querySnapshot.forEach((doc) => {
+                userEnrollments.push(doc.data().courseId);
+            });
+        } catch (error) {
+            console.error("Error loading user enrollments:", error);
+        }
+    }
+
+    async function loadCoursesByType() {
+        try {
+            const coursesSnapshot = await getDocs(collection(db, "courses"));
+            const classCoursesContainer = document.getElementById('classCoursesContainer');
+            const subjectCoursesContainer = document.getElementById('subjectCoursesContainer');
+            
+            if (coursesSnapshot.empty) {
+                classCoursesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-book"></i>
+                        <p>No class courses available yet</p>
+                        <p>An Error Occured. Try again Later.</p>
+                    </div>
+                `;
+                subjectCoursesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-book-open"></i>
+                        <p>No subject courses available yet</p>
+                        <p>An Error Occured. Try again Later.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let classCoursesHTML = '';
+            let subjectCoursesHTML = '';
+
+            coursesSnapshot.forEach((doc) => {
+                const course = doc.data();
+                if (!course.isActive) return;
+
+                const courseId = doc.id;
+                const isEnrolled = userEnrollments.includes(courseId);
+                
+                if (course.type === 'class') {
+                    classCoursesHTML += createCourseCard(course, courseId, isEnrolled);
+                } else if (course.type === 'subject') {
+                    subjectCoursesHTML += createCourseCard(course, courseId, isEnrolled);
+                }
+            });
+
+            classCoursesContainer.innerHTML = classCoursesHTML || `
+                <div class="empty-state">
+                    <i class="fas fa-book"></i>
+                    <p>No class courses available</p>
+                </div>
+            `;
+            subjectCoursesContainer.innerHTML = subjectCoursesHTML || `
+                <div class="empty-state">
+                    <i class="fas fa-book-open"></i>
+                    <p>No subject courses available</p>
+                </div>
+            `;
+        } catch (error) {
+            console.error("Error loading courses:", error);
+            const errorHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Error loading courses</p>
+                    <p>${error.message}</p>
+                    <p>Please check Firebase permissions</p>
+                </div>
+            `;
+            document.getElementById('classCoursesContainer').innerHTML = errorHTML;
+            document.getElementById('subjectCoursesContainer').innerHTML = errorHTML;
+        }
+    }
+
+    function createCourseCard(course, courseId, isEnrolled) {
+        const backgroundClass = getBackgroundClass(course);
+        const isFree = course.status === 'free';
+        
+        // Determine if we should use an image or gradient background
+        const hasImage = course.imageUrl && course.imageUrl.trim() !== '';
+        const imageStyle = hasImage ? `style="background-image: url('${course.imageUrl}'); background-size: cover; background-position: center;"` : '';
+        const imageClass = hasImage ? '' : backgroundClass;
+        
+        return `
+            <div class="course-card">
+                <div class="course-image ${imageClass}" ${imageStyle}>
+                    ${hasImage ? '<div class="image-overlay"></div>' : ''}
+                    <span class="course-category">${course.type === 'class' ? course.classLevel : course.subject}</span>
+                    <span class="course-badge ${isFree ? 'badge-free' : 'badge-paid'}">
+                        ${isFree ? 'FREE' : 'PAID'}
+                    </span>
+                </div>
+                <div class="course-content">
+                    <h3>${course.title}</h3>
+                    <p>${course.description}</p>
+                    
+                    <div class="course-meta">
+                        <span><i class="fas fa-play-circle"></i> ${course.lessonCount || 10} Lessons</span>
+                        <span><i class="fas fa-clock"></i> ${course.duration || '6h'}</span>
+                        <span><i class="fas fa-user-graduate"></i> ${course.level || 'All Levels'}</span>
+                    </div>
+                    
+                    ${!isFree ? `
+                        <div class="course-price price-paid">$${course.price || '19.99'}</div>
+                    ` : `
+                        <div class="course-price price-free">Free</div>
+                    `}
+                    
+                    <div class="course-actions">
+                        ${isEnrolled ? `
+                            <a href="course.html?id=${courseId}" class="btn-secondary">Continue Learning</a>
+                        ` : `
+                            <button class="btn-primary" onclick="enrollInCourse('${courseId}', ${isFree})">
+                                ${isFree ? 'Enroll Now' : 'Enroll Now'}
+                            </button>
+                        `}
+                        <button class="btn-outline" onclick="toggleCourseDetails('${courseId}')">
+                            View Details
+                        </button>
+                    </div>
+                    
+                    <div class="course-details" id="details-${courseId}">
+                        ${course.subjects ? `
+                            <div class="subjects-list">
+                                <h4>Subjects Included:</h4>
+                                <div class="subjects-grid">
+                                    ${course.subjects.map(subject => `
+                                        <div class="subject-tag">${subject}</div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="course-features">
+                            <h4>Course Features:</h4>
+                            <ul class="features-list">
+                                ${(course.features || ['Interactive lessons', 'Progress tracking', 'Certificate of completion']).map(feature => `
+                                    <li><i class="fas fa-check"></i> ${feature}</li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function getBackgroundClass(course) {
+        if (course.type === 'class') {
+            switch(course.classLevel) {
+                case 'SS1': return 'ss1-bg';
+                case 'SS2': return 'ss2-bg';
+                case 'SS3': return 'ss3-bg';
+                default: return 'math-bg';
+            }
+        } else {
+            switch(course.subject?.toLowerCase()) {
+                case 'mathematics': return 'math-bg';
+                case 'physics': return 'science-bg';
+                case 'chemistry': return 'science-bg';
+                case 'biology': return 'science-bg';
+                case 'english language': return 'english-bg';
+                default: return 'history-bg';
+            }
+        }
+    }
+
+    window.enrollInCourse = async function(courseId, isFree) {
+        try {
+            if (!currentUser) {
+                alert('Please log in to enroll in courses');
+                return;
+            }
+
+            if (!isFree) {
+                alert('Payment integration would be implemented here!');
+                console.log(`Processing payment for course ${courseId}`);
+                return;
+            }
+
+            // Check if already enrolled
+            if (userEnrollments.includes(courseId)) {
+                alert('You are already enrolled in this course!');
+                return;
+            }
+
+            // Add enrollment to Firestore
+            await addDoc(collection(db, "enrollments"), {
+                userId: currentUser.uid,
+                courseId: courseId,
+                enrolledAt: new Date(),
+                progress: 0,
+                completedLessons: []
+            });
+
+            // Update local state
+            userEnrollments.push(courseId);
+            
+            // Show success message
+            alert('Successfully enrolled in the course!');
+            
+            // Refresh the courses display
+            await loadCoursesByType();
+            
+        } catch (error) {
+            console.error("Error enrolling in course:", error);
+            alert('Error enrolling in course. Please try again.');
+        }
+    }
+</script>
+</body>
+</html>

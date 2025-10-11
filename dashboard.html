@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JaroMind</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+
+            :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --warning-color: #f72585;
+            --light-bg: #f8f9fa;
+            --dark-bg: #121212;
+            --card-light: #ffffff;
+            --card-dark: #1e1e1e;
+            --text-light: #333333;
+            --text-dark: #f5f5f5;
+            --border-light: #e0e0e0;
+            --border-dark: #333333;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-section h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            color: #666;
+        }
+
+        .dark-mode .welcome-section p {
+            color: #aaa;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(201, 201, 201, 0.771);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .icon-lessons {
+            background-color: var(--primary-color);
+        }
+
+        .icon-quiz {
+            background-color: var(--success-color);
+        }
+
+        .icon-streak {
+            background-color: var(--warning-color);
+        }
+
+        .stat-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-info p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .dark-mode .stat-info p {
+            color: #aaa;
+        }
+
+        .dashboard-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .view-all {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .course-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-image {
+            height: 140px;
+            position: relative;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .math-bg {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+        }
+
+        .science-bg {
+            background: linear-gradient(135deg, #4cc9f0, #3f37c9);
+        }
+
+        .course-category {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .course-badge {
+            background-color: white;
+            color: var(--primary-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .progress-ring {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+
+        .progress-ring-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.2);
+            stroke-width: 6;
+        }
+
+        .progress-ring-circle {
+            fill: none;
+            stroke: white;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 163;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dashoffset 0.5s;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .course-content {
+            padding: 1.5rem;
+        }
+
+        .course-content h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .course-content p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .dark-mode .course-content p {
+            color: #aaa;
+        }
+
+        .course-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .dark-mode .course-stats {
+            color: #aaa;
+        }
+
+        .btn-primary, .btn-secondary {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #666;
+        }
+
+        .dark-mode .empty-state {
+            color: #aaa;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .action-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); */
+            transition: transform 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .dark-mode .action-card {
+            box-shadow:  0 4px 12px rgb(255, 255, 255);
+        }
+
+        .light-mode .action-card {
+            box-shadow:  0 4px 12px #000000;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .action-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .nav-link {
+                margin: 0.5rem 0;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Add these styles to your existing CSS in dashboard.html */
+
+        /* Image overlay for better text readability */
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.1));
+            z-index: 1;
+        }
+
+        /* Ensure text stays above the image */
+        .course-category,
+        .course-badge,
+        .progress-ring {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Make sure course image container is positioned relative */
+        .course-image {
+            position: relative;
+        }
+
+        /* Keep existing gradient backgrounds as fallback */
+        .course-image.math-bg { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
+        .course-image.science-bg { background: linear-gradient(135deg, #4cc9f0, #3f37c9); }
+        .course-image.english-bg { background: linear-gradient(135deg, #f72585, #b5179e); }
+        .course-image.history-bg { background: linear-gradient(135deg, #4895ef, #560bad); }
+        .course-image.ss1-bg { background: linear-gradient(135deg, #7209b7, #3a0ca3); }
+        .course-image.ss2-bg { background: linear-gradient(135deg, #f72585, #b5179e); }
+        .course-image.ss3-bg { background: linear-gradient(135deg, #4cc9f0, #4361ee); }
+        
+    </style>
+</head>
+<body class="light-mode">
+    <button class="mode-toggle" id="modeToggle">🌞</button>
+
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="index.html" class="nav-link">JaroMind</a>
+        </div>
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="courses.html" class="nav-link">Courses</a>
+        <a href="dashboard.html" class="nav-link active">Dashboard</a>
+        <div class="user-menu">
+                <div class="user-avatar">
+                    <img id="userAvatar" src="" alt="User Avatar" style="width: 100%; height: 100%; border-radius: 50%; display: none;">
+                    <span id="avatarInitial">S</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-name">Student</div>
+                    <div id="userEmail" style="font-size: 0.8rem; color: #000000;"></div>
+                </div>
+            </div>
+    </nav>
+
+    
+    
+
+
+
+
+    <div class="container">
+        <div class="dashboard-header">
+            <div class="welcome-section">
+                <h1>Welcome back, <span class="user-name">Student</span>!</h1>
+                <p>Continue your learning journey</p>
+            </div>
+            <div class="header-actions">
+                <a href="courses.html" class="btn-primary">Browse Courses</a>
+            </div>
+        </div>
+
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon icon-lessons">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="completedLessons">0</h3>
+                    <p>Lessons Completed</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-quiz">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="avgQuizScore">0%</h3>
+                    <p>Average Quiz Score</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-streak">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="studyStreak">0</h3>
+                    <p>Day Study Streak</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-section">
+            <div class="section-header">
+                <h2>Your Courses</h2>
+                <a href="courses.html" class="view-all">View All</a>
+            </div>
+            <div class="courses-grid" id="enrolledCourses">
+                <!-- Enrolled courses will be loaded here by JavaScript -->
+                <div class="empty-state">
+                    <i class="fas fa-book-open"></i>
+                    <p>You haven't enrolled in any courses yet</p>
+                    <a href="courses.html" class="btn-primary">Browse Courses</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-section">
+            <div class="section-header">
+                <h2>Recommended For You</h2>
+                <a href="courses.html" class="view-all">View All</a>
+            </div>
+            <div class="courses-grid" id="recommendedCourses">
+                <!-- Recommended courses will be loaded here by JavaScript -->
+            </div>
+        </div>
+
+        <div class="dashboard-section">
+            <div class="section-header">
+                <h2>Quick Actions</h2>
+            </div>
+            <div class="quick-actions">
+                <a href="quizzes.html" class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-pencil-alt"></i>
+                    </div>
+                    <h3>Take a Quiz</h3>
+                    <p>Test your knowledge</p>
+                </a>
+                <a href="materials.html" class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-file-download"></i>
+                    </div>
+                    <h3>Study Materials</h3>
+                    <p>Download resources</p>
+                </a>
+                <a href="tutors.html" class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3>Book a Tutor</h3>
+                    <p>1-on-1 sessions</p>
+                </a>
+                <a href="progress.html" class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>View Progress</h3>
+                    <p>Track your learning</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        import { auth, db } from './firebase.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { doc, getDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        // Wait for DOM to load
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check auth state and load user data
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    console.log("User is signed in:", user.uid);
+                    await loadUserData(user);
+                    await loadEnrolledCourses(user);
+                    await loadRecommendedCourses();
+                    await loadProgressData(user);
+                } else {
+                    console.log("No user signed in");
+                    window.location.href ='sign_in.html';
+                }
+            });
+
+            // Navigation active state
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        async function loadUserData(user) {
+            try {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                const userData = userDoc.data();
+                const firstName = userData.firstName || "";
+                const lastName = userData.lastName || "";
+                const formattedName = firstName
+                    ? `${firstName} ${lastName.charAt(0).toUpperCase()}.`
+                    : user.displayName || "Student";
+
+                // Update ALL elements with the 'user-name' class
+                document.querySelectorAll('.user-name').forEach(el => {
+                    el.textContent = formattedName;
+                });
+
+                document.getElementById('userEmail').textContent = user.email;
+
+                // Update avatar initial
+                const avatarInitial = document.getElementById('avatarInitial');
+                if (firstName) {
+                    avatarInitial.textContent = firstName.charAt(0).toUpperCase();
+                } else if (user.displayName) {
+                    avatarInitial.textContent = user.displayName.charAt(0).toUpperCase();
+                }
+
+                if (userData.avatar) {
+                    document.getElementById('userAvatar').src = userData.avatar;
+                    document.getElementById('userAvatar').style.display = 'block';
+                    avatarInitial.style.display = 'none';
+                }
+                } else {
+                document.querySelectorAll('.user-name').forEach(el => {
+                    el.textContent = user.displayName || "Student";
+                });
+                document.getElementById('userEmail').textContent = user.email;
+                }
+            } catch (error) {
+                console.error("Error loading user data:", error);
+                document.querySelectorAll('.user-name').forEach(el => {
+                el.textContent = "Student";
+                });
+            }
+            }
+
+
+
+        async function loadEnrolledCourses(user) {
+            try {
+                const enrolledQuery = query(
+                    collection(db, "enrollments"), 
+                    where("userId", "==", user.uid)
+                );
+                const querySnapshot = await getDocs(enrolledQuery);
+                const enrolledCoursesContainer = document.getElementById('enrolledCourses');
+                
+                if (querySnapshot.empty) {
+                    enrolledCoursesContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-book-open"></i>
+                            <p>You haven't enrolled in any courses yet</p>
+                            <a href="courses.html" class="btn-primary">Browse Courses</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let coursesHTML = '';
+                
+                // Create an array of promises to fetch all course details
+                const coursePromises = [];
+                const enrollmentsData = [];
+                
+                querySnapshot.forEach((enrollmentDoc) => {
+                    const enrollment = enrollmentDoc.data();
+                    enrollmentsData.push(enrollment);
+                    // Fetch course details for each enrollment
+                    coursePromises.push(getDoc(doc(db, "courses", enrollment.courseId)));
+                });
+
+                // Wait for all course details to be fetched
+                const courseSnapshots = await Promise.all(coursePromises);
+                
+                // Process each course and its enrollment data
+                courseSnapshots.forEach((courseDoc, index) => {
+                    const enrollment = enrollmentsData[index];
+                    
+                    if (courseDoc.exists()) {
+                        const course = courseDoc.data();
+                        const backgroundClass = getEnrolledCourseBackgroundClass(course);
+                        const category = course.type === 'class' ? course.classLevel : course.subject;
+                        
+                        // Check if course has an image URL
+                        const hasImage = course.imageUrl && course.imageUrl.trim() !== '';
+                        const imageStyle = hasImage ? `style="background-image: url('${course.imageUrl}'); background-size: cover; background-position: center;"` : '';
+                        const imageClass = hasImage ? '' : backgroundClass;
+                        
+                        coursesHTML += `
+                            <div class="course-card">
+                                <div class="course-image ${imageClass}" ${imageStyle}>
+                                    ${hasImage ? '<div class="image-overlay"></div>' : ''}
+                                    <span class="course-category">${category}</span>
+                                    <div class="progress-ring">
+                                        <svg width="60" height="60">
+                                            <circle class="progress-ring-bg" cx="30" cy="30" r="26"></circle>
+                                            <circle class="progress-ring-circle" cx="30" cy="30" r="26" 
+                                                    style="stroke-dashoffset: ${163 - (163 * (enrollment.progress || 0)) / 100}"></circle>
+                                        </svg>
+                                        <span class="progress-text">${enrollment.progress || 0}%</span>
+                                    </div>
+                                </div>
+                                <div class="course-content">
+                                    <h3>${course.title}</h3>
+                                    <p>${course.description}</p>
+                                    <div class="course-stats">
+                                        <span><i class="fas fa-play-circle"></i> ${course.lessonCount || 0} Lessons</span>
+                                        <span><i class="fas fa-clock"></i> ${course.duration || 'N/A'}</span>
+                                        <span><i class="fas fa-user-graduate"></i> ${course.level || 'All Levels'}</span>
+                                    </div>
+                                    <a href="course.html?id=${enrollment.courseId}" class="btn-secondary">Continue Learning</a>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Course doesn't exist, show generic card
+                        coursesHTML += `
+                            <div class="course-card">
+                                <div class="course-image math-bg">
+                                    <span class="course-category">Course</span>
+                                    <div class="progress-ring">
+                                        <svg width="60" height="60">
+                                            <circle class="progress-ring-bg" cx="30" cy="30" r="26"></circle>
+                                            <circle class="progress-ring-circle" cx="30" cy="30" r="26" 
+                                                    style="stroke-dashoffset: ${163 - (163 * (enrollment.progress || 0)) / 100}"></circle>
+                                        </svg>
+                                        <span class="progress-text">${enrollment.progress || 0}%</span>
+                                    </div>
+                                </div>
+                                <div class="course-content">
+                                    <h3>Course Not Found</h3>
+                                    <p>This course is no longer available</p>
+                                    <div class="course-stats">
+                                        <span><i class="fas fa-play-circle"></i> 0 Lessons</span>
+                                        <span><i class="fas fa-clock"></i> N/A</span>
+                                    </div>
+                                    <button class="btn-secondary" disabled>Unavailable</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                enrolledCoursesContainer.innerHTML = coursesHTML;
+            } catch (error) {
+                console.error("Error loading enrolled courses:", error);
+                const enrolledCoursesContainer = document.getElementById('enrolledCourses');
+                enrolledCoursesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading your courses</p>
+                        <p>Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Helper function to determine background class for enrolled courses
+        function getEnrolledCourseBackgroundClass(course) {
+            if (course.type === 'class') {
+                switch(course.classLevel) {
+                    case 'SS1': return 'ss1-bg';
+                    case 'SS2': return 'ss2-bg';
+                    case 'SS3': return 'ss3-bg';
+                    default: return 'math-bg';
+                }
+            } else {
+                switch(course.subject?.toLowerCase()) {
+                    case 'mathematics': return 'math-bg';
+                    case 'physics': return 'science-bg';
+                    case 'chemistry': return 'science-bg';
+                    case 'biology': return 'science-bg';
+                    case 'english language': return 'english-bg';
+                    default: return 'history-bg';
+                }
+            }
+        }
+
+        async function loadRecommendedCourses() {
+            try {
+                const coursesSnapshot = await getDocs(collection(db, "courses"));
+                const recommendedContainer = document.getElementById('recommendedCourses');
+                let coursesHTML = '';
+                
+                coursesSnapshot.forEach((doc) => {
+                    const course = doc.data();
+                    if (course.isActive && course.status === 'free') {
+                        coursesHTML += `
+                            <div class="course-card">
+                                <div class="course-image science-bg">
+                                    <span class="course-category">${course.category || 'Science'}</span>
+                                    <span class="course-badge free">FREE</span>
+                                </div>
+                                <div class="course-content">
+                                    <h3>${course.title}</h3>
+                                    <p>${course.description || 'Explore exciting concepts and build your knowledge'}</p>
+                                    <div class="course-stats">
+                                        <span><i class="fas fa-play-circle"></i> ${course.lessonCount || 10} Lessons</span>
+                                        <span><i class="fas fa-clock"></i> ${course.duration || '6h'}</span>
+                                    </div>
+                                    <button class="btn-primary" onclick="enrollInCourse('${doc.id}')">Enroll Now</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                recommendedContainer.innerHTML = coursesHTML;
+            } catch (error) {
+                console.error("Error loading recommended courses:", error);
+            }
+        }
+
+        async function loadProgressData(user) {
+            try {
+                const enrolledQuery = query(
+                    collection(db, "enrollments"), 
+                    where("userId", "==", user.uid)
+                );
+                const querySnapshot = await getDocs(enrolledQuery);
+                
+                if (querySnapshot.empty) {
+                    document.getElementById('completedLessons').textContent = '0';
+                    document.getElementById('avgQuizScore').textContent = '0%';
+                    document.getElementById('studyStreak').textContent = '0';
+                    return;
+                }
+
+                let totalLessonsCompleted = 0;
+                let totalProgress = 0;
+                let enrollmentCount = 0;
+
+                querySnapshot.forEach((enrollmentDoc) => {  // Changed from 'doc' to 'enrollmentDoc'
+                    const enrollment = enrollmentDoc.data();  // Use enrollmentDoc instead of doc
+                    totalProgress += enrollment.progress || 0;
+                    enrollmentCount++;
+                    
+                    // If you track completed lessons in enrollment
+                    if (enrollment.completedLessons) {
+                        totalLessonsCompleted += enrollment.completedLessons.length;
+                    }
+                });
+
+                // Update stats with real data
+                document.getElementById('completedLessons').textContent = totalLessonsCompleted;
+                document.getElementById('avgQuizScore').textContent = enrollmentCount > 0 ? 
+                    Math.round(totalProgress / enrollmentCount) + '%' : '0%';
+                
+                // Study streak would need to be tracked separately in user profile
+                document.getElementById('studyStreak').textContent = '5'; // Keep mock for now
+                
+            } catch (error) {
+                console.error("Error loading progress data:", error);
+                // Keep the mock data as fallback
+                document.getElementById('completedLessons').textContent = '8';
+                document.getElementById('avgQuizScore').textContent = '85%';
+                document.getElementById('studyStreak').textContent = '5';
+            }
+        }
+        
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Retrieve saved theme from localStorage and apply it
+            const savedTheme = localStorage.getItem('theme') || 'light-mode';
+            document.body.className = savedTheme;
+    
+            // Update the toggle button icon based on the saved theme
+            const modeToggle = document.getElementById('modeToggle');
+            modeToggle.textContent = savedTheme === 'dark-mode' ? '\u263D' : '\u2600'; // Unicode for moon and sun
+    
+            // Toggle theme and save preference to localStorage
+            modeToggle.addEventListener('click', () => {
+                if (document.body.classList.contains('light-mode')) {
+                    document.body.classList.replace('light-mode', 'dark-mode');
+                    modeToggle.textContent = '\u263D'; // Unicode for crescent moon
+                    localStorage.setItem('theme', 'dark-mode');
+                } else {
+                    document.body.classList.replace('dark-mode', 'light-mode');
+                    modeToggle.textContent = '\u2600'; // Unicode for sun
+                    localStorage.setItem('theme', 'light-mode');
+                }
+            });
+        }); 
+    </script>
+</body>
+</html>
