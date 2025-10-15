@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-
             :root {
             --primary-color: #4361ee;
             --secondary-color: #3f37c9;
@@ -40,9 +39,48 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: rgb(159, 0, 0);
             font-weight: bold;
         }
+
+        @media (max-width: 768px) {
+            .user-menu {
+                margin-top: 10px;
+                margin-left: 26%;
+                gap: 5px;
+                font-size: 0.9rem;
+            }
+        }
+
+        .sign-out-btn {
+            /* background: none;
+            border: none; */
+            color: #fff7f7;
+            cursor: pointer;
+            /* padding: 8px;
+            border-radius: 50%; */
+            transition: all 0.3s ease;
+            display: block;
+            /* margin-left: 100px; */
+        }
+
+        .sign-out-btn:hover {
+            background-color: rgba(255, 68, 68, 0.1);
+            transform: scale(1.1);
+        }
+
+        .sign-out-btn i {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .sign-out-btn {
+                margin-left: 5px;
+                padding: 6px;
+            }
+        }
+
+        
 
         .container {
             max-width: 1200px;
@@ -414,11 +452,13 @@
 
     <nav class="navbar">
         <div class="navbar-left">
+            <img src="ht9.png" alt="Logo" class="logo_img">
             <a href="index.html" class="nav-link">JaroMind</a>
         </div>
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="courses.html" class="nav-link">Courses</a>
-        <a href="dashboard.html" class="nav-link active">Dashboard</a>
+             <div class="sign-out-btn" id="signOutBtn" title="Sign Out">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+    </nav>
         <div class="user-menu">
                 <div class="user-avatar">
                     <img id="userAvatar" src="" alt="User Avatar" style="width: 100%; height: 100%; border-radius: 50%; display: none;">
@@ -426,15 +466,9 @@
                 </div>
                 <div class="user-info">
                     <div class="user-name">Student</div>
-                    <div id="userEmail" style="font-size: 0.8rem; color: #000000;"></div>
+                    <div id="userEmail" style="font-size: 0.8rem;"></div>
                 </div>
             </div>
-    </nav>
-
-    
-    
-
-
 
 
     <div class="container">
@@ -543,7 +577,7 @@
 
     <script type="module">
         import { auth, db } from './firebase.js';
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
         import { doc, getDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         // Wait for DOM to load
@@ -570,7 +604,23 @@
                     link.classList.add('active');
                 }
             });
+
+            // Sign out functionality
+            const signOutBtn = document.getElementById('signOutBtn');
+            signOutBtn.addEventListener('click', handleSignOut);
         });
+
+        // Sign out function
+        async function handleSignOut() {
+            try {
+                await signOut(auth);
+                console.log("User signed out successfully");
+                window.location.href = 'sign_in.html';
+            } catch (error) {
+                console.error("Error signing out:", error);
+                alert('Error signing out. Please try again.');
+            }
+        }
 
         async function loadUserData(user) {
             try {
