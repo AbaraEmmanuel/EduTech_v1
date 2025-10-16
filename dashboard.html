@@ -46,7 +46,7 @@
         @media (max-width: 768px) {
             .user-menu {
                 margin-top: 10px;
-                margin-left: 26%;
+                margin-left: 23%;
                 gap: 5px;
                 font-size: 0.9rem;
             }
@@ -55,7 +55,7 @@
         .sign-out-btn {
             /* background: none;
             border: none; */
-            color: #fff7f7;
+            color: #ff0000;
             cursor: pointer;
             /* padding: 8px;
             border-radius: 50%; */
@@ -387,14 +387,6 @@
         }
 
         @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                padding: 1rem;
-            }
-
-            .nav-link {
-                margin: 0.5rem 0;
-            }
 
             .dashboard-header {
                 flex-direction: column;
@@ -452,12 +444,9 @@
 
     <nav class="navbar">
         <div class="navbar-left">
-            <img src="ht9.png" alt="Logo" class="logo_img">
+            <img src="ht9.png" alt="JaroMind Logo" class="logo_img">
             <a href="index.html" class="nav-link">JaroMind</a>
         </div>
-             <div class="sign-out-btn" id="signOutBtn" title="Sign Out">
-                <i class="fas fa-sign-out-alt"></i>
-            </div>
     </nav>
         <div class="user-menu">
                 <div class="user-avatar">
@@ -467,6 +456,9 @@
                 <div class="user-info">
                     <div class="user-name">Student</div>
                     <div id="userEmail" style="font-size: 0.8rem;"></div>
+                </div>
+                <div class="sign-out-btn" id="signOutBtn" title="Sign Out">
+                    <i class="fas fa-sign-out-alt"></i>
                 </div>
             </div>
 
@@ -571,6 +563,11 @@
                     <p>Track your learning</p>
                 </a>
             </div>
+        </div>
+
+        <div class="sign-out-btn" id="signOutBtn" title="Sign Out">
+            <i class="fas fa-sign-out-alt"></i>
+            <span class="sign-out-text">Sign Out</span>
         </div>
     </div>
 
