@@ -1422,14 +1422,6 @@ body {
         }
 
         @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                padding: 1rem;
-            }
-
-            .nav-link {
-                margin: 0.5rem 0;
-            }
 
             .dashboard-header {
                 flex-direction: column;
