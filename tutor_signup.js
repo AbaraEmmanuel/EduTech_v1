@@ -61,7 +61,8 @@ document.querySelector('.form-container form').addEventListener('submit', async 
         const confirmationMessage = `
             <div class="confirmation-message">
                 <p>Thank you for signing up, <strong>${name}</strong>!</p>
-                <p>We have sent a verification email to <strong>${email}</strong>. Please check your inbox and verify your email address before you can sign in.</p>
+                <p>We have sent a verification email to <strong>${email}</strong>. Please check your inbox and verify your email address.</p>
+                <p><small>Check your spam folder if you can't find the email in your inbox.</small></p>
             </div>
         `;
         document.querySelector('.form-container').innerHTML = confirmationMessage;

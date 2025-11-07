@@ -5,61 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JaroMind - Explore Your Learning Journey</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body class="light-mode">
-    <!-- Light/Dark Mode Toggle -->
-    <button class="mode-toggle" id="modeToggle">🌞</button>
-
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="navbar-left">
-            <img src="ht9.png" class="logo_img">
+            <img src="ht9.png" class="logo_img" alt="JaroMind Logo">
             <a href="/home" class="name">JaroMind</a>
         </div>
+        
         <ul class="nav-menu">
-            <!-- <li class="nav-item"><a href="/packages" class="nav-link">Packages</a></li> -->
             <li class="nav-item"><a href="/courses.html" class="nav-link">Courses</a></li>
             <li class="nav-item"><a href="/booktutor.html" class="nav-link">Book a Tutor</a></li>
             <li class="nav-item"><a href="/diffference" class="nav-link">Our Difference</a></li>
             <li class="nav-item dropdown">
-                <a href="#" class="nav-link">For Tutors &#9662;</a>
+                <a href="#" class="nav-link">For Tutors <i class="fas fa-chevron-down"></i></a>
                 <ul class="dropdown-menu">
                     <li><a href="/tutors">For Tutors</a></li>
                     <li><a href="/tutors_signup">Create Tutor Profile</a></li>
                 </ul>
             </li>
         </ul>
-        <div class="hamburger" id="hamburger">&#9776;</div>
-        <div class="auth-buttons">
-            <a href="/sign_in.html" class="button_login">Sign In</a>
-            <a href="/sign_up.html" class="button-neon">Sign Up</a>
+        
+        <div class="navbar-right">
+            <!-- Dark Mode Toggle in Navbar -->
+            <button class="mode-toggle" id="modeToggle">🌞</button>
+            
+            <div class="auth-buttons">
+                <a href="/sign_in.html" class="button_login">Sign In</a>
+                <a href="/sign_up.html" class="button-neon">Sign Up</a>
+            </div>
+            
+            <div class="hamburger" id="hamburger">&#9776;</div>
         </div>
     </nav>
+
+    <!-- Mobile Sidebar -->
     <div class="sidebar" id="sidebar">
         <ul class="nav-menu">
             <li class="nav-item"><a href="/courses.html" class="nav-link">Courses</a></li>
+            <li class="nav-item"><a href="/booktutor.html" class="nav-link">Book a Tutor</a></li>
+            <li class="nav-item"><a href="/diffference" class="nav-link">Our Difference</a></li>
             <li class="nav-item dropdown">
-                <a href="#" class="nav-link">For Tutors &#9662;</a>
+                <a href="#" class="nav-link">For Tutors <i class="fas fa-chevron-down"></i></a>
                 <ul class="dropdown-menu">
                     <li><a href="/tutors">For Tutors</a></li>
                     <li><a href="/tutors_signup">Create Tutor Profile</a></li>
                 </ul>
             </li>
-            <div class="auth-buttons">
-                <a href="/sign_in.html" class="button_login" style="width: 120px">Sign In</a>
-                <a href="/sign_up.html" class="button-neon" style="width: 110px">Sign Up</a>
-            </div>
+            <li class="nav-item"><a href="/sign_in.html" class="button_login">Sign In</a></li>
+            <li class="nav-item"><a href="/sign_up.html" class="button-neon">Sign Up</a></li>
+            
+            <!-- Dark Mode Toggle in Sidebar -->
+            <button class="mode-toggle" id="sidebarModeToggle">🌞</button>
         </ul>
     </div>
+
     <!-- Main Content Section -->
     <main>
         <!-- Hero Section -->
         <section class="section hero" id="intro">
-            <h1>Welcome to JaroMind</h1>
-            <p>Empowering learners with interactive and personalized education paths for their success.</p>
-            <a href="/courses.html" class="cta-button">View Courses</a>
+            <div class="hero-content">
+                <h1>Welcome to JaroMind</h1>
+                <p>Empowering learners with interactive and personalized education paths for their success.</p>
+                <a href="/courses.html" class="cta-button">View Courses</a>
+            </div>
         </section>
 
         <!-- Features Section -->
@@ -67,22 +80,34 @@
             <h2>Why Choose JaroMind?</h2>
             <div class="feature-grid">
                 <div class="feature-item">
-                    <img src="https://i.pinimg.com/736x/98/6c/d9/986cd93e1c9bc33be6fdab7d7f938c94.jpg">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <img src="https://i.pinimg.com/736x/98/6c/d9/986cd93e1c9bc33be6fdab7d7f938c94.jpg" alt="Innovative Tools">
                     <h3>Innovative Tools</h3>
                     <p>Access cutting-edge tools that simplify learning and enhance understanding.</p>
                 </div>
                 <div class="feature-item">
-                    <img src="https://www.forbes.com/advisor/wp-content/uploads/2022/05/Image_-_Best_virtual_assistant_services_.jpeg.jpg">
+                    <div class="feature-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <img src="https://www.forbes.com/advisor/wp-content/uploads/2022/05/Image_-_Best_virtual_assistant_services_.jpeg.jpg" alt="Expert Tutors">
                     <h3>Expert Tutors</h3>
                     <p>Learn from top educators passionate about making knowledge accessible.</p>
                 </div>
                 <div class="feature-item">
-                    <img src="https://i.pinimg.com/736x/79/06/c3/7906c30c804e0207a4e0d000e4e5b457.jpg">
+                    <div class="feature-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <img src="https://i.pinimg.com/736x/79/06/c3/7906c30c804e0207a4e0d000e4e5b457.jpg" alt="Engaging Content">
                     <h3>Engaging Content</h3>
                     <p>Interactive and captivating lessons for all subjects, with a focus on STEM.</p>
                 </div>
                 <div class="feature-item">
-                    <img src="https://i.pinimg.com/736x/61/38/95/613895b44915a34ce2d8abebb6dc034f.jpg">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <img src="https://i.pinimg.com/736x/61/38/95/613895b44915a34ce2d8abebb6dc034f.jpg" alt="Mobile Accessibility">
                     <h3>Mobile Accessibility</h3>
                     <p>Stay connected and learn anywhere with mobile-optimized features.</p>
                 </div>
@@ -90,21 +115,21 @@
         </section>
 
         <!-- Testimonials Section -->
-        <section class="testimonials">
+        <section class="section testimonials">
             <h2>What Our Users Say</h2>
             <div class="testimonial-wrapper">
                 <!-- Left Column -->
                 <div class="testimonial-column left-column">
                     <div class="testimonial-item">
-                        <p>"This platform changed the way I learn. Highly recommended!"</p>
+                        <p>"This platform changed the way I learn. The interactive features and personalized approach made complex topics easy to understand!"</p>
                         <cite>- Jane Doe</cite>
                     </div>
                     <div class="testimonial-item">
-                        <p>"A great experience from start to finish. 5 stars!"</p>
+                        <p>"A great experience from start to finish. The tutors are knowledgeable and the platform is incredibly user-friendly. 5 stars!"</p>
                         <cite>- John Smith</cite>
                     </div>
                     <div class="testimonial-item">
-                        <p>"The resources and support are unmatched. Thank you!"</p>
+                        <p>"The resources and support are unmatched. I've tried other platforms, but JaroMind's approach to personalized learning is revolutionary!"</p>
                         <cite>- Maria Lee</cite>
                     </div>
                 </div>
@@ -112,54 +137,55 @@
                 <!-- Right Column -->
                 <div class="testimonial-column right-column">
                     <div class="testimonial-item">
-                        <p>"I’ve improved so much since joining this program!"</p>
+                        <p>"I've improved my grades significantly since joining this program! The adaptive learning system knows exactly what I need to focus on."</p>
                         <cite>- Michael Brown</cite>
                     </div>
                     <div class="testimonial-item">
-                        <p>"Learning has never been this fun and easy!"</p>
+                        <p>"Learning has never been this fun and easy! The gamified elements keep me engaged and motivated to learn every day."</p>
                         <cite>- Sarah Connor</cite>
                     </div>
                     <div class="testimonial-item">
-                        <p>"Their resources are truly amazing!"</p>
+                        <p>"Their resources are truly amazing! From interactive quizzes to detailed progress tracking, everything is designed for success."</p>
                         <cite>- David Carter</cite>
                     </div>
                 </div>
             </div>
         </section>
 
-        
-                <!-- Schools Section -->
-                <section class="schools" id="schools">
-                    <h2>Schools That Trust Us</h2>
-                    <div class="school-slider">
-                        <div class="school-item">
-                            <img src="https://png.pngtree.com/png-vector/20221215/ourmid/pngtree-school-logo-design-png-image_6524414.png" alt="School 1" class="school-img">
-                            <p>Harvard University</p>
-                        </div>
-                        <div class="school-item">
-                            <img src="https://d1csarkz8obe9u.cloudfront.net/posterpreviews/school-logo-design-template-bdba28b46ac7ad0e26ea0e6e013d2c43_screen.jpg" alt="School 2" class="school-img">
-                            <p>Stanford University</p>
-                        </div>
-                        <div class="school-item">
-                            <img src="https://png.pngtree.com/png-vector/20221215/ourmid/pngtree-school-logo-design-png-image_6524414.png" alt="School 3" class="school-img">
-                            <p>MIT</p>
-                        </div>
-                        <div class="school-item">
-                            <img src="https://d1csarkz8obe9u.cloudfront.net/posterpreviews/school-logo-design-template-bdba28b46ac7ad0e26ea0e6e013d2c43_screen.jpg" alt="School 4" class="school-img">
-                            <p>Oxford University</p>
-                        </div>
-                        <div class="school-item">
-                            <img src="https://png.pngtree.com/png-vector/20221215/ourmid/pngtree-school-logo-design-png-image_6524414.png" alt="School 5" class="school-img">
-                            <p>Cambridge University</p>
-                        </div>
-                    </div>
-                </section>        
+        <!-- Schools Section -->
+        <section class="section schools" id="schools">
+            <h2>Schools That Trust Us</h2>
+            <div class="school-slider">
+                <div class="school-item">
+                    <img src="https://png.pngtree.com/png-vector/20221215/ourmid/pngtree-school-logo-design-png-image_6524414.png" alt="Harvard University" class="school-img">
+                    <p>Harvard University</p>
+                </div>
+                <div class="school-item">
+                    <img src="https://d1csarkz8obe9u.cloudfront.net/posterpreviews/school-logo-design-template-bdba28b46ac7ad0e26ea0e6e013d2c43_screen.jpg" alt="Stanford University" class="school-img">
+                    <p>Stanford University</p>
+                </div>
+                <div class="school-item">
+                    <img src="https://png.pngtree.com/png-vector/20221215/ourmid/pngtree-school-logo-design-png-image_6524414.png" alt="MIT" class="school-img">
+                    <p>MIT</p>
+                </div>
+                <div class="school-item">
+                    <img src="https://d1csarkz8obe9u.cloudfront.net/posterpreviews/school-logo-design-template-bdba28b46ac7ad0e26ea0e6e013d2c43_screen.jpg" alt="Oxford University" class="school-img">
+                    <p>Oxford University</p>
+                </div>
+                <div class="school-item">
+                    <img src="https://png.pngtree.com/png-vector/20221215/ourmid/pngtree-school-logo-design-png-image_6524414.png" alt="Cambridge University" class="school-img">
+                    <p>Cambridge University</p>
+                </div>
+            </div>
+        </section>        
 
         <!-- Call to Action Section -->
         <section class="section cta">
-            <h2>Start Your Learning Journey Today</h2>
-            <p>Join thousands of learners achieving their goals with JaroMind.</p>
-            <a href="/signup" class="cta-button">Sign Up Now</a>
+            <div class="cta-content">
+                <h2>Start Your Learning Journey Today</h2>
+                <p>Join thousands of learners achieving their goals with JaroMind's innovative platform.</p>
+                <a href="/signup" class="cta-button">Sign Up Now</a>
+            </div>
         </section>
     </main>
 
@@ -168,17 +194,16 @@
         <div class="footer-container">
             <div class="footer-section">
                 <h3>JaroMind</h3>
-                <p>Explore personalized learning journeys designed for success.</p>
+                <p>Explore personalized learning journeys designed for success. Empowering students and educators through innovative technology.</p>
             </div>
             <div class="footer-section">
-                <h3>Social Media</h3>
-                <ul>
-                    <li><img src="facebook-icon.png" alt="Facebook"> Facebook</li>
-                    <li><img src="twitter-icon.png" alt="Twitter"> Twitter</li>
-                    <li><img src="instagram-icon.png" alt="Instagram"> Instagram</li>
-                    <li><a href="linkedin-icon.png" target="_blank">
-                        <i class="fab fa-twitter"></i>
-                </ul>
+                <h3>Connect With Us</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i> Facebook</a>
+                    <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+                    <a href="#"><i class="fab fa-instagram"></i> Instagram</a>
+                    <a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
             </div>
             <div class="footer-section">
                 <h3>Quick Links</h3>
@@ -187,55 +212,193 @@
                     <li><a href="#">Contact</a></li>
                     <li><a href="#">Privacy Policy</a></li>
                     <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Careers</a></li>
                 </ul>
             </div>
             <a href="/tutors-signin" class="tutors-login-btn">Tutors Login</a>
         </div>
-        <p>&copy; 2025 JaroMind. All Rights Reserved.</p>
+        <div class="footer-bottom">
+            <p>&copy; 2025 JaroMind. All Rights Reserved. | Empowering Education Through Innovation</p>
+        </div>
     </footer>    
 
     <!-- JavaScript -->
     <script>
+        // Enhanced JavaScript for Dark Mode and Smart Hamburger Menu
         document.addEventListener('DOMContentLoaded', () => {
-            // Retrieve saved theme from localStorage and apply it
+            // Theme Management
             const savedTheme = localStorage.getItem('theme') || 'light-mode';
             document.body.className = savedTheme;
-    
-            // Update the toggle button icon based on the saved theme
+
             const modeToggle = document.getElementById('modeToggle');
-            modeToggle.textContent = savedTheme === 'dark-mode' ? '\u263D' : '\u2600'; // Unicode for moon and sun
-    
-            // Toggle theme and save preference to localStorage
-            modeToggle.addEventListener('click', () => {
+            const sidebarModeToggle = document.getElementById('sidebarModeToggle');
+            
+            // Set initial icons
+            updateModeIcons(savedTheme);
+
+            function updateModeIcons(theme) {
+                const icon = theme === 'dark-mode' ? '🌙' : '🌞';
+                if (modeToggle) modeToggle.textContent = icon;
+                if (sidebarModeToggle) sidebarModeToggle.textContent = icon;
+            }
+
+            function toggleTheme() {
                 if (document.body.classList.contains('light-mode')) {
                     document.body.classList.replace('light-mode', 'dark-mode');
-                    modeToggle.textContent = '\u263D'; // Unicode for crescent moon
                     localStorage.setItem('theme', 'dark-mode');
+                    updateModeIcons('dark-mode');
                 } else {
                     document.body.classList.replace('dark-mode', 'light-mode');
-                    modeToggle.textContent = '\u2600'; // Unicode for sun
                     localStorage.setItem('theme', 'light-mode');
+                    updateModeIcons('light-mode');
                 }
-            });
-        });    
-   
-        document.addEventListener("DOMContentLoaded", () => {
+            }
+
+            // Add event listeners to both dark mode buttons
+            if (modeToggle) {
+                modeToggle.addEventListener('click', toggleTheme);
+            }
+            
+            if (sidebarModeToggle) {
+                sidebarModeToggle.addEventListener('click', toggleTheme);
+            }
+
+            // Smart Hamburger and Sidebar Management
             const sidebar = document.getElementById("sidebar");
             const hamburger = document.getElementById("hamburger");
 
+            // Function to check if navbar items fit
+            function checkNavbarFit() {
+                const navbar = document.querySelector('.navbar');
+                const navMenu = document.querySelector('.nav-menu');
+                const authButtons = document.querySelector('.auth-buttons');
+                const modeToggle = document.querySelector('.mode-toggle');
+                
+                if (!navbar || !navMenu || !authButtons) return;
+                
+                // Get total width of navbar content
+                const navbarWidth = navbar.offsetWidth;
+                const navbarLeftWidth = navbar.querySelector('.navbar-left').offsetWidth;
+                const navMenuWidth = navMenu.offsetWidth;
+                const authButtonsWidth = authButtons.offsetWidth;
+                const modeToggleWidth = modeToggle ? modeToggle.offsetWidth : 0;
+                
+                const navbarContentWidth = navbarLeftWidth + navMenuWidth + authButtonsWidth + modeToggleWidth + 100;
+                
+                // Show hamburger only if content doesn't fit
+                if (navbarContentWidth > navbarWidth) {
+                    hamburger.classList.add('active');
+                    navMenu.style.display = 'none';
+                    authButtons.style.display = 'none';
+                    if (modeToggle) modeToggle.style.display = 'none';
+                } else {
+                    hamburger.classList.remove('active');
+                    navMenu.style.display = 'flex';
+                    authButtons.style.display = 'flex';
+                    if (modeToggle) modeToggle.style.display = 'flex';
+                }
+            }
+
             // Toggle sidebar on hamburger menu click
-            hamburger.addEventListener("click", () => {
-                sidebar.classList.toggle("open");
+            if (hamburger && sidebar) {
+                hamburger.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    sidebar.classList.toggle("open");
+                });
+
+                // Close sidebar when clicking outside
+                document.addEventListener("click", (e) => {
+                    if (sidebar.contains(e.target) || hamburger.contains(e.target)) return;
+                    sidebar.classList.remove("open");
+                });
+            }
+
+            // Check navbar fit on load and resize
+            checkNavbarFit();
+            window.addEventListener('resize', checkNavbarFit);
+
+            // Navbar Scroll Effect
+            window.addEventListener('scroll', () => {
+                const navbar = document.querySelector('.navbar');
+                if (!navbar) return;
+                
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
             });
 
-            // Close sidebar when clicking outside
-            document.addEventListener("click", (e) => {
-                if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
-                    sidebar.classList.remove("open");
-                }
+            // Scroll Animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        
+                        if (entry.target.classList.contains('features')) {
+                            const featureItems = entry.target.querySelectorAll('.feature-item');
+                            featureItems.forEach((item, index) => {
+                                setTimeout(() => {
+                                    item.classList.add('visible');
+                                }, index * 200);
+                            });
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.section').forEach(section => {
+                observer.observe(section);
+            });
+
+            // Enhanced dropdown functionality for mobile
+            const dropdowns = document.querySelectorAll('.dropdown');
+            dropdowns.forEach(dropdown => {
+                const link = dropdown.querySelector('.nav-link');
+                link.addEventListener('click', (e) => {
+                    if (window.innerWidth <= 950) {
+                        e.preventDefault();
+                        const menu = dropdown.querySelector('.dropdown-menu');
+                        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                    }
+                });
+            });
+
+            // Add hover effect to feature items
+            document.querySelectorAll('.feature-item').forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    item.style.transform = 'translateY(-10px)';
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    if (item.classList.contains('visible')) {
+                        item.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            // Prevent dropdown from closing when clicking inside
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                menu.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            });
+        });
+
+        // Add loading animation for images
+        window.addEventListener('load', () => {
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                img.style.opacity = '1';
             });
         });
     </script>
+
     <!--Start of Tawk.to Script-->
     <script type="text/javascript">
         var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();

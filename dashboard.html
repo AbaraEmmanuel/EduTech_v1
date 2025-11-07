@@ -28,7 +28,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 100px;
         }
 
         .user-avatar {
@@ -45,7 +45,7 @@
 
         @media (max-width: 768px) {
             .user-menu {
-                margin-top: 10px;
+                margin-top: 100px;
                 margin-left: 23%;
                 gap: 5px;
                 font-size: 0.9rem;
@@ -119,11 +119,20 @@
             background-color: var(--card-bg);
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 4px 12px rgba(201, 201, 201, 0.771);
+            /* box-shadow: 0 4px 12px rgba(201, 201, 201, 0.771); */
             display: flex;
             align-items: center;
             gap: 1rem;
         }
+
+        .dark-mode .stat-card {
+            box-shadow:  0 4px 12px rgb(255, 255, 255);
+        }
+
+        .light-mode .stat-card {
+            box-shadow:  0 4px 12px #000000;
+        }
+
 
         .stat-icon {
             width: 50px;
@@ -440,12 +449,15 @@
     </style>
 </head>
 <body class="light-mode">
-    <button class="mode-toggle" id="modeToggle">🌞</button>
-
     <nav class="navbar">
         <div class="navbar-left">
             <img src="ht9.png" class="logo_img">
             <a href="index.html" class="nav-link">JaroMind</a>
+    </div>
+    <div class="navbar-right">
+            <!-- Dark Mode Toggle in Navbar -->
+            <a href="courses.html" class="nav-link">Courses</a>
+            <button class="mode-toggle" id="modeToggle">🌞</button>
         </div>
     </nav>
         <div class="user-menu">
@@ -460,7 +472,8 @@
                 <div class="sign-out-btn" id="signOutBtn" title="Sign Out">
                     <i class="fas fa-sign-out-alt"></i>
                 </div>
-            </div>
+        </div>
+
 
 
     <div class="container">
@@ -548,7 +561,7 @@
                     <h3>Study Materials</h3>
                     <p>Download resources</p>
                 </a>
-                <a href="tutors.html" class="action-card">
+                <a href="booktutor.html" class="action-card">
                     <div class="action-icon">
                         <i class="fas fa-chalkboard-teacher"></i>
                     </div>
@@ -887,31 +900,133 @@
                 document.getElementById('studyStreak').textContent = '5';
             }
         }
-        
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Retrieve saved theme from localStorage and apply it
-            const savedTheme = localStorage.getItem('theme') || 'light-mode';
-            document.body.className = savedTheme;
-    
-            // Update the toggle button icon based on the saved theme
-            const modeToggle = document.getElementById('modeToggle');
-            modeToggle.textContent = savedTheme === 'dark-mode' ? '\u263D' : '\u2600'; // Unicode for moon and sun
-    
-            // Toggle theme and save preference to localStorage
-            modeToggle.addEventListener('click', () => {
-                if (document.body.classList.contains('light-mode')) {
-                    document.body.classList.replace('light-mode', 'dark-mode');
-                    modeToggle.textContent = '\u263D'; // Unicode for crescent moon
-                    localStorage.setItem('theme', 'dark-mode');
-                } else {
-                    document.body.classList.replace('dark-mode', 'light-mode');
-                    modeToggle.textContent = '\u2600'; // Unicode for sun
-                    localStorage.setItem('theme', 'light-mode');
+                // Theme Management
+                const savedTheme = localStorage.getItem('theme') || 'light-mode';
+                document.body.className = savedTheme;
+
+                const modeToggle = document.getElementById('modeToggle');
+                const sidebarModeToggle = document.getElementById('sidebarModeToggle');
+                
+                // Set initial icons
+                updateModeIcons(savedTheme);
+
+                function updateModeIcons(theme) {
+                    const icon = theme === 'dark-mode' ? '🌙' : '🌞';
+                    if (modeToggle) modeToggle.textContent = icon;
+                    if (sidebarModeToggle) sidebarModeToggle.textContent = icon;
                 }
+
+                function toggleTheme() {
+                    if (document.body.classList.contains('light-mode')) {
+                        document.body.classList.replace('light-mode', 'dark-mode');
+                        localStorage.setItem('theme', 'dark-mode');
+                        updateModeIcons('dark-mode');
+                    } else {
+                        document.body.classList.replace('dark-mode', 'light-mode');
+                        localStorage.setItem('theme', 'light-mode');
+                        updateModeIcons('light-mode');
+                    }
+                }
+
+                // Add event listeners to both dark mode buttons
+                if (modeToggle) {
+                    modeToggle.addEventListener('click', toggleTheme);
+                }
+                
+                if (sidebarModeToggle) {
+                    sidebarModeToggle.addEventListener('click', toggleTheme);
+                }
+
+                // Smart Hamburger and Sidebar Management
+                const sidebar = document.getElementById("sidebar");
+                const hamburger = document.getElementById("hamburger");
+
+                // Function to check if navbar items fit
+                function checkNavbarFit() {
+                    const navbar = document.querySelector('.navbar');
+                    const navMenu = document.querySelector('.nav-menu');
+                    const authButtons = document.querySelector('.auth-buttons');
+                    const modeToggle = document.querySelector('.mode-toggle');
+                    
+                    if (!navbar || !navMenu || !authButtons) return;
+                    
+                    // Get total width of navbar content
+                    const navbarWidth = navbar.offsetWidth;
+                    const navbarLeftWidth = navbar.querySelector('.navbar-left').offsetWidth;
+                    const navMenuWidth = navMenu.offsetWidth;
+                    const authButtonsWidth = authButtons.offsetWidth;
+                    const modeToggleWidth = modeToggle ? modeToggle.offsetWidth : 0;
+                    
+                    const navbarContentWidth = navbarLeftWidth + navMenuWidth + authButtonsWidth + modeToggleWidth + 100;
+                    
+                    // Show hamburger only if content doesn't fit
+                    if (navbarContentWidth > navbarWidth) {
+                        hamburger.classList.add('active');
+                        navMenu.style.display = 'none';
+                        authButtons.style.display = 'none';
+                        if (modeToggle) modeToggle.style.display = 'none';
+                    } else {
+                        hamburger.classList.remove('active');
+                        navMenu.style.display = 'flex';
+                        authButtons.style.display = 'flex';
+                        if (modeToggle) modeToggle.style.display = 'flex';
+                    }
+                }
+
+                
+
+            
+                // Navbar Scroll Effect
+                window.addEventListener('scroll', () => {
+                    const navbar = document.querySelector('.navbar');
+                    if (!navbar) return;
+                    
+                    if (window.scrollY > 50) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                });
+
+                // Scroll Animations
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            
+                            if (entry.target.classList.contains('features')) {
+                                const featureItems = entry.target.querySelectorAll('.feature-item');
+                                featureItems.forEach((item, index) => {
+                                    setTimeout(() => {
+                                        item.classList.add('visible');
+                                    }, index * 200);
+                                });
+                            }
+                        }
+                    });
+                }, observerOptions);
+
+                document.querySelectorAll('.section').forEach(section => {
+                    observer.observe(section);
+                });
+
+                });
+
+            // Add loading animation for images
+            window.addEventListener('load', () => {
+                const images = document.querySelectorAll('img');
+                images.forEach(img => {
+                    img.style.opacity = '1';
+                });
             });
-        }); 
     </script>
 </body>
 </html>

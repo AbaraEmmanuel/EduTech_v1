@@ -42,7 +42,7 @@
         .container {
             width: 90%;
             max-width: 800px;
-            margin: 40px auto;
+            margin: 100px auto 40px;
             background: white;
             padding: 20px;
             border-radius: 10px;
@@ -385,41 +385,21 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            /* .navbar {
-                padding: 15px 20px;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .navbar-left {
-                margin-bottom: 10px;
-            }
-
-            .container {
-                margin: 20px;
-                padding: 20px;
-            }
-            
-            #tutorsList {
-                grid-template-columns: 1fr;
-            } */
-        }
     </style>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="light-mode">
-    <button class="mode-toggle" id="modeToggle">🌞</button>
-
     <nav class="navbar">
         <div class="navbar-left">
             <a href="index.html" class="nav-link">EduTech</a>
         </div>
             <a href="index.html" class="nav-link">Home</a>
             <a href="tutors.html" class="nav-link">Tutors</a>
+        <div class="navbar-right">
+            <button class="mode-toggle" id="modeToggle">🌞</button>
+        </div>
     </nav>
+    
 
     <div class="container">
         <h2 id="selectedSkill">Available Tutors</h2>

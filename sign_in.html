@@ -11,39 +11,33 @@
 
 <body class="light-mode">
     <!-- Light/Dark Mode Toggle -->
-    <button class="mode-toggle" id="modeToggle">🌞</button>
-
-    <nav class="navbar">
+        <nav class="navbar">
         <div class="navbar-left">
             <img src="ht9.png" alt="JaroMind Logo" class="logo_img">
             <a href="index.html" class="name">JaroMind</a>
         </div>
         <a href="index.html" class="nav-link">Home</a>
         <div class="hamburger" id="hamburger">&#9776;</div>
+        <div class="navbar-right">
+            <button class="mode-toggle" id="modeToggle">🌞</button>
+        </div>
     </nav>
+
 
     <div class="sidebar" id="sidebar">
         <ul class="nav-menu">
-            <li class="nav-item"><a href="packages.html" class="nav-link">Packages</a></li>
-            <li class="nav-item"><a href="#" class="nav-link">Our Difference</a></li>
+            <li class="nav-item"><a href="/courses.html" class="nav-link">Courses</a></li>
             <li class="nav-item dropdown">
                 <a href="#" class="nav-link">For Tutors &#9662;</a>
                 <ul class="dropdown-menu">
-                    <li><a href="#">For Tutors</a></li>
-                    <li><a href="#">Create Tutor Profile</a></li>
+                    <li><a href="/tutors">For Tutors</a></li>
+                    <li><a href="/tutors_signup">Create Tutor Profile</a></li>
                 </ul>
             </li>
-            <li class="nav-item dropdown">
-                <a href="#" class="nav-link">Learning Plans &#9662;</a>
-                <ul class="dropdown-menu">
-                    <li><a href="#">Plan 1</a></li>
-                    <li><a href="#">Plan 2</a></li>
-                    <li><a href="#">Plan 3</a></li>
-                </ul>
-            </li>
+            <button class="mode-toggle" id="sidebarModeToggle">🌞</button>
             <div class="auth-buttons">
-                <a href="sign_in.html" class="button_login">Sign In</a>
-                <a href="sign_up.html" class="button-neon">Sign Up</a>
+                <a href="/sign_in.html" class="button_login" style="width: 120px">Sign In</a>
+                <a href="/sign_up.html" class="button-neon" style="width: 110px">Sign Up</a>
             </div>
         </ul>
     </div>
@@ -103,32 +97,81 @@
             }
         }
 
+        // Enhanced JavaScript for Dark Mode and Smart Hamburger Menu
         document.addEventListener('DOMContentLoaded', () => {
-            // Retrieve saved theme from localStorage and apply it
+            // Theme Management
             const savedTheme = localStorage.getItem('theme') || 'light-mode';
             document.body.className = savedTheme;
-    
-            // Update the toggle button icon based on the saved theme
+
             const modeToggle = document.getElementById('modeToggle');
-            modeToggle.textContent = savedTheme === 'dark-mode' ? '\u263D' : '\u2600'; // Unicode for moon and sun
-    
-            // Toggle theme and save preference to localStorage
-            modeToggle.addEventListener('click', () => {
+            const sidebarModeToggle = document.getElementById('sidebarModeToggle');
+            
+            // Set initial icons
+            updateModeIcons(savedTheme);
+
+            function updateModeIcons(theme) {
+                const icon = theme === 'dark-mode' ? '🌙' : '🌞';
+                if (modeToggle) modeToggle.textContent = icon;
+                if (sidebarModeToggle) sidebarModeToggle.textContent = icon;
+            }
+
+            function toggleTheme() {
                 if (document.body.classList.contains('light-mode')) {
                     document.body.classList.replace('light-mode', 'dark-mode');
-                    modeToggle.textContent = '\u263D'; // Unicode for crescent moon
                     localStorage.setItem('theme', 'dark-mode');
+                    updateModeIcons('dark-mode');
                 } else {
                     document.body.classList.replace('dark-mode', 'light-mode');
-                    modeToggle.textContent = '\u2600'; // Unicode for sun
                     localStorage.setItem('theme', 'light-mode');
+                    updateModeIcons('light-mode');
                 }
-            });
-        }); 
+            }
 
-        document.addEventListener("DOMContentLoaded", () => {
+            // Add event listeners to both dark mode buttons
+            if (modeToggle) {
+                modeToggle.addEventListener('click', toggleTheme);
+            }
+            
+            if (sidebarModeToggle) {
+                sidebarModeToggle.addEventListener('click', toggleTheme);
+            }
+
+            // Smart Hamburger and Sidebar Management
             const sidebar = document.getElementById("sidebar");
             const hamburger = document.getElementById("hamburger");
+
+            // Function to check if navbar items fit
+            function checkNavbarFit() {
+                const navbar = document.querySelector('.navbar');
+                const navMenu = document.querySelector('.nav-menu');
+                const authButtons = document.querySelector('.auth-buttons');
+                const modeToggle = document.querySelector('.mode-toggle');
+                
+                if (!navbar || !navMenu || !authButtons) return;
+                
+                // Get total width of navbar content
+                const navbarWidth = navbar.offsetWidth;
+                const navbarLeftWidth = navbar.querySelector('.navbar-left').offsetWidth;
+                const navMenuWidth = navMenu.offsetWidth;
+                const authButtonsWidth = authButtons.offsetWidth;
+                const modeToggleWidth = modeToggle ? modeToggle.offsetWidth : 0;
+                
+                const navbarContentWidth = navbarLeftWidth + navMenuWidth + authButtonsWidth + modeToggleWidth + 100;
+                
+                // Show hamburger only if content doesn't fit
+                if (navbarContentWidth > navbarWidth) {
+                    hamburger.classList.add('active');
+                    navMenu.style.display = 'none';
+                    authButtons.style.display = 'none';
+                    if (modeToggle) modeToggle.style.display = 'none';
+                } else {
+                    hamburger.classList.remove('active');
+                    navMenu.style.display = 'flex';
+                    authButtons.style.display = 'flex';
+                    if (modeToggle) modeToggle.style.display = 'flex';
+                }
+            }
+        // document.addEventListener("DOMContentLoaded", () => {
 
             // Toggle sidebar on hamburger menu click
             hamburger.addEventListener("click", () => {

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JaroMind - Explore Courses</title>
+    <link rel="stylesheet" href="notification.css">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -47,7 +48,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 100px;
         }
 
         .user-avatar {
@@ -64,12 +65,13 @@
 
         @media (max-width: 768px) {
             .user-menu {
-                margin-top: 10px;
+                margin-top: 100px;
                 margin-left: 23%;
                 gap: 5px;
                 font-size: 0.9rem;  
             }
         }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -482,13 +484,15 @@
     </style>
 </head>
 <body class="light-mode">
-    <button class="mode-toggle" id="modeToggle">🌞</button>
 
     <nav class="navbar">
         <div class="navbar-left">
             <img src="ht9.png" class="logo_img">
             <a href="index.html" class="nav-link">JaroMind</a>
             <a href="dashboard.html" class="nav-link">Dashboard</a>
+        </div>
+        <div class="navbar-right">
+            <button class="mode-toggle" id="modeToggle">🌞</button>
         </div>
     </nav>
         <div class="user-menu">
@@ -533,48 +537,134 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Theme toggle functionality
-            const savedTheme = localStorage.getItem('theme') || 'light-mode';
-            document.body.className = savedTheme;
+            // Theme Management
+                const savedTheme = localStorage.getItem('theme') || 'light-mode';
+                document.body.className = savedTheme;
 
-            const modeToggle = document.getElementById('modeToggle');
-            modeToggle.textContent = savedTheme === 'dark-mode' ? '🌙' : '🌞';
-
-            modeToggle.addEventListener('click', () => {
-                if (document.body.classList.contains('light-mode')) {
-                    document.body.classList.replace('light-mode', 'dark-mode');
-                    modeToggle.textContent = '🌙';
-                    localStorage.setItem('theme', 'dark-mode');
-                } else {
-                    document.body.classList.replace('dark-mode', 'light-mode');
-                    modeToggle.textContent = '🌞';
-                    localStorage.setItem('theme', 'light-mode');
-                }
-            });
-
-            // View Details functionality
-            window.toggleCourseDetails = function(courseId) {
-                const detailsElement = document.getElementById(`details-${courseId}`);
-                const courseCard = detailsElement.closest('.course-card');
+                const modeToggle = document.getElementById('modeToggle');
+                const sidebarModeToggle = document.getElementById('sidebarModeToggle');
                 
-                if (detailsElement.classList.contains('expanded')) {
-                    detailsElement.classList.remove('expanded');
-                    courseCard.classList.remove('expanded');
-                } else {
-                    // Close all other expanded courses
-                    document.querySelectorAll('.course-details.expanded').forEach(el => {
-                        el.classList.remove('expanded');
-                        el.closest('.course-card').classList.remove('expanded');
-                    });
-                    
-                    detailsElement.classList.add('expanded');
-                    courseCard.classList.add('expanded');
+                // Set initial icons
+                updateModeIcons(savedTheme);
+
+                function updateModeIcons(theme) {
+                    const icon = theme === 'dark-mode' ? '🌙' : '🌞';
+                    if (modeToggle) modeToggle.textContent = icon;
+                    if (sidebarModeToggle) sidebarModeToggle.textContent = icon;
                 }
-            };
-        });
+
+                function toggleTheme() {
+                    if (document.body.classList.contains('light-mode')) {
+                        document.body.classList.replace('light-mode', 'dark-mode');
+                        localStorage.setItem('theme', 'dark-mode');
+                        updateModeIcons('dark-mode');
+                    } else {
+                        document.body.classList.replace('dark-mode', 'light-mode');
+                        localStorage.setItem('theme', 'light-mode');
+                        updateModeIcons('light-mode');
+                    }
+                }
+
+                // Add event listeners to both dark mode buttons
+                if (modeToggle) {
+                    modeToggle.addEventListener('click', toggleTheme);
+                }
+                
+                if (sidebarModeToggle) {
+                    sidebarModeToggle.addEventListener('click', toggleTheme);
+                }
+
+                // Smart Hamburger and Sidebar Management
+                const sidebar = document.getElementById("sidebar");
+                const hamburger = document.getElementById("hamburger");
+
+                // Function to check if navbar items fit
+                function checkNavbarFit() {
+                    const navbar = document.querySelector('.navbar');
+                    const navMenu = document.querySelector('.nav-menu');
+                    const authButtons = document.querySelector('.auth-buttons');
+                    const modeToggle = document.querySelector('.mode-toggle');
+                    
+                    if (!navbar || !navMenu || !authButtons) return;
+                    
+                    // Get total width of navbar content
+                    const navbarWidth = navbar.offsetWidth;
+                    const navbarLeftWidth = navbar.querySelector('.navbar-left').offsetWidth;
+                    const navMenuWidth = navMenu.offsetWidth;
+                    const authButtonsWidth = authButtons.offsetWidth;
+                    const modeToggleWidth = modeToggle ? modeToggle.offsetWidth : 0;
+                    
+                    const navbarContentWidth = navbarLeftWidth + navMenuWidth + authButtonsWidth + modeToggleWidth + 100;
+                    
+                    // Show hamburger only if content doesn't fit
+                    if (navbarContentWidth > navbarWidth) {
+                        hamburger.classList.add('active');
+                        navMenu.style.display = 'none';
+                        authButtons.style.display = 'none';
+                        if (modeToggle) modeToggle.style.display = 'none';
+                    } else {
+                        hamburger.classList.remove('active');
+                        navMenu.style.display = 'flex';
+                        authButtons.style.display = 'flex';
+                        if (modeToggle) modeToggle.style.display = 'flex';
+                    }
+                }
+
+                
+
+            
+                // Navbar Scroll Effect
+                window.addEventListener('scroll', () => {
+                    const navbar = document.querySelector('.navbar');
+                    if (!navbar) return;
+                    
+                    if (window.scrollY > 50) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                });
+
+                // Scroll Animations
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            
+                            if (entry.target.classList.contains('features')) {
+                                const featureItems = entry.target.querySelectorAll('.feature-item');
+                                featureItems.forEach((item, index) => {
+                                    setTimeout(() => {
+                                        item.classList.add('visible');
+                                    }, index * 200);
+                                });
+                            }
+                        }
+                    });
+                }, observerOptions);
+
+                document.querySelectorAll('.section').forEach(section => {
+                    observer.observe(section);
+                });
+
+                });
+
+            // Add loading animation for images
+            window.addEventListener('load', () => {
+                const images = document.querySelectorAll('img');
+                images.forEach(img => {
+                    img.style.opacity = '1';
+                });
+            });
     </script>
 
 <script type="module">
+    import { showNotification } from './notification.js';
     import { auth, db } from './firebase.js';
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     import { doc, getDoc, collection, getDocs, query, where, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
@@ -600,6 +690,8 @@
             }
         });
     });
+    
+    
 
 
     async function loadUserData(user) {
@@ -826,19 +918,19 @@
     window.enrollInCourse = async function(courseId, isFree) {
         try {
             if (!currentUser) {
-                alert('Please log in to enroll in courses');
+                showNotification('Please log in to enroll in courses', 'error');
                 return;
             }
 
             if (!isFree) {
-                alert('Payment integration would be implemented here!');
+                showNotification('Payment integration would be implemented here!', 'error');
                 console.log(`Processing payment for course ${courseId}`);
                 return;
             }
 
             // Check if already enrolled
             if (userEnrollments.includes(courseId)) {
-                alert('You are already enrolled in this course!');
+                showNotification('You are already enrolled in this course!', 'error');
                 return;
             }
 
@@ -855,14 +947,14 @@
             userEnrollments.push(courseId);
             
             // Show success message
-            alert('Successfully enrolled in the course!');
+            showNotification('Successfully enrolled in the course!', 'success');
             
             // Refresh the courses display
             await loadCoursesByType();
             
         } catch (error) {
             console.error("Error enrolling in course:", error);
-            alert('Error enrolling in course. Please try again.');
+            showNotification('Error enrolling in course. Please try again.', 'error');
         }
     }
 </script>
