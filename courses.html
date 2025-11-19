@@ -864,9 +864,10 @@
                                 ${isFree ? 'Enroll Now' : 'Enroll Now'}
                             </button>
                         `}
-                        <button class="btn-outline" onclick="toggleCourseDetails('${courseId}')">
+                        <a href="coursedetails.html?id=COURSE_ID
+                            "class="btn-outline" onclick="toggleCourseDetails('${courseId}')">
                             View Details
-                        </button>
+                        </a>
                     </div>
                     
                     <div class="course-details" id="details-${courseId}">
