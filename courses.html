@@ -481,7 +481,174 @@
         .course-image.ss1-bg { background: linear-gradient(135deg, #7209b7, #3a0ca3); }
         .course-image.ss2-bg { background: linear-gradient(135deg, #f72585, #b5179e); }
         .course-image.ss3-bg { background: linear-gradient(135deg, #4cc9f0, #4361ee); }
-    </style>
+
+
+        /* Modal styles */
+.course-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  font-family: 'Poppins', sans-serif;
+}
+
+.course-modal.show {
+  display: flex;
+}
+
+.course-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
+.course-modal.show .course-modal-backdrop {
+  opacity: 1;
+}
+
+.course-modal-panel {
+  position: relative;
+  z-index: 2;
+  width: min(920px, 95%);
+  max-height: 90vh;
+  overflow: auto;
+  background: var(--card-bg);
+  color: var(--text-color);
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+  transform: translateY(18px) scale(0.98);
+  opacity: 0;
+  transition: transform 260ms cubic-bezier(.2,.9,.3,1), opacity 260ms ease;
+}
+
+.course-modal.show .course-modal-panel {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* Modal header */
+.modal-header {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-image {
+  width: 110px;
+  height: 84px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4361ee, #3a0ca3);
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.modal-headline h2 {
+  margin: 0 0 .25rem 0;
+  font-size: 1.2rem;
+}
+
+.muted {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Meta */
+.modal-meta {
+  display: flex;
+  gap: 1rem;
+  padding: .75rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.modal-price {
+  margin-left: auto;
+  font-weight: 700;
+}
+
+/* Tabs */
+.modal-tabs {
+  display: flex;
+  gap: .5rem;
+  padding: .75rem 1.25rem;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  border: none;
+  background: transparent;
+  padding: .5rem .85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-color);
+  transition: background .18s;
+}
+
+.tab-btn.active {
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  color: white;
+}
+
+/* Panels */
+.tab-panels {
+  padding: 1rem 1.25rem 2rem 1.25rem;
+}
+
+.tab-panel {
+  display: none;
+  animation: fadeIn 200ms ease;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Close button */
+.modal-close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  font-size: 1.4rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* Footer */
+.modal-footer {
+  padding: 1rem 1.25rem 1.5rem 1.25rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: .75rem;
+  justify-content: flex-end;
+}
+
+/* Small screens */
+@media (max-width: 600px) {
+  .modal-image { display: none; }
+  .modal-headline h2 { font-size: 1.05rem; }
+  .modal-meta { padding: .5rem 1rem; }
+  .modal-tabs { padding: .5rem 1rem; }
+  .tab-panels { padding: .75rem 1rem 1.5rem 1rem; }
+}
+
+</style>
+
+
 </head>
 <body class="light-mode">
 
@@ -864,10 +1031,9 @@
                                 ${isFree ? 'Enroll Now' : 'Enroll Now'}
                             </button>
                         `}
-                        <a href="coursedetails.html?id=COURSE_ID
-                            "class="btn-outline" onclick="toggleCourseDetails('${courseId}')">
+                        <button class="btn-outline" onclick="openCourseModal('${courseId}')">
                             View Details
-                        </a>
+                        </button>
                     </div>
                     
                     <div class="course-details" id="details-${courseId}">
@@ -958,6 +1124,221 @@
             showNotification('Error enrolling in course. Please try again.', 'error');
         }
     }
+
+  // --- Dynamic modal functions ---
+window.openCourseModal = async function(courseId) {
+  try {
+    const modal = document.getElementById('courseModal');
+    const backdrop = document.getElementById('modalBackdrop');
+    const closeBtn = document.getElementById('modalCloseBtn');
+
+    // show loading placeholder quickly
+    showModalSkeleton();
+
+    // fetch course doc from Firestore
+    const courseRef = doc(db, 'courses', courseId);
+    const snap = await getDoc(courseRef);
+    if (!snap.exists()) {
+      console.error('Course not found', courseId);
+      closeModal();
+      return;
+    }
+    const course = snap.data();
+
+    // populate header
+    document.getElementById('modalTitle').textContent = course.title || 'Course';
+    document.getElementById('modalSubtitle').textContent = course.description || '';
+    document.getElementById('modalLessons').innerHTML = `<i class="fas fa-play-circle"></i> ${course.lessonCount || 0} Lessons`;
+    document.getElementById('modalDuration').innerHTML = `<i class="fas fa-clock"></i> ${course.duration || 'N/A'}`;
+    document.getElementById('modalLevel').innerHTML = `<i class="fas fa-user-graduate"></i> ${course.level || 'All Levels'}`;
+    document.getElementById('modalPrice').textContent = course.status === 'free' ? 'Free' : (course.price ? `$${course.price}` : '');
+    const imageEl = document.getElementById('modalImage');
+    if (course.imageUrl) {
+      imageEl.style.backgroundImage = `url('${course.imageUrl}')`;
+    } else {
+      imageEl.style.backgroundImage = '';
+      // fallback gradient by subject/class
+      const bgClass = getBackgroundClass(course);
+      // simple mapping for modal: set a gradient equivalent
+      if (bgClass.includes('math')) imageEl.style.background = 'linear-gradient(135deg,#4361ee,#3a0ca3)';
+      else if (bgClass.includes('science')) imageEl.style.background = 'linear-gradient(135deg,#4cc9f0,#3f37c9)';
+      else if (bgClass.includes('english')) imageEl.style.background = 'linear-gradient(135deg,#f72585,#b5179e)';
+      else imageEl.style.background = 'linear-gradient(135deg,#4895ef,#560bad)';
+    }
+
+    // populate overview
+    document.getElementById('panelOverview').innerHTML = `
+      <p>${course.longDescription || course.description || 'No overview available.'}</p>
+      ${course.subjects ? `<h4>Subjects</h4><div class="subjects-grid">${course.subjects.map(s => `<div class="subject-tag">${s}</div>`).join('')}</div>` : ''}
+      ${course.features ? `<h4>Features</h4><ul class="features-list">${course.features.map(f => `<li><i class="fas fa-check"></i> ${f}</li>`).join('')}</ul>` : ''}
+    `;
+
+    // populate tutor
+    const tutorHtml = course.tutor ? `
+      <div class="tutor-card">
+        <strong>${course.tutor.name || 'Tutor'}</strong>
+        <p>${course.tutor.bio || ''}</p>
+        ${course.tutor.email ? `<p><small>Email: ${course.tutor.email}</small></p>` : ''}
+      </div>
+    ` : `<p>No tutor information available.</p>`;
+    document.getElementById('panelTutor').innerHTML = tutorHtml;
+
+    // populate curriculum
+    if (course.curriculum && Array.isArray(course.curriculum)) {
+      document.getElementById('panelCurriculum').innerHTML = `
+        <ol>
+          ${course.curriculum.map(item => `<li><strong>${item.title || item}</strong> ${item.description ? ` - ${item.description}` : ''}</li>`).join('')}
+        </ol>
+      `;
+    } else {
+      // fallback use simple lessons list if present
+      document.getElementById('panelCurriculum').innerHTML = `
+        <p>No detailed curriculum available. ${course.lessonCount ? 'Number of lessons: ' + course.lessonCount : ''}</p>
+      `;
+    }
+
+    // populate reviews
+    if (course.reviews && Array.isArray(course.reviews) && course.reviews.length) {
+      document.getElementById('panelReviews').innerHTML = `
+        <ul class="features-list">
+          ${course.reviews.map(r => `<li><strong>${r.user || 'Anonymous'}</strong> - ${r.rating ? `${r.rating}/5` : ''}<br>${r.comment || ''}</li>`).join('')}
+        </ul>
+      `;
+    } else {
+      document.getElementById('panelReviews').innerHTML = `<p>No reviews yet.</p>`;
+    }
+
+    // set action URL (continue or enroll)
+    const actionBtn = document.getElementById('modalAction');
+    if (userEnrollments.includes(courseId)) {
+      actionBtn.textContent = 'Continue Learning';
+      actionBtn.href = `course.html?id=${courseId}`;
+    } else if (course.status === 'free') {
+      actionBtn.textContent = 'Enroll (Free)';
+      actionBtn.href = '#';
+      actionBtn.onclick = (e) => { e.preventDefault(); enrollInCourse(courseId, true); closeModal(); };
+    } else {
+      actionBtn.textContent = 'Enroll Now';
+      actionBtn.href = '#';
+      actionBtn.onclick = (e) => { e.preventDefault(); enrollInCourse(courseId, false); closeModal(); };
+    }
+
+    // show modal
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+
+    // activate tab behavior
+    setupModalTabs();
+
+    // close handlers
+    backdrop.onclick = closeModal;
+    closeBtn.onclick = closeModal;
+    document.addEventListener('keydown', escCloseHandler);
+  } catch (err) {
+    console.error('Error opening modal', err);
+  }
+};
+
+function showModalSkeleton() {
+  // quick skeleton while fetch finishes
+  document.getElementById('modalTitle').textContent = 'Loading...';
+  document.getElementById('panelOverview').innerHTML = '<div class="spinner"></div>';
+  // show modal immediately
+  const modal = document.getElementById('courseModal');
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeModal() {
+  const modal = document.getElementById('courseModal');
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+  // cleanup listeners
+  document.removeEventListener('keydown', escCloseHandler);
+}
+
+function escCloseHandler(e) {
+  if (e.key === 'Escape') closeModal();
+}
+
+function setupModalTabs() {
+  const tabBtns = Array.from(document.querySelectorAll('.tab-btn'));
+  const panels = Array.from(document.querySelectorAll('.tab-panel'));
+
+  tabBtns.forEach(btn => {
+    btn.onclick = () => {
+      // set active button
+      tabBtns.forEach(b => {
+        b.classList.toggle('active', b === btn);
+        b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+      });
+      // show panels accordingly
+      panels.forEach(panel => {
+        const shouldShow = panel.dataset.panel === btn.dataset.tab;
+        panel.hidden = !shouldShow;
+        panel.classList.toggle('active', shouldShow);
+      });
+      // keep focus on the selected tab for keyboard users
+      btn.focus();
+    };
+  });
+}
+
+
 </script>
+
+
+<!-- Course Details Modal -->
+<div id="courseModal" class="course-modal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="course-modal-backdrop" id="modalBackdrop"></div>
+  <div class="course-modal-panel" role="document" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalCloseBtn" aria-label="Close details">&times;</button>
+    <div class="modal-header">
+      <div class="modal-image" id="modalImage"></div>
+      <div class="modal-headline">
+        <h2 id="modalTitle">Course Title</h2>
+        <p id="modalSubtitle" class="muted">Course subtitle / summary</p>
+      </div>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-meta">
+        <span id="modalLessons"><i class="fas fa-play-circle"></i> 0 Lessons</span>
+        <span id="modalDuration"><i class="fas fa-clock"></i> 0h</span>
+        <span id="modalLevel"><i class="fas fa-user-graduate"></i> Level</span>
+        <span id="modalPrice" class="modal-price"></span>
+      </div>
+
+      <!-- Tabs -->
+      <div class="modal-tabs" role="tablist" aria-label="Course sections">
+        <button class="tab-btn active" role="tab" aria-selected="true" data-tab="overview">Overview</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="tutor">Tutor</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="curriculum">Curriculum</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="reviews">Reviews</button>
+      </div>
+
+      <div class="tab-panels">
+        <div class="tab-panel active" data-panel="overview" role="tabpanel">
+          <div id="panelOverview">Loading overview…</div>
+        </div>
+        <div class="tab-panel" data-panel="tutor" role="tabpanel" hidden>
+          <div id="panelTutor">Loading tutor…</div>
+        </div>
+        <div class="tab-panel" data-panel="curriculum" role="tabpanel" hidden>
+          <div id="panelCurriculum">Loading curriculum…</div>
+        </div>
+        <div class="tab-panel" data-panel="reviews" role="tabpanel" hidden>
+          <div id="panelReviews">Loading reviews…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <a href="#" id="modalAction" class="btn-primary">Go to Course</a>
+    </div>
+  </div>
+</div>
+
+
 </body>
 </html>
