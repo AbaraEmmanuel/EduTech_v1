@@ -1025,7 +1025,7 @@
                     
                     <div class="course-actions">
                         ${isEnrolled ? `
-                            <a href="course.html?id=${courseId}" class="btn-secondary">Continue Learning</a>
+                            <a href="studentdashboard.html?id=${courseId}" class="btn-secondary">Continue Learning</a>
                         ` : `
                             <button class="btn-primary" onclick="enrollInCourse('${courseId}', ${isFree})">
                                 ${isFree ? 'Enroll Now' : 'Enroll Now'}
@@ -1312,7 +1312,7 @@ function setupModalTabs() {
       <!-- Tabs -->
       <div class="modal-tabs" role="tablist" aria-label="Course sections">
         <button class="tab-btn active" role="tab" aria-selected="true" data-tab="overview">Overview</button>
-        <button class="tab-btn" role="tab" aria-selected="false" data-tab="tutor">Tutor</button>
+    
         <button class="tab-btn" role="tab" aria-selected="false" data-tab="curriculum">Curriculum</button>
         <button class="tab-btn" role="tab" aria-selected="false" data-tab="reviews">Reviews</button>
       </div>
