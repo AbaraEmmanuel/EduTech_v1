@@ -24,8 +24,8 @@ document.querySelector('.sign-in-form').addEventListener('submit', async (e) => 
             return;
         }
 
-        console.log('User signed in:', data.user);
-        console.log('Session:', data.session);
+        // console.log('User signed in:', data.user);
+        // console.log('Session:', data.session);
 
         showNotification('Sign-in successful!', 'success');
 
