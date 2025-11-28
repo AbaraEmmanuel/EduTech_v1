@@ -1,76 +1,92 @@
 import { showNotification } from './notification.js';
-import { supabase } from './supabase.js';  // Import the supabase client
 
 document.querySelector('.sign-up-form').addEventListener('submit', async (e) => {
-    e.preventDefault(); // Prevent page reload
+    e.preventDefault();
 
-    showNotification('Processing...', 'loading');
+    const firstName = e.target['first-name'].value.trim();
+    const lastName = e.target['last-name'].value.trim();
+    const email = e.target.email.value.trim();
+    const phoneNumber = e.target['phone-number'].value.trim();
+    const password = e.target.password.value.trim();
+    const confirmPassword = e.target['confirm-password'].value.trim();
 
-    const firstName = e.target['first-name'].value;
-    const lastName = e.target['last-name'].value;
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-    const confirmPassword = e.target['confirm-password'].value;
-    const phoneNumber = e.target['phone-number'].value;
+    // --- Frontend validation ---
+    if (!firstName || !lastName) {
+        showNotification('Please enter both first and last name', 'error');
+        return;
+    }
 
-    // Ensure passwords match
+    if (!email) {
+        showNotification('Please enter an email address', 'error');
+        return;
+    }
+
+    // Simple email regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showNotification('Please enter a valid email address', 'error');
+        return;
+    }
+
+    if (!phoneNumber) {
+        showNotification('Please enter a phone number', 'error');
+        return;
+    }
+
+    // Optional: simple phone validation (digits only, 7-15 characters)
+    // const phoneRegex = /^\d{7,15}$/;
+    // if (!phoneRegex.test(phoneNumber)) {
+    //     showNotification('Please enter a valid phone number (digits only)', 'error');
+    //     return;
+    // }
+
+    if (!password || !confirmPassword) {
+        showNotification('Please enter and confirm your password', 'error');
+        return;
+    }
+
     if (password !== confirmPassword) {
         showNotification('Passwords do not match!', 'error');
         return;
     }
 
+    if (password.length < 6) {
+        showNotification('Password must be at least 6 characters', 'error');
+        return;
+    }
+
+    const fullName = `${firstName} ${lastName}`.trim();
+
     try {
-        // Supabase Authentication Sign Up
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-            options: {
-                data: {
-                    first_name: firstName,
-                    last_name: lastName,
-                    phone_number: phoneNumber
-                }
-            }
+        const response = await fetch("https://jaromind-production-5e3b.up.railway.app/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                Name: fullName,
+                Email: email,
+                Phone: phoneNumber,
+                Password: password
+            })
         });
 
-        if (authError) {
-            throw authError;
+        const data = await response.json();
+        // console.log("Backend response:", data);
+
+        if (!response.ok) {
+            showNotification(data.message || "Registration failed", "error");
+            return;
         }
 
-        const user = authData.user;
+        showNotification("Sign-up successful! Redirecting...", "success");
 
-        // Save additional user data to Supabase 'users' table (if you have one)
-        // Note: You might want to create a 'profiles' or 'users' table in Supabase
-        if (user) {
-            const { error: dbError } = await supabase
-                .from('users')  // Change this to your table name
-                .insert({
-                    id: user.id,  // Use the same ID as auth user
-                    first_name: firstName,
-                    last_name: lastName,
-                    email: email,
-                    phone_number: phoneNumber,
-                    created_at: new Date().toISOString(),
-                });
-
-            if (dbError) {
-                console.error('Error saving user data:', dbError);
-                // Don't throw here - the user was created in auth, just the profile failed
-            }
-        }
-
-        // Show notification on successful signup
-        showNotification('Sign-up successful! Redirecting...', 'success');
-
-        console.log('Redirecting to: dashboard.html');
-
-        // Redirect after 2 seconds to allow time for the success notification
         setTimeout(() => {
-            window.location.href = 'dashboard.html';
+            window.location.href = "sign_in.html";
         }, 2000);
 
     } catch (error) {
-        console.error('Sign-up error:', error);
-        showNotification(`Error: ${error.message}`, 'error');
+        console.error("Sign-up error:", error);
+        showNotification(`Error: ${error.message}`, "error");
     }
 });
