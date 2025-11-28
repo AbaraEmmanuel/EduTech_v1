@@ -1,11 +1,18 @@
 import { showNotification } from './notification.js';
 
-// Event listener for form submission
-document.querySelector('.sign-in-form').addEventListener('submit', async (e) => {
+const form = document.querySelector('.sign-in-form');
+const submitButton = form.querySelector('button[type="submit"]');
+const originalText = submitButton.textContent;
+
+form.addEventListener('submit', async (e) => {
     e.preventDefault(); // Prevent page reload
 
     const email = e.target.email.value.trim();
     const password = e.target.password.value.trim();
+
+    // Disable button while logging in
+    submitButton.textContent = 'Signing in...';
+    submitButton.disabled = true;
 
     try {
         const response = await fetch("https://jaromind-production-5e3b.up.railway.app/login", {
@@ -17,24 +24,30 @@ document.querySelector('.sign-in-form').addEventListener('submit', async (e) => 
         });
 
         const data = await response.json();
-        // console.log("Backend response:", data);
 
         if (!response.ok) {
-            showNotification(data.message || "Login failed", "error");
+            showNotification(data.error || "Login failed", "error");
             return;
         }
 
-        // console.log('User signed in:', data.user);
-        // console.log('Session:', data.session);
+        // --- KEY FIX: store the JWT in localStorage ---
+        if (data.token) {
+            localStorage.setItem('token', data.token);
+        } else {
+            showNotification("Login succeeded but no token received", "warning");
+            return;
+        }
 
         showNotification('Sign-in successful!', 'success');
 
+        setTimeout(() => {
+            window.location.href = "dashboard.html";
+        }, 1000);
 
     } catch (error) {
         console.error('Sign-in error:', error);
         showNotification(`Error: ${error.message}`, 'error');
     } finally {
-        // Reset button state
         submitButton.textContent = originalText;
         submitButton.disabled = false;
     }

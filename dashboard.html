@@ -585,448 +585,265 @@
     </div>
 
 
-    <script type="module">
-        import { auth, db } from './firebase.js';
-        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { doc, getDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-        // Wait for DOM to load
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            // Check auth state and load user data
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    console.log("User is signed in:", user.uid);
-                    await loadUserData(user);
-                    await loadEnrolledCourses(user);
-                    await loadRecommendedCourses();
-                    await loadProgressData(user);
-                } else {
-                    console.log("No user signed in");
-                    window.location.href ='sign_in.html';
-                }
-            });
-
-            // Navigation active state
-            const currentPage = window.location.pathname.split('/').pop();
-            document.querySelectorAll('.nav-link').forEach(link => {
-                if (link.getAttribute('href') === currentPage) {
-                    link.classList.add('active');
-                }
-            });
-
-            // Sign out functionality
-            const signOutBtn = document.getElementById('signOutBtn');
-            signOutBtn.addEventListener('click', handleSignOut);
-        });
-
-        // Sign out function
-        async function handleSignOut() {
-            try {
-                await signOut(auth);
-                console.log("User signed out successfully");
-                window.location.href = 'sign_in.html';
-            } catch (error) {
-                console.error("Error signing out:", error);
-                alert('Error signing out. Please try again.');
-            }
-        }
-
-        async function loadUserData(user) {
-            try {
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.exists()) {
-                const userData = userDoc.data();
-                const firstName = userData.firstName || "";
-                const lastName = userData.lastName || "";
-                const formattedName = firstName
-                    ? `${firstName} ${lastName.charAt(0).toUpperCase()}.`
-                    : user.displayName || "Student";
-
-                // Update ALL elements with the 'user-name' class
-                document.querySelectorAll('.user-name').forEach(el => {
-                    el.textContent = formattedName;
-                });
-
-                document.getElementById('userEmail').textContent = user.email;
-
-                // Update avatar initial
-                const avatarInitial = document.getElementById('avatarInitial');
-                if (firstName) {
-                    avatarInitial.textContent = firstName.charAt(0).toUpperCase();
-                } else if (user.displayName) {
-                    avatarInitial.textContent = user.displayName.charAt(0).toUpperCase();
-                }
-
-                if (userData.avatar) {
-                    document.getElementById('userAvatar').src = userData.avatar;
-                    document.getElementById('userAvatar').style.display = 'block';
-                    avatarInitial.style.display = 'none';
-                }
-                } else {
-                document.querySelectorAll('.user-name').forEach(el => {
-                    el.textContent = user.displayName || "Student";
-                });
-                document.getElementById('userEmail').textContent = user.email;
-                }
-            } catch (error) {
-                console.error("Error loading user data:", error);
-                document.querySelectorAll('.user-name').forEach(el => {
-                el.textContent = "Student";
-                });
-            }
-            }
-
-
-
-        async function loadEnrolledCourses(user) {
-            try {
-                const enrolledQuery = query(
-                    collection(db, "enrollments"), 
-                    where("userId", "==", user.uid)
-                );
-                const querySnapshot = await getDocs(enrolledQuery);
-                const enrolledCoursesContainer = document.getElementById('enrolledCourses');
-                
-                if (querySnapshot.empty) {
-                    enrolledCoursesContainer.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-book-open"></i>
-                            <p>You haven't enrolled in any courses yet</p>
-                            <a href="courses.html" class="btn-primary">Browse Courses</a>
-                        </div>
-                    `;
-                    return;
-                }
-
-                let coursesHTML = '';
-                
-                // Create an array of promises to fetch all course details
-                const coursePromises = [];
-                const enrollmentsData = [];
-                
-                querySnapshot.forEach((enrollmentDoc) => {
-                    const enrollment = enrollmentDoc.data();
-                    enrollmentsData.push(enrollment);
-                    // Fetch course details for each enrollment
-                    coursePromises.push(getDoc(doc(db, "courses", enrollment.courseId)));
-                });
-
-                // Wait for all course details to be fetched
-                const courseSnapshots = await Promise.all(coursePromises);
-                
-                // Process each course and its enrollment data
-                courseSnapshots.forEach((courseDoc, index) => {
-                    const enrollment = enrollmentsData[index];
-                    
-                    if (courseDoc.exists()) {
-                        const course = courseDoc.data();
-                        const backgroundClass = getEnrolledCourseBackgroundClass(course);
-                        const category = course.type === 'class' ? course.classLevel : course.subject;
-                        
-                        // Check if course has an image URL
-                        const hasImage = course.imageUrl && course.imageUrl.trim() !== '';
-                        const imageStyle = hasImage ? `style="background-image: url('${course.imageUrl}'); background-size: cover; background-position: center;"` : '';
-                        const imageClass = hasImage ? '' : backgroundClass;
-                        
-                        coursesHTML += `
-                            <div class="course-card">
-                                <div class="course-image ${imageClass}" ${imageStyle}>
-                                    ${hasImage ? '<div class="image-overlay"></div>' : ''}
-                                    <span class="course-category">${category}</span>
-                                    <div class="progress-ring">
-                                        <svg width="60" height="60">
-                                            <circle class="progress-ring-bg" cx="30" cy="30" r="26"></circle>
-                                            <circle class="progress-ring-circle" cx="30" cy="30" r="26" 
-                                                    style="stroke-dashoffset: ${163 - (163 * (enrollment.progress || 0)) / 100}"></circle>
-                                        </svg>
-                                        <span class="progress-text">${enrollment.progress || 0}%</span>
-                                    </div>
-                                </div>
-                                <div class="course-content">
-                                    <h3>${course.title}</h3>
-                                    <p>${course.description}</p>
-                                    <div class="course-stats">
-                                        <span><i class="fas fa-play-circle"></i> ${course.lessonCount || 0} Lessons</span>
-                                        <span><i class="fas fa-clock"></i> ${course.duration || 'N/A'}</span>
-                                        <span><i class="fas fa-user-graduate"></i> ${course.level || 'All Levels'}</span>
-                                    </div>
-                                    <a href="course.html?id=${enrollment.courseId}" class="btn-secondary">Continue Learning</a>
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        // Course doesn't exist, show generic card
-                        coursesHTML += `
-                            <div class="course-card">
-                                <div class="course-image math-bg">
-                                    <span class="course-category">Course</span>
-                                    <div class="progress-ring">
-                                        <svg width="60" height="60">
-                                            <circle class="progress-ring-bg" cx="30" cy="30" r="26"></circle>
-                                            <circle class="progress-ring-circle" cx="30" cy="30" r="26" 
-                                                    style="stroke-dashoffset: ${163 - (163 * (enrollment.progress || 0)) / 100}"></circle>
-                                        </svg>
-                                        <span class="progress-text">${enrollment.progress || 0}%</span>
-                                    </div>
-                                </div>
-                                <div class="course-content">
-                                    <h3>Course Not Found</h3>
-                                    <p>This course is no longer available</p>
-                                    <div class="course-stats">
-                                        <span><i class="fas fa-play-circle"></i> 0 Lessons</span>
-                                        <span><i class="fas fa-clock"></i> N/A</span>
-                                    </div>
-                                    <button class="btn-secondary" disabled>Unavailable</button>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-                
-                enrolledCoursesContainer.innerHTML = coursesHTML;
-            } catch (error) {
-                console.error("Error loading enrolled courses:", error);
-                const enrolledCoursesContainer = document.getElementById('enrolledCourses');
-                enrolledCoursesContainer.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>Error loading your courses</p>
-                        <p>Please try again later</p>
-                    </div>
-                `;
-            }
-        }
-
-        // Helper function to determine background class for enrolled courses
-        function getEnrolledCourseBackgroundClass(course) {
-            if (course.type === 'class') {
-                switch(course.classLevel) {
-                    case 'SS1': return 'ss1-bg';
-                    case 'SS2': return 'ss2-bg';
-                    case 'SS3': return 'ss3-bg';
-                    default: return 'math-bg';
-                }
-            } else {
-                switch(course.subject?.toLowerCase()) {
-                    case 'mathematics': return 'math-bg';
-                    case 'physics': return 'science-bg';
-                    case 'chemistry': return 'science-bg';
-                    case 'biology': return 'science-bg';
-                    case 'english language': return 'english-bg';
-                    default: return 'history-bg';
-                }
-            }
-        }
-
-        async function loadRecommendedCourses() {
-            try {
-                const coursesSnapshot = await getDocs(collection(db, "courses"));
-                const recommendedContainer = document.getElementById('recommendedCourses');
-                let coursesHTML = '';
-                
-                coursesSnapshot.forEach((doc) => {
-                    const course = doc.data();
-                    if (course.isActive && course.status === 'free') {
-                        coursesHTML += `
-                            <div class="course-card">
-                                <div class="course-image science-bg">
-                                    <span class="course-category">${course.category || 'Science'}</span>
-                                    <span class="course-badge free">FREE</span>
-                                </div>
-                                <div class="course-content">
-                                    <h3>${course.title}</h3>
-                                    <p>${course.description || 'Explore exciting concepts and build your knowledge'}</p>
-                                    <div class="course-stats">
-                                        <span><i class="fas fa-play-circle"></i> ${course.lessonCount || 10} Lessons</span>
-                                        <span><i class="fas fa-clock"></i> ${course.duration || '6h'}</span>
-                                    </div>
-                                    <button class="btn-primary" onclick="enrollInCourse('${doc.id}')">Enroll Now</button>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-                
-                recommendedContainer.innerHTML = coursesHTML;
-            } catch (error) {
-                console.error("Error loading recommended courses:", error);
-            }
-        }
-
-        async function loadProgressData(user) {
-            try {
-                const enrolledQuery = query(
-                    collection(db, "enrollments"), 
-                    where("userId", "==", user.uid)
-                );
-                const querySnapshot = await getDocs(enrolledQuery);
-                
-                if (querySnapshot.empty) {
-                    document.getElementById('completedLessons').textContent = '0';
-                    document.getElementById('avgQuizScore').textContent = '0%';
-                    document.getElementById('studyStreak').textContent = '0';
-                    return;
-                }
-
-                let totalLessonsCompleted = 0;
-                let totalProgress = 0;
-                let enrollmentCount = 0;
-
-                querySnapshot.forEach((enrollmentDoc) => {  // Changed from 'doc' to 'enrollmentDoc'
-                    const enrollment = enrollmentDoc.data();  // Use enrollmentDoc instead of doc
-                    totalProgress += enrollment.progress || 0;
-                    enrollmentCount++;
-                    
-                    // If you track completed lessons in enrollment
-                    if (enrollment.completedLessons) {
-                        totalLessonsCompleted += enrollment.completedLessons.length;
-                    }
-                });
-
-                // Update stats with real data
-                document.getElementById('completedLessons').textContent = totalLessonsCompleted;
-                document.getElementById('avgQuizScore').textContent = enrollmentCount > 0 ? 
-                    Math.round(totalProgress / enrollmentCount) + '%' : '0%';
-                
-                // Study streak would need to be tracked separately in user profile
-                document.getElementById('studyStreak').textContent = '5'; // Keep mock for now
-                
-            } catch (error) {
-                console.error("Error loading progress data:", error);
-                // Keep the mock data as fallback
-                document.getElementById('completedLessons').textContent = '8';
-                document.getElementById('avgQuizScore').textContent = '85%';
-                document.getElementById('studyStreak').textContent = '5';
-            }
-        }
-    </script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-                // Theme Management
-                const savedTheme = localStorage.getItem('theme') || 'light-mode';
-                document.body.className = savedTheme;
+/*
+  Dashboard (Full backend + MongoDB)
+  - Expects JWT stored in localStorage.token (set by signin.js)
+  - Backend base URL:
+*/
+const API_BASE = "https://jaromind-production-5e3b.up.railway.app";
 
-                const modeToggle = document.getElementById('modeToggle');
-                const sidebarModeToggle = document.getElementById('sidebarModeToggle');
-                
-                // Set initial icons
-                updateModeIcons(savedTheme);
+document.addEventListener('DOMContentLoaded', () => {
+  // Check token
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'sign_in.html';
+    return;
+  }
 
-                function updateModeIcons(theme) {
-                    const icon = theme === 'dark-mode' ? '🌙' : '🌞';
-                    if (modeToggle) modeToggle.textContent = icon;
-                    if (sidebarModeToggle) sidebarModeToggle.textContent = icon;
-                }
+  // Wire up sign out
+  const signOutBtn = document.getElementById('signOutBtn');
+  if (signOutBtn) signOutBtn.addEventListener('click', handleSignOut);
 
-                function toggleTheme() {
-                    if (document.body.classList.contains('light-mode')) {
-                        document.body.classList.replace('light-mode', 'dark-mode');
-                        localStorage.setItem('theme', 'dark-mode');
-                        updateModeIcons('dark-mode');
-                    } else {
-                        document.body.classList.replace('dark-mode', 'light-mode');
-                        localStorage.setItem('theme', 'light-mode');
-                        updateModeIcons('light-mode');
-                    }
-                }
+  // Load all dashboard data
+  (async () => {
+    try {
+      const profile = await apiGet('/user/profile', token);
+      renderProfile(profile);
 
-                // Add event listeners to both dark mode buttons
-                if (modeToggle) {
-                    modeToggle.addEventListener('click', toggleTheme);
-                }
-                
-                if (sidebarModeToggle) {
-                    sidebarModeToggle.addEventListener('click', toggleTheme);
-                }
+      const [enrollments, recommended, progress] = await Promise.all([
+        apiGet('/user/enrollments', token).catch(() => []),
+        apiGet('/courses/recommended').catch(() => []),
+        apiGet('/user/progress', token).catch(() => null),
+      ]);
 
-                // Smart Hamburger and Sidebar Management
-                const sidebar = document.getElementById("sidebar");
-                const hamburger = document.getElementById("hamburger");
+      renderEnrolledCourses(enrollments);
+      renderRecommendedCourses(recommended);
+      renderProgressStats(progress, enrollments);
+    } catch (err) {
+      console.error('Dashboard load error:', err);
+      // If auth failed, redirect to sign in
+      if (err && err.status === 401) window.location.href = 'sign_in.html';
+    }
+  })();
+});
 
-                // Function to check if navbar items fit
-                function checkNavbarFit() {
-                    const navbar = document.querySelector('.navbar');
-                    const navMenu = document.querySelector('.nav-menu');
-                    const authButtons = document.querySelector('.auth-buttons');
-                    const modeToggle = document.querySelector('.mode-toggle');
-                    
-                    if (!navbar || !navMenu || !authButtons) return;
-                    
-                    // Get total width of navbar content
-                    const navbarWidth = navbar.offsetWidth;
-                    const navbarLeftWidth = navbar.querySelector('.navbar-left').offsetWidth;
-                    const navMenuWidth = navMenu.offsetWidth;
-                    const authButtonsWidth = authButtons.offsetWidth;
-                    const modeToggleWidth = modeToggle ? modeToggle.offsetWidth : 0;
-                    
-                    const navbarContentWidth = navbarLeftWidth + navMenuWidth + authButtonsWidth + modeToggleWidth + 100;
-                    
-                    // Show hamburger only if content doesn't fit
-                    if (navbarContentWidth > navbarWidth) {
-                        hamburger.classList.add('active');
-                        navMenu.style.display = 'none';
-                        authButtons.style.display = 'none';
-                        if (modeToggle) modeToggle.style.display = 'none';
-                    } else {
-                        hamburger.classList.remove('active');
-                        navMenu.style.display = 'flex';
-                        authButtons.style.display = 'flex';
-                        if (modeToggle) modeToggle.style.display = 'flex';
-                    }
-                }
+// Generic GET helper (adds Authorization if token provided)
+async function apiGet(path, token) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
 
-                
+  const res = await fetch(API_BASE + path, {
+    method: 'GET',
+    headers,
+  });
 
-            
-                // Navbar Scroll Effect
-                window.addEventListener('scroll', () => {
-                    const navbar = document.querySelector('.navbar');
-                    if (!navbar) return;
-                    
-                    if (window.scrollY > 50) {
-                        navbar.classList.add('scrolled');
-                    } else {
-                        navbar.classList.remove('scrolled');
-                    }
-                });
+  if (res.status === 401) {
+    const e = new Error('Unauthorized');
+    e.status = 401;
+    throw e;
+  }
 
-                // Scroll Animations
-                const observerOptions = {
-                    threshold: 0.1,
-                    rootMargin: '0px 0px -50px 0px'
-                };
+  if (!res.ok) {
+    const body = await safeJson(res);
+    const err = new Error(body?.message || 'Request failed');
+    err.status = res.status;
+    throw err;
+  }
 
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('visible');
-                            
-                            if (entry.target.classList.contains('features')) {
-                                const featureItems = entry.target.querySelectorAll('.feature-item');
-                                featureItems.forEach((item, index) => {
-                                    setTimeout(() => {
-                                        item.classList.add('visible');
-                                    }, index * 200);
-                                });
-                            }
-                        }
-                    });
-                }, observerOptions);
+  return res.status === 204 ? null : res.json();
+}
 
-                document.querySelectorAll('.section').forEach(section => {
-                    observer.observe(section);
-                });
+async function safeJson(res) {
+  try { return await res.json(); } catch { return null; }
+}
 
-                });
+// Render user profile into UI
+function renderProfile(profile) {
+  if (!profile) return;
 
-            // Add loading animation for images
-            window.addEventListener('load', () => {
-                const images = document.querySelectorAll('img');
-                images.forEach(img => {
-                    img.style.opacity = '1';
-                });
-            });
-    </script>
+  const fullName = profile.name || profile.email || 'Student';
+  const nameParts = fullName.split(' ');
+  const firstName = nameParts[0] || '';
+  const lastName = nameParts[1] || '';
+
+  const displayName = firstName ? `${firstName} ${lastName ? lastName.charAt(0).toUpperCase() + '.' : ''}` : fullName;
+
+  document.querySelectorAll('.user-name').forEach(el => el.textContent = displayName);
+  document.getElementById('userEmail').textContent = profile.email || '';
+
+  const avatarImg = document.getElementById('userAvatar');
+  const avatarInitial = document.getElementById('avatarInitial');
+  if (profile.avatar) {
+    if (avatarImg) { avatarImg.src = profile.avatar; avatarImg.style.display = 'block'; }
+    if (avatarInitial) avatarInitial.style.display = 'none';
+  } else {
+    if (avatarImg) avatarImg.style.display = 'none';
+    if (avatarInitial) avatarInitial.textContent = (firstName || 'S').charAt(0).toUpperCase();
+  }
+}
+
+
+// Render enrolled courses from backend enrollments array
+// Expected enrollments shape: [{ courseId, progress, course: { title, description, imageUrl, lessonCount, duration, level, type, subject, classLevel } }, ...]
+// OR: [{ courseId, progress }] in which case we assume backend doesn't include course details and we try to fetch them (not implemented here)
+function renderEnrolledCourses(enrollments) {
+  const container = document.getElementById('enrolledCourses');
+  if (!container) return;
+
+  if (!enrollments || enrollments.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-book-open"></i>
+        <p>You haven't enrolled in any courses yet</p>
+        <a href="courses.html" class="btn-primary">Browse Courses</a>
+      </div>`;
+    return;
+  }
+
+  let html = '';
+  enrollments.forEach(en => {
+    // If backend returns full course object inside enrollment use it, otherwise fallback to minimal
+    const course = en.course || en.courseData || en.courseInfo || {};
+    const courseId = course.id || en.courseId || en.course_id || '';
+    const title = course.title || course.name || 'Untitled Course';
+    const description = course.description || '';
+    const imageUrl = course.imageUrl || course.image || '';
+    const lessonCount = course.lessonCount || course.lessonsCount || 0;
+    const duration = course.duration || 'N/A';
+    const level = course.level || course.classLevel || 'All Levels';
+    const progress = typeof en.progress === 'number' ? en.progress : (en.progressPercentage || 0);
+
+    const hasImage = imageUrl && imageUrl.trim() !== '';
+    const imageStyle = hasImage ? `style="background-image: url('${imageUrl}'); background-size: cover; background-position: center;"` : '';
+    const imageClass = hasImage ? '' : 'math-bg';
+
+    html += `
+      <div class="course-card">
+        <div class="course-image ${imageClass}" ${imageStyle}>
+          ${hasImage ? '<div class="image-overlay"></div>' : ''}
+          <span class="course-category">${course.subject || 'Course'}</span>
+          <div class="progress-ring">
+            <svg width="60" height="60">
+              <circle class="progress-ring-bg" cx="30" cy="30" r="26"></circle>
+              <circle class="progress-ring-circle" cx="30" cy="30" r="26"
+                style="stroke-dashoffset: ${163 - (163 * progress) / 100}"></circle>
+            </svg>
+            <span class="progress-text">${progress}%</span>
+          </div>
+        </div>
+        <div class="course-content">
+          <h3>${escapeHtml(title)}</h3>
+          <p>${escapeHtml(description)}</p>
+          <div class="course-stats">
+            <span><i class="fas fa-play-circle"></i> ${lessonCount} Lessons</span>
+            <span><i class="fas fa-clock"></i> ${duration}</span>
+            <span><i class="fas fa-user-graduate"></i> ${level}</span>
+          </div>
+          <a href="course.html?id=${encodeURIComponent(courseId)}" class="btn-secondary">Continue Learning</a>
+        </div>
+      </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+// Render recommended courses (expects array of course objects)
+function renderRecommendedCourses(courses) {
+  const container = document.getElementById('recommendedCourses');
+  if (!container) return;
+
+  if (!courses || courses.length === 0) {
+    container.innerHTML = `<div class="empty-state"><p>No recommended courses right now.</p></div>`;
+    return;
+  }
+
+  let html = '';
+  courses.forEach(course => {
+    const id = course.id || course._id || course.courseId || '';
+    const title = course.title || course.name || 'Untitled';
+    const description = course.description || '';
+    const imageUrl = course.imageUrl || course.image || '';
+    const lessonCount = course.lessonCount || 0;
+    const duration = course.duration || 'N/A';
+    const category = course.category || course.subject || 'General';
+    const hasImage = imageUrl && imageUrl.trim() !== '';
+    const imageStyle = hasImage ? `style="background-image: url('${imageUrl}'); background-size: cover; background-position: center;"` : '';
+    const imageClass = hasImage ? '' : 'science-bg';
+
+    html += `
+      <div class="course-card">
+        <div class="course-image ${imageClass}" ${imageStyle}>
+          ${hasImage ? '<div class="image-overlay"></div>' : ''}
+          <span class="course-category">${category}</span>
+          <span class="course-badge free">FREE</span>
+        </div>
+        <div class="course-content">
+          <h3>${escapeHtml(title)}</h3>
+          <p>${escapeHtml(description)}</p>
+          <div class="course-stats">
+            <span><i class="fas fa-play-circle"></i> ${lessonCount} Lessons</span>
+            <span><i class="fas fa-clock"></i> ${duration}</span>
+          </div>
+          <button class="btn-primary" onclick="location.href='course.html?id=${encodeURIComponent(id)}'">View Course</button>
+        </div>
+      </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+// Populate the stats cards; if backend provides progress object use it, otherwise compute from enrollments
+function renderProgressStats(progress, enrollments) {
+  const completedLessonsEl = document.getElementById('completedLessons');
+  const avgQuizEl = document.getElementById('avgQuizScore');
+  const streakEl = document.getElementById('studyStreak');
+
+  if (progress && typeof progress === 'object') {
+    completedLessonsEl.textContent = progress.completedLessons || 0;
+    avgQuizEl.textContent = (progress.avgQuizScore ? Math.round(progress.avgQuizScore) : 0) + '%';
+    streakEl.textContent = progress.studyStreak || 0;
+    return;
+  }
+
+  // fallback: compute from enrollments
+  if (Array.isArray(enrollments) && enrollments.length > 0) {
+    let totalProgress = 0;
+    let completedLessons = 0;
+    enrollments.forEach(en => {
+      totalProgress += en.progress || 0;
+      if (Array.isArray(en.completedLessons)) completedLessons += en.completedLessons.length;
+    });
+    const avg = Math.round(totalProgress / (enrollments.length || 1));
+    completedLessonsEl.textContent = completedLessons;
+    avgQuizEl.textContent = avg + '%';
+    streakEl.textContent = '5'; // placeholder if you don't track streaks yet
+    return;
+  }
+
+  // final fallback
+  completedLessonsEl.textContent = '0';
+  avgQuizEl.textContent = '0%';
+  streakEl.textContent = '0';
+}
+
+// Sign out: remove token and redirect
+function handleSignOut() {
+  localStorage.removeItem('token');
+  window.location.href = 'sign_in.html';
+}
+
+// Escaping helper
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+</script>
+
 </body>
 </html>
