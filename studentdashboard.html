@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Dashboard</title>
+
+  <style>
+/* ------------------------  
+      COMBINED CSS  
+------------------------- */
+
+:root{
+  --sidebar-w: 220px;
+  --sidebar-w-mobile: 150px;
+  --sidebar-collapsed-w: 64px;
+  --bg: #f7f8fb;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --accent: #ffd43b;
+  --primary: #1f67ff;
+  --glass: rgba(255,255,255,0.6);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:#111827;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Topbar */
+.topbar{
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 12px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6));
+  border-bottom:1px solid rgba(0,0,0,0.04);
+}
+.brand{font-weight:600; color:#0f172a}
+.profile-pill{display:flex;gap:10px;align-items:center}
+.points{font-size:13px;color:var(--muted)}
+.avatar{
+  width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ffd43b,#ffa726);
+  display:flex;align-items:center;justify-content:center;font-weight:600;color:#123;
+}
+
+/* hamburger */
+.hamburger{display:none;border:0;background:transparent;padding:6px}
+.hamburger span{display:block;width:20px;height:2px;margin:4px 0;background:#111;border-radius:2px}
+
+/* layout */
+.app{display:flex;min-height:calc(100vh - 56px)}
+.sidebar{
+  width:var(--sidebar-w);
+  background:linear-gradient(180deg, white, #fbfdff);
+  border-right:1px solid rgba(0,0,0,0.04);
+  transition:width .28s ease, box-shadow .28s ease;
+  overflow:hidden;
+  position:relative;
+}
+.sidebar.collapsed{width:var(--sidebar-collapsed-w)}
+.sidebar .sidebar-inner{display:flex;flex-direction:column;height:100%;padding:12px;gap:12px}
+.logo{font-weight:700;font-size:20px;color:#111;padding:8px 6px}
+
+/* nav */
+.nav-list{list-style:none;padding:0;margin:6px 0;display:flex;flex-direction:column;gap:6px}
+.nav-item{display:block}
+.nav-btn{
+  display:flex;align-items:center;gap:12px;width:100%;
+  background:transparent;border:0;padding:10px;border-radius:8px;cursor:pointer;
+  transition:background .18s ease, transform .12s ease;
+}
+.nav-btn:hover{background:rgba(31,103,255,0.06); transform:translateX(4px)}
+.icon{width:20px;height:20px;fill:#0f172a;opacity:.9}
+.label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis; font-weight:600}
+
+/* footer collapse button */
+.sidebar-footer{margin-top:auto}
+.collapse-toggle{display:flex;align-items:center;gap:10px;border:0;background:transparent;padding:10px;border-radius:8px;cursor:pointer}
+.collapse-toggle .icon{transform:rotate(0);transition:transform .28s ease}
+.sidebar.collapsed .collapse-toggle .label{display:none}
+.sidebar.collapsed .collapse-toggle .icon{transform:rotate(180deg)}
+
+/* main area */
+.main{flex:1; padding:20px}
+.overview{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+.left-column{display:flex;flex-direction:column;gap:20px}
+.right-column{display:flex;flex-direction:column;gap:20px}
+
+/* cards */
+.card{
+  background:var(--card);padding:16px;border-radius:12px;box-shadow:0 4px 20px rgba(10,10,20,0.04);
+  border:1px solid rgba(15,23,42,0.03);
+}
+.card h3{margin:0 0 12px 0;font-size:16px}
+
+/* upcoming */
+.event-list{min-height:56px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.event.empty{padding:18px;border-radius:8px;background:linear-gradient(90deg,#fbfbfe,#f7f9ff);color:var(--muted)}
+
+/* projects */
+.project-body{display:flex;flex-direction:column;gap:12px}
+.project-actions{display:flex;gap:8px}
+.btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);background:transparent;cursor:pointer}
+.btn.primary{background:var(--primary);color:white;border:0}
+.btn.small{padding:6px 10px}
+
+/* courses grid */
+.course-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.course-card{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fcfcff);border:1px solid rgba(15,23,42,0.03)}
+.course-title{font-weight:700}
+.course-sub{font-size:13px;color:var(--muted)}
+.progress-row{display:flex;gap:12px;align-items:center;margin-top:8px}
+.course-meta .meta-line{font-size:13px}
+.course-meta .small{color:var(--muted);font-size:12px}
+
+/* right column small items */
+.score-item{display:flex;justify-content:space-between;align-items:center}
+.score-badge{background:linear-gradient(90deg,#e6f2ff,#f3fbff);padding:6px 10px;border-radius:999px;font-weight:700;color:#0f67ff}
+.score-list{margin-top:12px}
+.score-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed rgba(0,0,0,0.03)}
+
+/* quick glance */
+.glance-grid{display:flex;gap:12px}
+.glance-item{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fafafe);text-align:center}
+.glance-title{color:var(--muted);font-size:13px}
+.glance-number{font-weight:700;font-size:18px}
+
+/* radial */
+.radial-wrap{display:flex;gap:12px;align-items:center}
+.radial{width:96px;height:96px}
+.radial .bg{fill:none;stroke:#eee;stroke-width:2.5}
+.radial .progress{fill:none;stroke:#1f67ff;stroke-width:2.5;stroke-linecap:round;transition:stroke-dasharray 1s ease}
+.radial-text{font-size:6px;text-anchor:middle;fill:#0f172a;font-weight:700}
+
+/* small circle progress */
+.circle{width:48px;height:48px;border-radius:50%;display:inline-block;position:relative}
+.circle::before{
+  content:"";
+  position:absolute;inset:6px;border-radius:50%;background:conic-gradient(#1f67ff 0deg, #e6eaf2 0deg);
+  transition:background .6s ease;
+}
+
+/* footer */
+.app-footer{margin-top:24px;padding:8px 0;color:var(--muted);font-size:13px;text-align:center}
+
+/* collapsed state styles */
+.sidebar.collapsed .label{display:none}
+.sidebar.collapsed .nav-btn{justify-content:center;padding:8px}
+.sidebar.collapsed .logo{font-size:18px;padding-left:6px}
+.sidebar.collapsed .nav-btn:hover{transform:none}
+
+/* responsive */
+@media (max-width:980px){
+  .overview{grid-template-columns:1fr; padding-bottom:40px}
+  .sidebar{position:fixed;left:0;top:56px;height:calc(100% - 56px);z-index:40;transform:translateX(0);box-shadow:0 10px 30px rgba(2,6,23,0.08)}
+  .app{padding-left:0}
+  .hamburger{display:block}
+}
+@media (max-width:620px){
+  .radial{width:72px;height:72px}
+  .nav-btn .label{display:none}
+  .sidebar{width:var(--sidebar-collapsed-w)}
+  .sidebar.expanded .label{display:inline-block}
+}
+/* --- MOBILE FIX (Strong override for sidebar) --- */
+@media (max-width: 768px){
+
+  /* Sidebar becomes a drawer */
+  .sidebar {
+    position: fixed;
+    top: 56px;
+    left: -220px;
+    height: calc(100% - 56px);
+    width: var(--sidebar-w);
+    transition: left .28s ease;
+    z-index: 999;
+    width: var(--sidebar-w-mobile) !important;
+    left: calc(var(--sidebar-w-mobile) * -1);
+  }
+
+  /* When toggled */
+  .sidebar.mobile-open {
+    left: 0;
+  }
+
+  /* Prevent layout shift */
+  .main {
+    padding-left: 0;
+  }
+
+  /* Hide collapse button on mobile */
+  .collapse-toggle {
+    display: none;
+  }
+
+  /* Force labels hidden but not collapsed behaviour */
+  .sidebar.collapsed .label {
+    display: inline-block;
+  }
+  /* When sidebar is open on mobile, force labels to show */
+.sidebar.mobile-open.collapsed .label,
+.sidebar.mobile-open .label {
+  display: inline-block !important;
+  opacity: 1 !important;
+}
+}
+/* --- SIDEBAR HOVER EXPAND (Desktop only) --- */
+@media (min-width: 769px) {
+  .sidebar.hover-expanded {
+    width: var(--sidebar-w) !important;
+  }
+}
+  </style>
+</head>
+
+<body>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button id="mobileToggle" aria-label="Toggle navigation" class="hamburger">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="brand">JaroMind Learning — Student Hub</div>
+    <div class="profile-pill">
+      <div id="themeToggleContainer"></div>
+    </div>
+  </header>
+
+  <!-- App Container -->
+  <div class="app">
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar expanded" aria-label="Main navigation">
+      <div class="sidebar-inner">
+        
+
+      
+
+        <ul class="nav-list">
+            <div class="sidebar-footer">
+          <button id="collapseBtn" class="collapse-toggle">
+            <svg viewBox="0 0 24 24" class="icon"><path d="M12 8l-6 6h12z" /></svg>
+            <span class="label"></span>
+          </button>
+        </div>
+          <li class="nav-item" data-name="Home"><button class="nav-btn"><svg viewBox="0 0 24 24" class="icon"><path d="M12 3l9 8h-3v9h-12v-9h-3z" /></svg><span class="label">Home</span></button></li>
+          <li class="nav-item" data-name="Courses"><button class="nav-btn"><svg viewBox="0 0 24 24" class="icon"><path d="M4 6h16v2h-16zM4 10h16v8h-16z" /></svg><span class="label">Courses</span></button></li>
+          <li class="nav-item" data-name="Projects"><button class="nav-btn"><svg viewBox="0 0 24 24" class="icon"><path d="M3 13h8v8h-8zM13 3h8v18h-8z" /></svg><span class="label">Projects</span></button></li>
+          <li class="nav-item" data-name="Events"><button class="nav-btn"><svg viewBox="0 0 24 24" class="icon"><path d="M7 10h10v8h-10zM7 4h10v2h-10z" /></svg><span class="label">Events</span></button></li>
+          <li class="nav-item" data-name="Profile"><button class="nav-btn"><svg viewBox="0 0 24 24" class="icon"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-5 0-9 2.5-9 6v2h18v-2c0-3.5-4-6-9-6z" /></svg><span class="label">Profile</span></button></li>
+          <li class="nav-item" data-name="Settings"><button class="nav-btn"><svg viewBox="0 0 24 24" class="icon"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zM21 12c0 .7-.1 1.4-.3 2l2 1.5-2 3.5-2.2-.9c-.6.5-1.3.9-2.1 1.2l-.4 2.3h-4l-.4-2.3c-.8-.3-1.5-.7-2.1-1.2l-2.2.9-2-3.5 2-1.5c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2l-2-1.5 2-3.5 2.2.9c.6-.5 1.3-.9 2.1-1.2l.4-2.3h4l.4 2.3c.8.3 1.5.7 2.1 1.2l2.2-.9 2 3.5-2 1.5c.2.6.3 1.3.3 2z" /></svg><span class="label">Settings</span></button></li>
+        </ul>
+
+        
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+      <section class="overview">
+
+        <div class="left-column">
+          <div class="card upcoming">
+            <h3>Upcoming events</h3>
+            <div class="event-list">
+              <div class="event empty">No upcoming event</div>
+            </div>
+          </div>
+
+          <div class="card projects">
+            <h3>Current project</h3>
+            <div class="project-body">
+              <div class="project-empty">None, enjoy the silence.</div>
+              <div class="project-actions">
+                <button class="btn primary">Start New Project</button>
+                <button class="btn">Import Project</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card courses">
+            <h3>Your courses</h3>
+            <div class="course-grid">
+
+              <article class="course-card">
+                <div class="course-left">
+                  <div class="course-title">Short Specializations</div>
+                  <div class="course-sub">3 months</div>
+                  <div class="progress-row">
+                    <div class="circle" data-percentage="97.64"></div>
+                    <div class="course-meta">
+                      <div class="meta-line"><strong>Month #0</strong> — 97.64%</div>
+                      <div class="meta-line small">Validated</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="course-right"><button class="btn small">Continue</button></div>
+              </article>
+
+              <article class="course-card">
+                <div class="course-left">
+                  <div class="course-title">SE Foundations</div>
+                  <div class="course-sub">2 months</div>
+                  <div class="progress-row">
+                    <div class="circle" data-percentage="111"></div>
+                    <div class="course-meta">
+                      <div class="meta-line"><strong>Progress</strong></div>
+                      <div class="meta-line small">Keep going</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="course-right"><button class="btn small">Continue</button></div>
+              </article>
+
+            </div>
+          </div>
+        </div>
+
+        <aside class="right-column">
+          <div class="card scores">
+            <h3>Scores</h3>
+            <div class="score-item">
+              <div class="score-label">Short Specializations</div>
+              <div class="score-badge">114.6%</div>
+            </div>
+
+            <div class="score-list">
+              <div class="score-row"><div>Month #0</div><div>97.64%</div></div>
+              <div class="score-row"><div>Month #1</div><div>70.5%</div></div>
+              <div class="score-row"><div>Month #2</div><div>158.13%</div></div>
+            </div>
+          </div>
+
+          <div class="card quick-glance">
+            <h3>Quick glance</h3>
+            <div class="glance-grid">
+              <div class="glance-item"><div class="glance-title">Courses</div><div class="glance-number">6</div></div>
+              <div class="glance-item"><div class="glance-title">Projects</div><div class="glance-number">1</div></div>
+              <div class="glance-item"><div class="glance-title">Events</div><div class="glance-number">0</div></div>
+            </div>
+          </div>
+
+          <div class="card small-graph">
+            <h3>Course completion</h3>
+            <div class="radial-wrap">
+              <svg class="radial" viewBox="0 0 36 36">
+                <path class="bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path class="progress" stroke-dasharray="0,100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <text x="18" y="20.35" class="radial-text">0%</text>
+              </svg>
+
+              <div class="radial-meta">
+                <div class="radial-course">Short Specializations</div>
+                <div class="radial-sub">Keep it up!</div>
+              </div>
+            </div>
+          </div>
+
+        </aside>
+      </section>
+
+      <footer class="app-footer">© <span id="year"></span> alx Learning</footer>
+    </main>
+  </div>
+
+  <!-- JS -->
+  <script>
+/* ------------------------  
+      COMBINED JS  
+------------------------- */
+
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebar = document.getElementById('sidebar');
+  const collapseBtn = document.getElementById('collapseBtn');
+  const mobileToggle = document.getElementById('mobileToggle');
+  const navBtns = document.querySelectorAll('.nav-btn');
+  const radial = document.querySelector('.radial');
+  const yearSpan = document.getElementById('year');
+
+  yearSpan.textContent = new Date().getFullYear();
+
+  collapseBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+    const pressed = collapseBtn.getAttribute('aria-pressed') === 'true';
+    collapseBtn.setAttribute('aria-pressed', String(!pressed));
+  });
+  /* --- HOVER TO EXPAND (Desktop Only) --- */
+sidebar.addEventListener("mouseenter", () => {
+  if (window.innerWidth > 768 && sidebar.classList.contains("collapsed")) {
+    sidebar.classList.add("hover-expanded");
+  }
+});
+
+sidebar.addEventListener("mouseleave", () => {
+  if (window.innerWidth > 768 && sidebar.classList.contains("collapsed")) {
+    sidebar.classList.remove("hover-expanded");
+  }
+});
+
+  navBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (window.innerWidth > 768 && sidebar.classList.contains('collapsed')) {
+      sidebar.classList.remove('collapsed');
+      btn.animate([{ transform: 'translateX(-6px)' }, { transform: 'translateX(0)' }], {
+        duration: 220,
+        easing: 'ease-out'
+      });
+    } else {
+      navBtns.forEach(n => n.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  });
+});
+  mobileToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('expanded');
+    if (sidebar.style.transform === 'translateX(0%)') {
+      sidebar.style.transform = '';
+    } else {
+      sidebar.style.transform = 'translateX(0%)';
+    }
+  });
+  
+  const circles = document.querySelectorAll('.circle');
+  circles.forEach(c => {
+    const pct = parseFloat(c.dataset.percentage || '0');
+    const clamped = Math.max(0, Math.min(200, pct));
+    const deg = Math.min(360, (clamped / 100) * 360);
+    c.style.background = `conic-gradient(#1f67ff ${deg}deg, #e6eaf2 ${deg}deg)`;
+
+    const label = document.createElement('div');
+    label.style.position = 'absolute';
+    label.style.left = '50%';
+    label.style.top = '50%';
+    label.style.transform = 'translate(-50%,-50%)';
+    label.style.fontSize = '11px';
+    label.style.fontWeight = '700';
+    label.textContent = `${Math.round(pct)}%`;
+    c.appendChild(label);
+  });
+
+  if (radial) {
+    const progressPath = radial.querySelector('.progress');
+    const text = radial.querySelector('.radial-text');
+
+    const target = 75;
+    const pct = Math.max(0, Math.min(100, target));
+    const dash = (pct / 100) * 100;
+
+    let current = 0;
+    const animDur = 900;
+    const start = performance.now();
+
+    function animate(now) {
+      const t = Math.min(1, (now - start) / animDur);
+      const eased = (1 - Math.cos(Math.PI * t)) / 2;
+      const val = Math.round(eased * pct);
+      text.textContent = val + '%';
+      progressPath.setAttribute('stroke-dasharray', `${(eased * dash).toFixed(2)},100`);
+      if (t < 1) requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  }
+  /* --- MOBILE SIDEBAR FIX --- */
+mobileToggle.addEventListener("click", () => {
+  sidebar.classList.toggle("mobile-open");
+});
+});
+
+    fetch("light_darkmode.html")
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById("themeToggleContainer").innerHTML = html;
+        });
+
+
+  </script>
+
+</body>
+</html>
