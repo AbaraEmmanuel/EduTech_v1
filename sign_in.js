@@ -15,7 +15,7 @@ form.addEventListener('submit', async (e) => {
     submitButton.disabled = true;
 
     try {
-        const response = await fetch("https://jaromind-production-5e3b.up.railway.app/login", {
+        const response = await fetch("https://jaromind-production-014b.up.railway.app/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

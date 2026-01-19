@@ -58,7 +58,7 @@ document.querySelector('.sign-up-form').addEventListener('submit', async (e) => 
     const fullName = `${firstName} ${lastName}`.trim();
 
     try {
-        const response = await fetch("https://jaromind-production-5e3b.up.railway.app/register", {
+        const response = await fetch("https://jaromind-production-014b.up.railway.app/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
