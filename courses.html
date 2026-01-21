@@ -139,6 +139,8 @@
         }
 
         // API functions
+        // In courses.html, find and UPDATE the loadCoursesFromAPI function:
+
         async function loadCoursesFromAPI() {
             try {
                 const coursesContainer = document.getElementById('coursesContainer');
@@ -154,15 +156,39 @@
                 }
                 
                 const data = await response.json();
-                allCourses = data.courses || [];
+                console.log('API Response:', data); // Debug log
+                
+                // Check response structure
+                if (data.courses) {
+                    allCourses = data.courses;
+                } else if (Array.isArray(data)) {
+                    allCourses = data;
+                } else {
+                    allCourses = [];
+                }
+                
+                console.log('All courses loaded:', allCourses.length, allCourses);
                 
                 if (allCourses.length === 0) {
                     showEmptyState(coursesContainer, 'No courses available yet');
                     return;
                 }
 
-                // Filter out inactive courses
-                allCourses = allCourses.filter(course => course.is_active);
+                // FIXED: Check for active courses with different field names
+                allCourses = allCourses.filter(course => {
+                    // Check various possible field names for active status
+                    const isActive = 
+                        course.is_active === true ||      // snake_case
+                        course.isActive === true ||       // camelCase  
+                        course.status === 'published' ||  // status field
+                        course.status === 'active' ||
+                        (course.is_active !== false && course.isActive !== false);
+                    
+                    console.log(`Course: ${course.title}, is_active: ${course.is_active}, isActive: ${course.isActive}, status: ${course.status}, Filtered: ${isActive}`);
+                    return isActive;
+                });
+                
+                console.log('Active courses:', allCourses.length, allCourses);
                 
                 // Initial filter
                 filteredCourses = [...allCourses];
