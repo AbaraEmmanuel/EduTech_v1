@@ -41,6 +41,121 @@
             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             border-radius: 3px;
         }
+
+        /* Star Rating Input Styles */
+        .star-rating-input {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 2rem;
+            margin: 0.5rem 0;
+        }
+
+        .star-rating-input i {
+            cursor: pointer;
+            color: #d1d5db;
+            transition: all 0.2s ease;
+        }
+
+        .star-rating-input i:hover,
+        .star-rating-input i.active {
+            color: #ffc107;
+            transform: scale(1.1);
+        }
+
+        .star-rating-input i.fas {
+            color: #ffc107;
+        }
+
+        /* Review Form Styles */
+        #reviewFormSection {
+            background: var(--bg-color);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+        }
+
+        .review-item {
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            background: var(--bg-color);
+            transition: all 0.3s ease;
+        }
+
+        .review-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .reviewer-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .review-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .review-rating i {
+            color: #ffc107;
+            font-size: 0.9rem;
+        }
+
+        .review-rating span {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* Loading spinner */
+        .btn-loading {
+            pointer-events: none;
+            opacity: 0.7;
+            position: relative;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="light-mode">
@@ -55,15 +170,11 @@
         <div class="navbar-right">
             <button class="mode-toggle" id="modeToggle">🌞</button>
             <div class="user-menu" id="userMenu" style="display: none;">
-                <div class="user-avatar">
-                    <img id="userAvatar" src="" alt="User Avatar" style="width: 100%; height: 100%; border-radius: 50%; display: none;">
-                    <span id="avatarInitial">U</span>
-                </div>
                 <div class="user-info">
                     <div class="user-name">Guest</div>
                     <div id="userEmail" style="font-size: 0.8rem; opacity: 0.7;"></div>
                 </div>
-                <button class="btn-outline btn-small" onclick="window.location.href='sign_in.html'">Login</button>
+                <button class="btn-outline btn-small" onclick="window.location.href='sign_in.html'">Log out</button>
             </div>
         </div>
     </nav>
@@ -90,13 +201,6 @@
                     <p>Free Courses</p>
                 </div>
             </div>
-            <!-- <div class="stat-card">
-                <i class="fas fa-chart-line"></i>
-                <div>
-                    <h3 id="activeStudents">0</h3>
-                    <p>Active Students</p>
-                </div>
-            </div> -->
         </div>
 
         <!-- Filter Tabs -->
@@ -158,7 +262,7 @@
         </div>
     </div>
 
-    <!-- Course Details Modal (From Old Page) -->
+    <!-- Course Details Modal -->
     <div id="courseModal" class="course-modal" aria-hidden="true" role="dialog" aria-modal="true">
         <div class="course-modal-backdrop" id="modalBackdrop"></div>
         <div class="course-modal-panel" role="document" aria-labelledby="modalTitle">
@@ -213,13 +317,18 @@
     </div>
 
     <script>
+        console.log('%c🚀 JAROMIND REVIEWS SYSTEM - VERSION 2.0 - DEBUG ENABLED 🚀', 'background: #4CAF50; color: white; font-size: 20px; padding: 10px; font-weight: bold;');
+        console.log('%cIf you see this, you are using the CORRECT debug version!', 'background: #2196F3; color: white; font-size: 14px; padding: 5px;');
+        
         // API Configuration
         const API_BASE_URL = 'https://jaromind-production-014b.up.railway.app';
+        // const API_BASE_URL = 'http://localhost:8080';
         
         // Global variables
         let allCourses = [];
         let filteredCourses = [];
         let user = null;
+        let currentCourseId = null;
 
         // DOM Content Loaded
         document.addEventListener('DOMContentLoaded', () => {
@@ -289,12 +398,9 @@
             const tabs = document.querySelectorAll('.filter-tab');
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
-                    // Remove active class from all tabs
                     tabs.forEach(t => t.classList.remove('active'));
-                    // Add active class to clicked tab
                     tab.classList.add('active');
                     
-                    // Filter courses
                     const filter = tab.dataset.filter;
                     filterCourses(filter);
                 });
@@ -349,7 +455,6 @@
                 filteredCourses = allCourses.filter(course => course.type === 'subject' || course.subject);
             }
             
-            // Update search input
             const searchInput = document.getElementById('courseSearch');
             if (searchInput) searchInput.value = '';
             
@@ -359,11 +464,9 @@
         // Load courses from API
         async function loadCoursesFromAPI() {
             try {
-                // Show loading states
                 showLoadingState('classCoursesContainer', 'Loading class courses...');
                 showLoadingState('subjectCoursesContainer', 'Loading subject courses...');
 
-                // Fetch courses from API
                 const response = await fetch(`${API_BASE_URL}/courses`);
                 
                 if (!response.ok) {
@@ -372,7 +475,6 @@
                 
                 const data = await response.json();
                 
-                // Check response structure
                 if (data.courses) {
                     allCourses = data.courses;
                 } else if (Array.isArray(data)) {
@@ -381,7 +483,6 @@
                     allCourses = [];
                 }
                 
-                // Filter active courses
                 allCourses = allCourses.filter(course => {
                     const isActive = 
                         course.is_active === true ||
@@ -392,10 +493,8 @@
                     return isActive;
                 });
                 
-                // Initial filter
                 filteredCourses = [...allCourses];
                 
-                // Separate courses by type
                 const classCourses = allCourses.filter(course => 
                     course.type === 'class' || course.class_level
                 );
@@ -404,10 +503,7 @@
                     course.type === 'subject' || course.subject
                 );
                 
-                // Render separated courses
                 renderSeparatedCourses(classCourses, subjectCourses);
-                
-                // Update stats
                 updateStats();
                 
             } catch (error) {
@@ -422,7 +518,6 @@
             const classContainer = document.getElementById('classCoursesContainer');
             const subjectContainer = document.getElementById('subjectCoursesContainer');
             
-            // Render class courses
             if (classCourses.length === 0) {
                 classContainer.innerHTML = createEmptyState('No class courses available yet');
             } else {
@@ -431,7 +526,6 @@
                 ).join('');
             }
             
-            // Render subject courses
             if (subjectCourses.length === 0) {
                 subjectContainer.innerHTML = createEmptyState('No subject courses available yet');
             } else {
@@ -453,7 +547,6 @@
                 return;
             }
             
-            // Separate filtered courses
             const classCourses = filteredCourses.filter(course => 
                 course.type === 'class' || course.class_level
             );
@@ -462,17 +555,14 @@
                 course.type === 'subject' || course.subject
             );
             
-            // Render
             renderSeparatedCourses(classCourses, subjectCourses);
         }
 
         // Create course card
-        // Enhanced Create Course Card Function
         function createCourseCard(course, courseId) {
             const title = course.title || 'Untitled Course';
             const description = course.description || 'No description available';
             
-            // Determine course type and category with icon
             let category = 'Course';
             let categoryIcon = 'book';
             let isClass = false;
@@ -492,14 +582,11 @@
             const duration = course.duration || 'N/A';
             const level = course.level || 'All Levels';
             
-            // Get quiz and assignment counts from metadata
             const quizCount = course.metadata?.quizCount || course.metadata?.quizzes?.length || 0;
             const assignmentCount = course.metadata?.assignmentCount || course.metadata?.assignments?.length || 0;
             
-            // Determine background class
             const backgroundClass = getBackgroundClass(course);
             
-            // Image handling
             const hasImage = course.image_url || course.imageUrl;
             const imageUrl = course.image_url || course.imageUrl || '';
             const imageStyle = hasImage 
@@ -507,11 +594,9 @@
                 : '';
             const imageClass = hasImage ? '' : backgroundClass;
             
-            // Rating stars
             const rating = course.rating || 4.5;
             const stars = generateStars(rating);
             
-            // Format level for badge class
             const levelClass = level.toLowerCase().replace(/\s+/g, '-');
             
             return `
@@ -580,8 +665,8 @@
                                     <i class="fas fa-plus-circle"></i> Enroll Now
                                 </button>
                             ` : `
-                                <a href="sign_up.html" class="btn-outline btn-block">
-                                    <i class="fas fa-user-plus"></i> Sign Up to Enroll
+                                <a href="enrollment.html" class="btn-outline btn-block">
+                                    <i class="fas fa-user-plus"></i> Enroll
                                 </a>
                             `}
                         </div>
@@ -596,7 +681,6 @@
                 </div>
             `;
         }
-
 
         // Generate star rating HTML
         function generateStars(rating) {
@@ -709,39 +793,35 @@
             document.getElementById('totalCourses').textContent = allCourses.length;
             const freeCount = allCourses.filter(course => !course.price || course.price === 0).length;
             document.getElementById('freeCourses').textContent = freeCount;
-            
-            // Simulate active students (in real app, fetch from API)
-            // const activeStudents = Math.floor(Math.random() * 1000) + 500;
-            // document.getElementById('activeStudents').textContent = activeStudents.toLocaleString();
         }
 
-        // Modal functions (from old page)
+        // Modal functions
         window.openCourseModal = async function(courseId) {
             try {
+                currentCourseId = courseId;
+
+                // Reset all panels loaded flags
+                const panels = document.querySelectorAll('.tab-panel');
+                panels.forEach(panel => {
+                    panel.dataset.loaded = 'false';
+                });
+                
                 const modal = document.getElementById('courseModal');
                 const backdrop = document.getElementById('modalBackdrop');
                 const closeBtn = document.getElementById('modalCloseBtn');
 
-                // Show modal skeleton
                 showModalSkeleton();
 
-                // Fetch course details
                 const response = await fetch(`${API_BASE_URL}/courses/${courseId}`);
                 if (!response.ok) throw new Error('Course not found');
                 
                 const course = await response.json();
                 
-                // Populate modal with course data
                 populateModal(course, courseId);
 
-                // Show modal
                 modal.classList.add('show');
                 modal.setAttribute('aria-hidden', 'false');
 
-                // Setup tab behavior
-                setupModalTabs();
-
-                // Close handlers
                 backdrop.onclick = closeModal;
                 closeBtn.onclick = closeModal;
                 document.addEventListener('keydown', escCloseHandler);
@@ -754,7 +834,6 @@
         };
 
         function showModalSkeleton() {
-            // Quick skeleton while loading
             document.getElementById('modalTitle').textContent = 'Loading...';
             document.getElementById('modalSubtitle').textContent = 'Please wait';
             document.getElementById('panelOverview').innerHTML = '<div class="spinner"></div>';
@@ -763,14 +842,8 @@
             modal.classList.add('show');
         }
 
-        // COMPLETE FIXED VERSION - Replace the entire populateModal function in your courses.html
-
         function populateModal(course, courseId) {
-            console.log('Full course object:', course); // Debug log
-            
-            // Handle different API response structures
             const courseData = course.course || course.data || course;
-            console.log('Course data after extraction:', courseData);
             
             // Basic info
             const title = courseData.title || courseData.name || 'Course';
@@ -780,7 +853,7 @@
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalSubtitle').textContent = description;
             
-            // Extract all possible field variations
+            // Extract counts
             const lessonCount = courseData.lessonCount || courseData.lesson_count || 
                             courseData.lessons?.length || courseData.curriculum?.length || 0;
             
@@ -825,7 +898,6 @@
                 imageEl.style.backgroundSize = 'cover';
                 imageEl.style.backgroundPosition = 'center';
             } else {
-                // Fallback gradient
                 const bgClass = getBackgroundClass(courseData);
                 const gradients = {
                     'math': 'linear-gradient(135deg,#4361ee,#3a0ca3)',
@@ -845,7 +917,7 @@
                 imageEl.style.background = gradient;
             }
             
-            // ==== OVERVIEW TAB ====
+            // OVERVIEW TAB
             let overviewHTML = `
                 <div class="modal-content-section">
                     <h4><i class="fas fa-info-circle"></i> Course Description</h4>
@@ -853,7 +925,6 @@
                 </div>
             `;
             
-            // Info Grid
             overviewHTML += `
                 <div class="info-grid">
                     <div class="info-card">
@@ -947,63 +1018,9 @@
                 `;
             }
             
-            // Prerequisites
-            const prereqs = courseData.prerequisites || courseData.requirements;
-            if (prereqs) {
-                const prereqText = Array.isArray(prereqs) ? prereqs.join(', ') : prereqs;
-                if (prereqText && prereqText.length > 0) {
-                    overviewHTML += `
-                        <div class="modal-content-section">
-                            <h4><i class="fas fa-clipboard-list"></i> Prerequisites</h4>
-                            <div class="prerequisites-box">${prereqText}</div>
-                        </div>
-                    `;
-                }
-            }
-            
-            // Course Features
-            const features = courseData.features || courseData.includes;
-            if (features && Array.isArray(features) && features.length > 0) {
-                overviewHTML += `
-                    <div class="modal-content-section">
-                        <h4><i class="fas fa-star"></i> Course Features</h4>
-                        <ul class="features-list">
-                            ${features.map(feature => `
-                                <li><i class="fas fa-check-circle"></i> <span>${feature}</span></li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                `;
-            }
-            
-            // Additional Details
-            const additionalDetails = [];
-            const language = courseData.language || 'English';
-            const hasCert = courseData.certificate || courseData.has_certificate;
-            const category = courseData.category || courseData.subject || courseData.class_level || courseData.classLevel;
-            
-            if (language) additionalDetails.push(`<i class="fas fa-language"></i> ${language === 'en' ? 'English' : language}`);
-            if (hasCert) additionalDetails.push(`<i class="fas fa-certificate"></i> Certificate included`);
-            if (category) additionalDetails.push(`<i class="fas fa-tag"></i> ${category}`);
-            
-            if (additionalDetails.length > 0) {
-                overviewHTML += `
-                    <div class="modal-content-section">
-                        <h4><i class="fas fa-info"></i> Additional Information</h4>
-                        <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.75rem;">
-                            ${additionalDetails.map(detail => `
-                                <span style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-color); border-radius: 20px; border: 1px solid var(--border-color);">
-                                    ${detail}
-                                </span>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-            
             document.getElementById('panelOverview').innerHTML = overviewHTML;
             
-            // ==== CURRICULUM TAB ====
+            // CURRICULUM TAB
             const curriculum = courseData.curriculum || courseData.lessons || courseData.syllabus || [];
             
             if (curriculum && curriculum.length > 0) {
@@ -1061,12 +1078,11 @@
                     <div style="text-align: center; padding: 3rem 1rem; color: #666;">
                         <i class="fas fa-book-open" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
                         <p>Detailed curriculum will be available soon.</p>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">This course is currently being developed.</p>
                     </div>
                 `;
             }
             
-            // ==== INSTRUCTOR TAB ====
+            // INSTRUCTOR TAB
             const instructor = courseData.instructor || courseData.tutor || courseData.teacher || courseData.author;
             
             if (instructor && typeof instructor === 'object') {
@@ -1074,8 +1090,6 @@
                 const instTitle = instructor.title || instructor.role || instructor.position || 'Professional Educator';
                 const instBio = instructor.bio || instructor.description || instructor.about || 'Experienced educator dedicated to student success.';
                 const instAvatar = instructor.avatar || instructor.photo || instructor.image;
-                const instQual = instructor.qualifications || instructor.credentials;
-                const instExp = instructor.experience || instructor.years_experience;
                 
                 let instructorHTML = `
                     <div class="instructor-card">
@@ -1097,27 +1111,9 @@
                             </div>
                         </div>
                         <p style="margin: 1.5rem 0; line-height: 1.8;">${instBio}</p>
+                    </div>
                 `;
                 
-                if (instQual) {
-                    instructorHTML += `
-                        <div class="modal-content-section">
-                            <h5><i class="fas fa-award"></i> Qualifications</h5>
-                            <p>${instQual}</p>
-                        </div>
-                    `;
-                }
-                
-                if (instExp) {
-                    instructorHTML += `
-                        <div class="modal-content-section">
-                            <h5><i class="fas fa-briefcase"></i> Experience</h5>
-                            <p>${typeof instExp === 'number' ? `${instExp}+ years of teaching experience` : instExp}</p>
-                        </div>
-                    `;
-                }
-                
-                instructorHTML += `</div>`;
                 document.getElementById('panelInstructor').innerHTML = instructorHTML;
             } else {
                 document.getElementById('panelInstructor').innerHTML = `
@@ -1128,29 +1124,208 @@
                 `;
             }
             
-            // ==== REVIEWS TAB ====
-            const reviews = courseData.reviews || courseData.testimonials || courseData.feedback || [];
+            // REVIEWS TAB - Initialize with loading state
+            const panelReviews = document.querySelector('.tab-panel[data-panel="reviews"]');
+            if (panelReviews) {
+                panelReviews.innerHTML = `
+                    <div style="text-align: center; padding: 3rem 1rem; color: var(--text-color);">
+                        <div class="spinner"></div>
+                        <p>Click here to load reviews...</p>
+                    </div>
+                `;
+                panelReviews.dataset.courseId = courseId;
+                panelReviews.dataset.loaded = 'false';
+            }
+            
+            // Action button
+            const actionBtn = document.getElementById('modalAction');
+            if (user) {
+                actionBtn.innerHTML = `<i class="fas fa-${price && price > 0 ? 'shopping-cart' : 'play-circle'}"></i> ${price && price > 0 ? 'Enroll Now' : 'Start Learning'}`;
+                actionBtn.href = `course.html?id=${courseId}`;
+            } else {
+                actionBtn.innerHTML = '<i class="fas fa-user-plus"></i> Enroll Now';
+                actionBtn.href = 'enrollment.html';
+            }
+            
+            setupModalTabs();
+        }
+
+        // ==============================================
+        // REVIEWS SYSTEM - COMPLETE IMPLEMENTATION
+        // ==============================================
+
+        /**
+         * Extract reviews array from various API response formats
+         * Handles: { reviews: [] }, { data: [] }, [...], { review: {} }, {success: true}, etc.
+         */
+        function extractReviewsArray(data) {
+            if (!data) {
+                console.log('❌ No data provided');
+                return [];
+            }
+            
+            // Direct array response
+            if (Array.isArray(data)) {
+                console.log('✅ Reviews found as direct array:', data.length);
+                return data;
+            }
+            
+            // Handle {success: true} with no reviews (empty state)
+            if (data.success === true && Object.keys(data).length === 1) {
+                console.log('✅ Empty response with success=true, treating as no reviews');
+                return [];
+            }
+            
+            // Check common property names
+            const reviewProps = ['reviews', 'data', 'review', 'items', 'content', 'results'];
+            
+            for (const prop of reviewProps) {
+                if (data[prop]) {
+                    const value = data[prop];
+                    const reviews = Array.isArray(value) ? value : [value];
+                    console.log(`✅ Reviews found in data.${prop}:`, reviews.length);
+                    return reviews;
+                }
+            }
+            
+            // Last resort: search for any array property
+            for (const key in data) {
+                if (Array.isArray(data[key]) && data[key].length > 0) {
+                    console.log(`✅ Reviews found in data.${key}:`, data[key].length);
+                    return data[key];
+                }
+            }
+            
+            console.log('ℹ️ No reviews found in response (probably empty)');
+            return [];
+        }
+
+        /**
+         * Load reviews for the reviews tab
+         */
+        async function loadReviewsForTab(panel, courseId) {
+            try {
+                console.log('=== LOADING REVIEWS FOR TAB ===');
+                console.log('Course ID:', courseId);
+                
+                // Show loading state
+                panel.innerHTML = `
+                    <div style="text-align: center; padding: 3rem 1rem; color: var(--text-color);">
+                        <div class="spinner"></div>
+                        <p>Loading reviews...</p>
+                    </div>
+                `;
+                
+                // Fetch course data for rating
+                const courseResponse = await fetch(`${API_BASE_URL}/courses/${courseId}`);
+                if (!courseResponse.ok) {
+                    throw new Error('Failed to fetch course data');
+                }
+                
+                const courseData = await courseResponse.json();
+                const course = courseData.course || courseData.data || courseData;
+                const courseRating = course.rating || course.average_rating || 4.5;
+                
+                console.log('Course rating:', courseRating);
+                
+                // Fetch reviews from API with cache-busting timestamp
+                const timestamp = Date.now();
+                const reviewsResponse = await fetch(
+                    `${API_BASE_URL}/courses/${courseId}/reviews?t=${timestamp}`,
+                    {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    }
+                );
+                
+                console.log('Reviews API status:', reviewsResponse.status);
+                
+                let reviews = [];
+                
+                if (reviewsResponse.ok) {
+                    const reviewsData = await reviewsResponse.json();
+                    console.log('Raw reviews response:', reviewsData);
+                    
+                    // Use helper function to extract reviews
+                    reviews = extractReviewsArray(reviewsData);
+                    console.log(`Successfully extracted ${reviews.length} reviews`);
+                } else {
+                    console.warn('Failed to fetch reviews:', reviewsResponse.status);
+                    const errorText = await reviewsResponse.text();
+                    console.warn('Error response:', errorText);
+                }
+                
+                // Render the reviews tab content
+                renderReviewsTabContent(panel, reviews, courseRating, courseId);
+                
+                // Mark as loaded
+                panel.dataset.loaded = 'true';
+                panel.dataset.courseId = courseId;
+                
+                console.log('✅ Reviews tab rendered successfully');
+                
+            } catch (error) {
+                console.error('❌ Error in loadReviewsForTab:', error);
+                
+                // Show error state
+                panel.innerHTML = `
+                    <div style="text-align: center; padding: 3rem 1rem; color: var(--text-color);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; color: #ef4444;"></i>
+                        <p style="font-size: 1.1rem; font-weight: 600;">Failed to load reviews</p>
+                        <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 0.5rem;">${error.message}</p>
+                        <button class="btn-outline" onclick="retryLoadReviews('${courseId}')" style="margin-top: 1.5rem;">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                `;
+                
+                panel.dataset.loaded = 'error';
+            }
+        }
+
+        /**
+         * Render the reviews tab content
+         */
+        function renderReviewsTabContent(panel, reviews, courseRating, courseId) {
+            console.log('=== RENDERING REVIEWS TAB ===');
+            console.log('Reviews count:', reviews.length);
+            console.log('Course rating:', courseRating);
+            console.log('User logged in:', !!user);
+            
+            panel.setAttribute('data-course-id', courseId);
+            
+            let reviewsHTML = '';
             
             if (reviews && reviews.length > 0) {
-                let reviewsHTML = `
+                reviewsHTML = `
                     <div class="modal-content-section">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
                             <div>
-                                <h3 style="margin: 0; font-size: 2rem;">${rating.toFixed(1)} <span style="font-size: 1rem; color: #666; font-weight: normal;">out of 5</span></h3>
+                                <h3 style="margin: 0; font-size: 2rem;">${courseRating.toFixed(1)} <span style="font-size: 1rem; color: #666; font-weight: normal;">out of 5</span></h3>
                                 <div class="course-rating" style="margin-top: 0.5rem;">
-                                    ${generateStars(rating)}
+                                    ${generateStars(courseRating)}
                                     <span style="margin-left: 0.5rem; color: #666;">${reviews.length} ${reviews.length === 1 ? 'review' : 'reviews'}</span>
                                 </div>
                             </div>
+                            ${user ? `
+                                <button class="btn-primary" onclick="showReviewForm('${courseId}')" id="writeReviewBtn_${courseId}">
+                                    <i class="fas fa-star"></i> Write a Review
+                                </button>
+                            ` : `
+                                <button class="btn-primary" onclick="window.location.href='sign_in.html'">
+                                    <i class="fas fa-sign-in-alt"></i> Login to Review
+                                </button>
+                            `}
                         </div>
                         <div class="reviews-list">
                 `;
                 
                 reviews.forEach(review => {
-                    const reviewerName = review.user_name || review.name || review.student_name || 'Anonymous';
+                    const reviewerName = review.user_name || review.userName || review.name || review.student_name || 'Anonymous';
                     const reviewRating = review.rating || 5;
                     const reviewComment = review.comment || review.review || review.text || 'Great course!';
-                    const reviewDate = review.date || review.created_at || review.timestamp;
+                    const reviewDate = review.date || review.created_at || review.createdAt || review.timestamp;
                     
                     reviewsHTML += `
                         <div class="review-item">
@@ -1175,62 +1350,526 @@
                         </div>
                     </div>
                 `;
-                
-                document.getElementById('panelReviews').innerHTML = reviewsHTML;
             } else {
-                document.getElementById('panelReviews').innerHTML = `
+                // No reviews yet - show empty state
+                reviewsHTML = `
                     <div style="text-align: center; padding: 3rem 1rem; color: #666;">
                         <i class="fas fa-comments" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                        <p>No reviews yet. Be the first to review this course!</p>
+                        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No reviews yet</p>
+                        <p style="font-size: 0.9rem; opacity: 0.8;">Be the first to share your experience with this course!</p>
                         ${user ? `
-                            <button class="btn-primary" style="margin-top: 1.5rem;" onclick="alert('Review feature coming soon!')">
-                                <i class="fas fa-star"></i> Write a Review
+                            <button class="btn-primary" style="margin-top: 1.5rem;" onclick="showReviewForm('${courseId}')" id="writeReviewBtn_${courseId}">
+                                <i class="fas fa-star"></i> Write the First Review
                             </button>
-                        ` : ''}
+                        ` : `
+                            <button class="btn-primary" style="margin-top: 1.5rem;" onclick="window.location.href='sign_in.html'">
+                                <i class="fas fa-sign-in-alt"></i> Login to Write a Review
+                            </button>
+                        `}
                     </div>
                 `;
             }
             
-            // Action button
-            const actionBtn = document.getElementById('modalAction');
+            // Add review form for logged-in users
             if (user) {
-                actionBtn.innerHTML = `<i class="fas fa-${price && price > 0 ? 'shopping-cart' : 'play-circle'}"></i> ${price && price > 0 ? 'Enroll Now' : 'Start Learning'}`;
-                actionBtn.href = `course.html?id=${courseId}`;
-            } else {
-                actionBtn.innerHTML = '<i class="fas fa-user-plus"></i> Sign Up to Enroll';
-                actionBtn.href = 'sign_up.html';
+                reviewsHTML += `
+                    <div class="modal-content-section" id="reviewFormSection_${courseId}" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-color);">
+                        <h4><i class="fas fa-edit"></i> Write Your Review</h4>
+                        <form id="reviewForm_${courseId}" onsubmit="submitReview(event, '${courseId}')">
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Your Rating *</label>
+                                <div class="star-rating-input" id="starRatingInput_${courseId}">
+                                    <i class="far fa-star" data-rating="1"></i>
+                                    <i class="far fa-star" data-rating="2"></i>
+                                    <i class="far fa-star" data-rating="3"></i>
+                                    <i class="far fa-star" data-rating="4"></i>
+                                    <i class="far fa-star" data-rating="5"></i>
+                                </div>
+                                <input type="hidden" id="ratingValue_${courseId}" name="rating" value="0" required>
+                                <span id="ratingError_${courseId}" style="color: #ef4444; font-size: 0.875rem; display: none;">Please select a rating</span>
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <label for="reviewComment_${courseId}" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Your Review *</label>
+                                <textarea 
+                                    id="reviewComment_${courseId}" 
+                                    name="comment" 
+                                    rows="5" 
+                                    placeholder="Share your experience with this course..."
+                                    required
+                                    style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; resize: vertical;"
+                                ></textarea>
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <button type="submit" class="btn-primary" id="submitReviewBtn_${courseId}">
+                                    <i class="fas fa-paper-plane"></i> Submit Review
+                                </button>
+                                <button type="button" class="btn-outline" onclick="hideReviewForm('${courseId}')">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                `;
             }
+            
+            panel.innerHTML = reviewsHTML;
+            
+            // Setup star rating if form exists
+            if (user) {
+                setTimeout(() => setupStarRating(courseId), 150);
+            }
+            
+            console.log('✅ Reviews tab content rendered');
         }
 
+        /**
+         * Setup star rating interaction
+         */
+        function setupStarRating(courseId) {
+            console.log(`Setting up star rating for course: ${courseId}`);
+            
+            setTimeout(() => {
+                const formSection = document.querySelector(`#reviewFormSection_${courseId}`);
+                
+                if (!formSection) {
+                    console.error(`❌ Form section not found: #reviewFormSection_${courseId}`);
+                    return;
+                }
+                
+                const starContainer = formSection.querySelector(`#starRatingInput_${courseId}`);
+                if (!starContainer) {
+                    console.error('❌ Star container not found');
+                    return;
+                }
+                
+                const stars = starContainer.querySelectorAll('i');
+                const ratingInput = formSection.querySelector(`#ratingValue_${courseId}`);
+                const ratingError = formSection.querySelector(`#ratingError_${courseId}`);
+                
+                if (!stars.length || !ratingInput) {
+                    console.error('❌ Required elements not found');
+                    return;
+                }
+                
+                // Clone stars to remove old event listeners
+                const newStars = [];
+                stars.forEach((star, index) => {
+                    const newStar = star.cloneNode(true);
+                    star.parentNode.replaceChild(newStar, star);
+                    newStars.push(newStar);
+                });
+                
+                // Add click listeners
+                newStars.forEach((star, index) => {
+                    star.addEventListener('click', function() {
+                        const rating = index + 1;
+                        ratingInput.value = rating;
+                        
+                        if (ratingError) ratingError.style.display = 'none';
+                        
+                        newStars.forEach((s, i) => {
+                            if (i < rating) {
+                                s.classList.remove('far');
+                                s.classList.add('fas');
+                            } else {
+                                s.classList.remove('fas');
+                                s.classList.add('far');
+                            }
+                        });
+                    });
+                    
+                    star.addEventListener('mouseenter', function() {
+                        newStars.forEach((s, i) => {
+                            s.classList.toggle('active', i <= index);
+                        });
+                    });
+                });
+                
+                starContainer.addEventListener('mouseleave', function() {
+                    const currentRating = parseInt(ratingInput.value) || 0;
+                    newStars.forEach((s, i) => {
+                        s.classList.remove('active');
+                        if (i < currentRating) {
+                            s.classList.add('fas');
+                            s.classList.remove('far');
+                        } else {
+                            s.classList.add('far');
+                            s.classList.remove('fas');
+                        }
+                    });
+                });
+                
+                console.log('✅ Star rating setup complete');
+                
+            }, 150);
+        }
+
+        /**
+         * Show review form
+         */
+        window.showReviewForm = function(courseId) {
+            console.log('=== SHOW REVIEW FORM ===');
+            const courseIdToUse = courseId || currentCourseId;
+            
+            if (!courseIdToUse) {
+                console.error('❌ No course ID available');
+                return;
+            }
+            
+            const formSection = document.querySelector(`#reviewFormSection_${courseIdToUse}`);
+            
+            if (!formSection) {
+                console.error(`❌ Form section not found`);
+                return;
+            }
+            
+            formSection.style.display = 'block';
+            
+            const writeReviewBtn = document.querySelector(`#writeReviewBtn_${courseIdToUse}`);
+            if (writeReviewBtn) {
+                writeReviewBtn.style.display = 'none';
+            }
+            
+            formSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            setupStarRating(courseIdToUse);
+            
+            setTimeout(() => {
+                const textarea = document.querySelector(`#reviewComment_${courseIdToUse}`);
+                if (textarea) textarea.focus();
+            }, 300);
+            
+            console.log('✅ Review form shown');
+        };
+
+        /**
+         * Hide review form
+         */
+        window.hideReviewForm = function(courseId) {
+            const courseIdToUse = courseId || currentCourseId;
+            if (!courseIdToUse) return;
+            
+            const formSection = document.querySelector(`#reviewFormSection_${courseIdToUse}`);
+            
+            if (formSection) {
+                formSection.style.display = 'none';
+                
+                const form = formSection.querySelector(`#reviewForm_${courseIdToUse}`);
+                if (form) form.reset();
+                
+                const stars = formSection.querySelectorAll(`#starRatingInput_${courseIdToUse} i`);
+                stars.forEach(s => {
+                    s.classList.remove('fas', 'active');
+                    s.classList.add('far');
+                });
+                
+                const ratingInput = formSection.querySelector(`#ratingValue_${courseIdToUse}`);
+                if (ratingInput) ratingInput.value = '0';
+                
+                const ratingError = formSection.querySelector(`#ratingError_${courseIdToUse}`);
+                if (ratingError) ratingError.style.display = 'none';
+            }
+            
+            const writeReviewBtn = document.querySelector(`#writeReviewBtn_${courseIdToUse}`);
+            if (writeReviewBtn) {
+                writeReviewBtn.style.display = 'inline-flex';
+            }
+        };
+
+        /**
+         * Submit review
+         */
+        window.submitReview = async function(event, courseId) {
+            event.preventDefault();
+            console.log('=== SUBMITTING REVIEW ===');
+            
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                showNotification('Please log in to submit a review', 'error');
+                setTimeout(() => window.location.href = 'sign_in.html', 1500);
+                return;
+            }
+            
+            const ratingInput = document.querySelector(`#ratingValue_${courseId}`);
+            const commentInput = document.querySelector(`#reviewComment_${courseId}`);
+            const ratingError = document.querySelector(`#ratingError_${courseId}`);
+            const submitBtn = document.querySelector(`#submitReviewBtn_${courseId}`);
+            
+            if (!ratingInput || !commentInput) {
+                showNotification('Error: Form elements not found', 'error');
+                return;
+            }
+            
+            const rating = parseInt(ratingInput.value);
+            const comment = commentInput.value.trim();
+            
+            // Validation
+            if (!rating || rating === 0) {
+                if (ratingError) ratingError.style.display = 'block';
+                showNotification('Please select a rating', 'error');
+                return;
+            }
+            
+            if (!comment) {
+                showNotification('Please write a review', 'error');
+                commentInput.focus();
+                return;
+            }
+            
+            if (comment.length < 10) {
+                showNotification('Please write at least 10 characters', 'error');
+                commentInput.focus();
+                return;
+            }
+            
+            // Disable submit button
+            if (submitBtn) {
+                submitBtn.classList.add('btn-loading');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            }
+            
+            try {
+                const reviewData = {
+                    rating: rating,
+                    comment: comment
+                };
+                
+                const response = await fetch(`${API_BASE_URL}/user/courses/${courseId}/review`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(reviewData)
+                });
+                
+                if (response.status === 401 || response.status === 403) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    showNotification('Session expired. Please log in again.', 'error');
+                    setTimeout(() => window.location.href = 'sign_in.html', 2000);
+                    return;
+                }
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Failed to submit review');
+                }
+                
+                const result = await response.json();
+                console.log('✅ Review submitted:', result);
+                console.log('🔍 Checking result.review:', result.review);
+                console.log('🔍 Review exists?', !!result.review);
+                
+                showNotification('Review submitted successfully! Thank you for your feedback.', 'success');
+                hideReviewForm(courseId);
+                
+                // Display the submitted review immediately
+                if (result && result.review) {
+                    console.log('📝 Displaying submitted review immediately');
+                    console.log('📝 Review data:', result.review);
+                    console.log('📝 User data:', user);
+                    
+                    // Format the review to match expected structure
+                    const newReview = {
+                        user_name: user.name || user.username || 'You',
+                        userName: user.name || user.username || 'You',
+                        rating: result.review.rating,
+                        comment: result.review.comment,
+                        created_at: result.review.createdAt || result.review.created_at || new Date().toISOString(),
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    console.log('📝 Formatted review:', newReview);
+                    
+                    // Get the reviews panel
+                    const reviewsPanel = document.querySelector('.tab-panel[data-panel="reviews"].active');
+                    console.log('📝 Reviews panel found?', !!reviewsPanel);
+                    
+                    if (reviewsPanel) {
+                        console.log('📝 Rendering review immediately...');
+                        
+                        // Fetch course rating and display review
+                        fetch(`${API_BASE_URL}/courses/${courseId}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                const course = data.course || data.data || data;
+                                const courseRating = course.rating || course.average_rating || 4.5;
+                                
+                                console.log('📝 Rendering with course rating:', courseRating);
+                                // Render with the new review
+                                renderReviewsTabContent(reviewsPanel, [newReview], courseRating, courseId);
+                                reviewsPanel.dataset.loaded = 'true';
+                                console.log('✅ Review displayed successfully!');
+                            })
+                            .catch(err => {
+                                console.error('❌ Error fetching course data:', err);
+                                // Fallback: display review with default rating
+                                console.log('📝 Using fallback rating 4.5');
+                                renderReviewsTabContent(reviewsPanel, [newReview], 4.5, courseId);
+                                reviewsPanel.dataset.loaded = 'true';
+                                console.log('✅ Review displayed successfully (fallback)!');
+                            });
+                    } else {
+                        console.error('❌ No active reviews panel found');
+                    }
+                } else {
+                    console.log('⚠️ No review in response, falling back to reload');
+                    console.log('⚠️ Result structure:', Object.keys(result || {}));
+                    
+                    // Fallback: reload reviews normally if backend returns full list
+                    const reviewsPanel = document.querySelector('.tab-panel[data-panel="reviews"].active');
+                    if (reviewsPanel) {
+                        console.log('📝 Reloading reviews from API...');
+                        reviewsPanel.dataset.loaded = 'false';
+                        setTimeout(() => loadReviewsForTab(reviewsPanel, courseId), 500);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('❌ Error submitting review:', error);
+                showNotification(error.message || 'Failed to submit review. Please try again.', 'error');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.classList.remove('btn-loading');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Review';
+                }
+            }
+        };
+
+        /**
+         * Retry loading reviews
+         */
+        window.retryLoadReviews = function(courseId) {
+            const panel = document.querySelector(`.tab-panel[data-panel="reviews"]`);
+            if (panel) {
+                panel.dataset.loaded = 'false';
+                loadReviewsForTab(panel, courseId);
+            }
+        };
+
+        /**
+         * Setup modal tabs with reviews loading
+         */
         function setupModalTabs() {
             const tabBtns = document.querySelectorAll('.tab-btn');
             const panels = document.querySelectorAll('.tab-panel');
             
+            console.log('🔧 Setting up modal tabs...');
+            
+            // Remove existing listeners
             tabBtns.forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+            });
+            
+            const newTabBtns = document.querySelectorAll('.tab-btn');
+            
+            newTabBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    // Set active button
-                    tabBtns.forEach(b => {
-                        b.classList.toggle('active', b === btn);
-                        b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
-                    });
+                    console.log('📍 Tab clicked:', btn.dataset.tab);
                     
-                    // Show corresponding panel
+                    // Update tab states
+                    newTabBtns.forEach(b => {
+                        b.classList.remove('active');
+                        b.setAttribute('aria-selected', 'false');
+                    });
+                    btn.classList.add('active');
+                    btn.setAttribute('aria-selected', 'true');
+                    
+                    const tabName = btn.dataset.tab;
+                    
+                    // Show/hide panels
                     panels.forEach(panel => {
-                        const shouldShow = panel.dataset.panel === btn.dataset.tab;
+                        const shouldShow = panel.dataset.panel === tabName;
                         panel.hidden = !shouldShow;
                         panel.classList.toggle('active', shouldShow);
+                        
+                        // Load reviews when clicked
+                        if (shouldShow && tabName === 'reviews' && currentCourseId) {
+                            console.log('🔍 Reviews tab activated via click');
+                            if (!panel.dataset.loaded || panel.dataset.loaded === 'false' || panel.dataset.loaded === 'error') {
+                                console.log('📥 Loading reviews...');
+                                loadReviewsForTab(panel, currentCourseId);
+                            } else {
+                                console.log('✅ Reviews already loaded');
+                            }
+                        }
                     });
                     
                     btn.focus();
                 });
             });
+            
+            // 🔥 FIX: Check if Reviews tab is ALREADY active when modal opens
+            // This handles the case where the last opened modal had Reviews tab active
+            console.log('🔍 Checking if Reviews tab is already active...');
+            const activeReviewsTab = Array.from(newTabBtns).find(btn => 
+                btn.classList.contains('active') && btn.dataset.tab === 'reviews'
+            );
+            
+            if (activeReviewsTab && currentCourseId) {
+                console.log('⚠️ Reviews tab is already active! Loading reviews automatically...');
+                const reviewsPanel = document.querySelector('.tab-panel[data-panel="reviews"].active');
+                
+                if (reviewsPanel && (!reviewsPanel.dataset.loaded || reviewsPanel.dataset.loaded === 'false')) {
+                    console.log('📥 Auto-loading reviews for already-active tab...');
+                    loadReviewsForTab(reviewsPanel, currentCourseId);
+                } else if (reviewsPanel) {
+                    console.log('✅ Reviews already loaded in active tab');
+                }
+            } else {
+                console.log('ℹ️ Reviews tab is not active (default state)');
+            }
+            
+            console.log('✅ Modal tabs setup complete');
         }
 
         window.closeModal = function() {
+            console.log('🚪 Closing modal...');
+            
             const modal = document.getElementById('courseModal');
             if (modal) {
                 modal.classList.remove('show');
                 document.removeEventListener('keydown', escCloseHandler);
+                
+                // Reset all panels
+                const panels = document.querySelectorAll('.tab-panel');
+                panels.forEach(panel => {
+                    panel.dataset.loaded = 'false';
+                });
+                
+                // 🔥 FIX: Reset tabs to Overview tab (first tab)
+                console.log('🔄 Resetting tabs to Overview...');
+                const tabBtns = document.querySelectorAll('.tab-btn');
+                tabBtns.forEach((btn, index) => {
+                    if (index === 0) {
+                        // First tab (Overview) should be active
+                        btn.classList.add('active');
+                        btn.setAttribute('aria-selected', 'true');
+                    } else {
+                        btn.classList.remove('active');
+                        btn.setAttribute('aria-selected', 'false');
+                    }
+                });
+                
+                // Reset panels - only Overview should be active
+                panels.forEach((panel, index) => {
+                    if (index === 0) {
+                        // First panel (Overview) should be visible
+                        panel.classList.add('active');
+                        panel.hidden = false;
+                    } else {
+                        panel.classList.remove('active');
+                        panel.hidden = true;
+                    }
+                });
+                
+                currentCourseId = null;
+                console.log('✅ Modal closed and reset');
             }
         }
 
@@ -1238,7 +1877,6 @@
             if (e.key === 'Escape') closeModal();
         }
 
-        // Enroll in course
         window.enrollInCourse = async function(courseId, isFree) {
             if (!user) {
                 window.location.href = 'sign_in.html';
@@ -1250,23 +1888,14 @@
                 return;
             }
             
-            // Simulate enrollment
             showNotification('Successfully enrolled in the course!', 'success');
-            
-            // In real app, call API to enroll
-            // await fetch(`${API_BASE_URL}/enroll`, {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ userId: user.id, courseId })
-            // });
         }
 
-        // Simple notification function
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = `notification notification-${type}`;
             notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
                 <span>${message}</span>
             `;
             
@@ -1294,7 +1923,23 @@
             }, 3000);
         }
 
-        // Add CSS for notification animations
+        // Debug helpers
+        window.debugReviewsSystem = function() {
+            console.log('=== REVIEWS SYSTEM DEBUG ===');
+            console.log('1. Current course ID:', currentCourseId);
+            console.log('2. User logged in:', !!user);
+            console.log('3. Token exists:', !!localStorage.getItem('token'));
+            
+            const reviewsPanel = document.querySelector('.tab-panel[data-panel="reviews"]');
+            if (reviewsPanel) {
+                console.log('4. Reviews panel loaded:', reviewsPanel.dataset.loaded);
+                console.log('5. Reviews panel course ID:', reviewsPanel.dataset.courseId);
+            }
+            
+            console.log('=== END DEBUG ===');
+        };
+
+        // Add CSS for animations
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideIn {
@@ -1307,6 +1952,8 @@
             }
         `;
         document.head.appendChild(style);
+
+        console.log('✅ All systems loaded - Use window.debugReviewsSystem() for debugging');
     </script>
 </body>
 </html>
