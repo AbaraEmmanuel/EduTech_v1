@@ -15,7 +15,7 @@ form.addEventListener('submit', async (e) => {
     submitButton.disabled = true;
 
     try {
-        const response = await fetch("https://jaromind-production-5e3b.up.railway.app/login", {
+        const response = await fetch("https://jaromind-production-014b.up.railway.app/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -30,9 +30,34 @@ form.addEventListener('submit', async (e) => {
             return;
         }
 
-        // --- KEY FIX: store the JWT in localStorage ---
+        // --- KEY FIX: Store BOTH token and user data ---
         if (data.token) {
             localStorage.setItem('token', data.token);
+            
+            // Also store user data if available
+            if (data.user) {
+                localStorage.setItem('user', JSON.stringify(data.user));
+            } else if (data.id || data._id || data.email || data.name) {
+                // Create user object from response data
+                const userData = {
+                    id: data.id || data._id,
+                    _id: data._id || data.id,
+                    name: data.name || data.username || email.split('@')[0],
+                    email: data.email || email,
+                    username: data.username || email.split('@')[0],
+                    token: data.token
+                };
+                localStorage.setItem('user', JSON.stringify(userData));
+            } else {
+                // Create minimal user object
+                const userData = {
+                    id: 'user_' + Date.now(),
+                    name: email.split('@')[0],
+                    email: email,
+                    token: data.token
+                };
+                localStorage.setItem('user', JSON.stringify(userData));
+            }
         } else {
             showNotification("Login succeeded but no token received", "warning");
             return;
@@ -41,7 +66,7 @@ form.addEventListener('submit', async (e) => {
         showNotification('Sign-in successful!', 'success');
 
         setTimeout(() => {
-            window.location.href = "dashboard.html";
+            window.location.href = "courses.html";
         }, 1000);
 
     } catch (error) {

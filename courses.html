@@ -6,649 +6,157 @@
     <title>JaroMind - Explore Courses</title>
     <link rel="stylesheet" href="notification.css">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="courses.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-color: #4361ee;
-            --secondary-color: #3f37c9;
-            --success-color: #4cc9f0;
-            --warning-color: #f72585;
-            --light-bg: #f8f9fa;
-            --dark-bg: #121212;
-            --card-light: #ffffff;
-            --card-dark: #1e1e1e;
-            --text-light: #333333;
-            --text-dark: #f5f5f5;
-            --border-light: #e0e0e0;
-            --border-dark: #333333;
+        /* Additional inline styles for animations */
+        .course-card {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
         }
-
-        .light-mode {
-            --bg-color: var(--light-bg);
-            --text-color: var(--text-light);
-            --card-bg: var(--card-light);
-            --border-color: var(--border-light);
-        }
-
-        .dark-mode {
-            --bg-color: var(--dark-bg);
-            --text-color: var(--text-dark);
-            --card-bg: var(--card-dark);
-            --border-color: var(--border-dark);
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 100px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgb(159, 0, 0);
-            font-weight: bold;
-        }
-
-        @media (max-width: 768px) {
-            .user-menu {
-                margin-top: 100px;
-                margin-left: 23%;
-                gap: 5px;
-                font-size: 0.9rem;  
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .courses-header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .courses-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .courses-header p {
-            font-size: 1.1rem;
-            color: #666;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .dark-mode .courses-header p {
-            color: #aaa;
-        }
-
         .section-header {
-            margin: 3rem 0 2rem 0;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--primary-color);
+            position: relative;
+        }
+        
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 3px;
         }
 
-        .section-header h2 {
-            font-size: 1.8rem;
+        /* Star Rating Input Styles */
+        .star-rating-input {
             display: flex;
-            align-items: center;
             gap: 0.5rem;
+            font-size: 2rem;
+            margin: 0.5rem 0;
         }
 
-        .section-header h2 i {
-            color: var(--primary-color);
-        }
-
-        .courses-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .course-card {
-            background-color: var(--card-bg);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 1px solid var(--border-color);
-            position: relative;
-        }
-
-        .course-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .course-card.expanded {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .course-image {
-            height: 160px;
-            position: relative;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .math-bg {
-            background: linear-gradient(135deg, #4361ee, #3a0ca3);
-        }
-
-        .science-bg {
-            background: linear-gradient(135deg, #4cc9f0, #3f37c9);
-        }
-
-        .english-bg {
-            background: linear-gradient(135deg, #f72585, #b5179e);
-        }
-
-        .history-bg {
-            background: linear-gradient(135deg, #4895ef, #560bad);
-        }
-
-        .ss1-bg {
-            background: linear-gradient(135deg, #7209b7, #3a0ca3);
-        }
-
-        .ss2-bg {
-            background: linear-gradient(135deg, #f72585, #b5179e);
-        }
-
-        .ss3-bg {
-            background: linear-gradient(135deg, #4cc9f0, #4361ee);
-        }
-
-        .course-category {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .course-badge {
-            background-color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .badge-free {
-            color: var(--primary-color);
-        }
-
-        .badge-paid {
-            color: var(--warning-color);
-        }
-
-        .course-content {
-            padding: 1.5rem;
-        }
-
-        .course-content h3 {
-            margin-bottom: 0.5rem;
-            font-size: 1.3rem;
-        }
-
-        .course-content p {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-            line-height: 1.5;
-        }
-
-        .dark-mode .course-content p {
-            color: #aaa;
-        }
-
-        .course-meta {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        .dark-mode .course-meta {
-            color: #aaa;
-        }
-
-        .course-meta span {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .course-price {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .price-free {
-            color: var(--success-color);
-        }
-
-        .price-paid {
-            color: var(--warning-color);
-        }
-
-        .btn-primary, .btn-secondary, .btn-outline {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            text-align: center;
+        .star-rating-input i {
             cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.9rem;
+            color: #d1d5db;
+            transition: all 0.2s ease;
         }
 
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-            width: 100%;
+        .star-rating-input i:hover,
+        .star-rating-input i.active {
+            color: #ffc107;
+            transform: scale(1.1);
         }
 
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
+        .star-rating-input i.fas {
+            color: #ffc107;
         }
 
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--primary-color);
-            border: 1px solid var(--primary-color);
-            width: 100%;
+        /* Review Form Styles */
+        #reviewFormSection {
+            background: var(--bg-color);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
         }
 
-        .btn-secondary:hover {
-            background-color: rgba(67, 97, 238, 0.1);
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            color: var(--primary-color);
-            border: 1px solid var(--primary-color);
-            padding: 0.5rem 1rem;
-        }
-
-        .btn-outline:hover {
-            background-color: rgba(67, 97, 238, 0.1);
-        }
-
-        .btn-disabled {
-            background-color: #ccc;
-            color: #666;
-            cursor: not-allowed;
-        }
-
-        .btn-disabled:hover {
-            background-color: #ccc;
-        }
-
-        .course-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .course-actions .btn-primary {
-            flex: 2;
-        }
-
-        .course-actions .btn-outline {
-            flex: 1;
-        }
-
-        .course-details {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease;
-            background-color: rgba(67, 97, 238, 0.05);
-            margin: 0 -1.5rem -1.5rem -1.5rem;
-            padding: 0 1.5rem;
-        }
-
-        .course-details.expanded {
-            max-height: 500px;
+        .review-item {
             padding: 1.5rem;
-        }
-
-        .subjects-list {
-            margin: 1rem 0;
-        }
-
-        .subjects-list h4 {
-            margin-bottom: 0.5rem;
-            color: var(--primary-color);
-        }
-
-        .subjects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .subject-tag {
-            background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            padding: 0.5rem;
-            border-radius: 6px;
-            text-align: center;
-            font-size: 0.8rem;
-            transition: all 0.3s;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            background: var(--bg-color);
+            transition: all 0.3s ease;
         }
 
-        .subject-tag:hover {
-            background-color: var(--primary-color);
-            color: white;
+        .review-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             transform: translateY(-2px);
         }
 
-        .course-features {
-            margin: 1rem 0;
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
         }
 
-        .course-features h4 {
-            margin-bottom: 0.5rem;
-            color: var(--primary-color);
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
-        .features-list {
-            list-style: none;
-            padding: 0;
+        .reviewer-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
         }
 
-        .features-list li {
+        .review-rating {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            margin-bottom: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .review-rating i {
+            color: #ffc107;
             font-size: 0.9rem;
         }
 
-        .features-list li i {
-            color: var(--success-color);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 2rem;
+        .review-rating span {
+            font-size: 0.85rem;
             color: #666;
-            grid-column: 1 / -1;
         }
 
-        .dark-mode .empty-state {
-            color: #aaa;
+        /* Loading spinner */
+        .btn-loading {
+            pointer-events: none;
+            opacity: 0.7;
+            position: relative;
         }
 
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: #ccc;
-        }
-
-        .loading-state {
-            text-align: center;
-            padding: 2rem;
-            grid-column: 1 / -1;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-color);
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
+            animation: spin 0.6s linear infinite;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
-
-        @media (max-width: 768px) {
-            .courses-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .course-actions {
-                flex-direction: column;
-            }
-            
-            .subjects-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* Image overlay for better text readability */
-        .image-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.1));
-            z-index: 1;
-        }
-
-        /* Ensure text stays above the image */
-        .course-category,
-        .course-badge {
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Keep existing gradient backgrounds as fallback */
-        .course-image.math-bg { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
-        .course-image.science-bg { background: linear-gradient(135deg, #4cc9f0, #3f37c9); }
-        .course-image.english-bg { background: linear-gradient(135deg, #f72585, #b5179e); }
-        .course-image.history-bg { background: linear-gradient(135deg, #4895ef, #560bad); }
-        .course-image.ss1-bg { background: linear-gradient(135deg, #7209b7, #3a0ca3); }
-        .course-image.ss2-bg { background: linear-gradient(135deg, #f72585, #b5179e); }
-        .course-image.ss3-bg { background: linear-gradient(135deg, #4cc9f0, #4361ee); }
-
-
-        /* Modal styles */
-.course-modal {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 3000;
-  font-family: 'Poppins', sans-serif;
-}
-
-.course-modal.show {
-  display: flex;
-}
-
-.course-modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  backdrop-filter: blur(2px);
-  opacity: 0;
-  transition: opacity 260ms ease;
-}
-
-.course-modal.show .course-modal-backdrop {
-  opacity: 1;
-}
-
-.course-modal-panel {
-  position: relative;
-  z-index: 2;
-  width: min(920px, 95%);
-  max-height: 90vh;
-  overflow: auto;
-  background: var(--card-bg);
-  color: var(--text-color);
-  border-radius: 12px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
-  transform: translateY(18px) scale(0.98);
-  opacity: 0;
-  transition: transform 260ms cubic-bezier(.2,.9,.3,1), opacity 260ms ease;
-}
-
-.course-modal.show .course-modal-panel {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-}
-
-/* Modal header */
-.modal-header {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  align-items: center;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.modal-image {
-  width: 110px;
-  height: 84px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #4361ee, #3a0ca3);
-  background-size: cover;
-  background-position: center;
-  flex-shrink: 0;
-}
-
-.modal-headline h2 {
-  margin: 0 0 .25rem 0;
-  font-size: 1.2rem;
-}
-
-.muted {
-  color: #666;
-  font-size: 0.9rem;
-}
-
-/* Meta */
-.modal-meta {
-  display: flex;
-  gap: 1rem;
-  padding: .75rem 1.25rem;
-  border-bottom: 1px solid var(--border-color);
-  flex-wrap: wrap;
-}
-
-.modal-price {
-  margin-left: auto;
-  font-weight: 700;
-}
-
-/* Tabs */
-.modal-tabs {
-  display: flex;
-  gap: .5rem;
-  padding: .75rem 1.25rem;
-  overflow-x: auto;
-}
-
-.tab-btn {
-  border: none;
-  background: transparent;
-  padding: .5rem .85rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  color: var(--text-color);
-  transition: background .18s;
-}
-
-.tab-btn.active {
-  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-  color: white;
-}
-
-/* Panels */
-.tab-panels {
-  padding: 1rem 1.25rem 2rem 1.25rem;
-}
-
-.tab-panel {
-  display: none;
-  animation: fadeIn 200ms ease;
-}
-
-.tab-panel.active {
-  display: block;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Close button */
-.modal-close {
-  position: absolute;
-  right: 10px;
-  top: 8px;
-  font-size: 1.4rem;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-}
-
-/* Footer */
-.modal-footer {
-  padding: 1rem 1.25rem 1.5rem 1.25rem;
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  gap: .75rem;
-  justify-content: flex-end;
-}
-
-/* Small screens */
-@media (max-width: 600px) {
-  .modal-image { display: none; }
-  .modal-headline h2 { font-size: 1.05rem; }
-  .modal-meta { padding: .5rem 1rem; }
-  .modal-tabs { padding: .5rem 1rem; }
-  .tab-panels { padding: .75rem 1rem 1.5rem 1rem; }
-}
-
-</style>
-
-
+    </style>
 </head>
 <body class="light-mode">
 
@@ -657,31 +165,67 @@
             <img src="ht9.png" class="logo_img">
             <a href="index.html" class="nav-link">JaroMind</a>
             <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="courses.html" class="nav-link active">Courses</a>
         </div>
         <div class="navbar-right">
             <button class="mode-toggle" id="modeToggle">🌞</button>
+            <div class="user-menu" id="userMenu" style="display: none;">
+                <div class="user-info">
+                    <div class="user-name">Guest</div>
+                    <div id="userEmail" style="font-size: 0.8rem; opacity: 0.7;"></div>
+                </div>
+                <button class="btn-outline btn-small" onclick="window.location.href='sign_in.html'">Log out</button>
+            </div>
         </div>
     </nav>
-        <div class="user-menu">
-            <div class="user-avatar">
-                <img id="userAvatar" src="" alt="User Avatar" style="width: 100%; height: 100%; border-radius: 50%; display: none;">
-                <span id="avatarInitial">S</span>
-            </div>
-            <div class="user-info">
-                <div class="user-name">Student</div>
-                <div id="userEmail" style="font-size: 0.8rem;"></div>
-            </div>
-        </div>
 
     <div class="container">
         <div class="courses-header">
-            <h1>Explore Our Courses</h1>
+            <h1><span class="gradient-text">Explore Our Courses</span></h1>
             <p>Choose from complete class curricula or focus on specific subjects. Start your learning journey today!</p>
+        </div>
+
+        <!-- Course Stats -->
+        <div class="course-stats">
+            <div class="stat-card">
+                <i class="fas fa-book-open"></i>
+                <div>
+                    <h3 id="totalCourses">0</h3>
+                    <p>Total Courses</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-graduation-cap"></i>
+                <div>
+                    <h3 id="freeCourses">0</h3>
+                    <p>Free Courses</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">
+                <i class="fas fa-th-large"></i> All Courses
+            </button>
+            <button class="filter-tab" data-filter="class">
+                <i class="fas fa-graduation-cap"></i> Class Lessons
+            </button>
+            <button class="filter-tab" data-filter="subject">
+                <i class="fas fa-book-open"></i> Subject Lessons
+            </button>
+            <button class="filter-tab" data-filter="free">
+                <i class="fas fa-gift"></i> Free Courses
+            </button>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="courseSearch" placeholder="Search courses...">
+            </div>
         </div>
 
         <!-- High School Class Lessons Section -->
         <div class="section-header">
-            <h2><i class="fas fa-graduation-cap"></i> High School Class Lessons</h2>
+            <h2><i class="fas fa-university"></i> High School Class Lessons</h2>
         </div>
         <div class="courses-grid" id="classCoursesContainer">
             <div class="loading-state">
@@ -692,7 +236,7 @@
 
         <!-- Subjects Lessons Section -->
         <div class="section-header">
-            <h2><i class="fas fa-book-open"></i> Subjects Lessons</h2>
+            <h2><i class="fas fa-atom"></i> Subjects Lessons</h2>
         </div>
         <div class="courses-grid" id="subjectCoursesContainer">
             <div class="loading-state">
@@ -700,645 +244,1716 @@
                 <p>Loading subject courses...</p>
             </div>
         </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section glass-effect">
+            <div class="cta-content">
+                <h2>Ready to Master Your Subjects?</h2>
+                <p>Join thousands of students who are already learning with JaroMind</p>
+                <div class="cta-buttons">
+                    <a href="sign_up.html" class="btn-primary btn-large btn-glow">
+                        <i class="fas fa-rocket"></i> Start Free Trial
+                    </a>
+                    <a href="#featured" class="btn-outline btn-large">
+                        <i class="fas fa-play-circle"></i> View Demo
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Theme Management
-                const savedTheme = localStorage.getItem('theme') || 'light-mode';
-                document.body.className = savedTheme;
-
-                const modeToggle = document.getElementById('modeToggle');
-                const sidebarModeToggle = document.getElementById('sidebarModeToggle');
-                
-                // Set initial icons
-                updateModeIcons(savedTheme);
-
-                function updateModeIcons(theme) {
-                    const icon = theme === 'dark-mode' ? '🌙' : '🌞';
-                    if (modeToggle) modeToggle.textContent = icon;
-                    if (sidebarModeToggle) sidebarModeToggle.textContent = icon;
-                }
-
-                function toggleTheme() {
-                    if (document.body.classList.contains('light-mode')) {
-                        document.body.classList.replace('light-mode', 'dark-mode');
-                        localStorage.setItem('theme', 'dark-mode');
-                        updateModeIcons('dark-mode');
-                    } else {
-                        document.body.classList.replace('dark-mode', 'light-mode');
-                        localStorage.setItem('theme', 'light-mode');
-                        updateModeIcons('light-mode');
-                    }
-                }
-
-                // Add event listeners to both dark mode buttons
-                if (modeToggle) {
-                    modeToggle.addEventListener('click', toggleTheme);
-                }
-                
-                if (sidebarModeToggle) {
-                    sidebarModeToggle.addEventListener('click', toggleTheme);
-                }
-
-                // Smart Hamburger and Sidebar Management
-                const sidebar = document.getElementById("sidebar");
-                const hamburger = document.getElementById("hamburger");
-
-                // Function to check if navbar items fit
-                function checkNavbarFit() {
-                    const navbar = document.querySelector('.navbar');
-                    const navMenu = document.querySelector('.nav-menu');
-                    const authButtons = document.querySelector('.auth-buttons');
-                    const modeToggle = document.querySelector('.mode-toggle');
-                    
-                    if (!navbar || !navMenu || !authButtons) return;
-                    
-                    // Get total width of navbar content
-                    const navbarWidth = navbar.offsetWidth;
-                    const navbarLeftWidth = navbar.querySelector('.navbar-left').offsetWidth;
-                    const navMenuWidth = navMenu.offsetWidth;
-                    const authButtonsWidth = authButtons.offsetWidth;
-                    const modeToggleWidth = modeToggle ? modeToggle.offsetWidth : 0;
-                    
-                    const navbarContentWidth = navbarLeftWidth + navMenuWidth + authButtonsWidth + modeToggleWidth + 100;
-                    
-                    // Show hamburger only if content doesn't fit
-                    if (navbarContentWidth > navbarWidth) {
-                        hamburger.classList.add('active');
-                        navMenu.style.display = 'none';
-                        authButtons.style.display = 'none';
-                        if (modeToggle) modeToggle.style.display = 'none';
-                    } else {
-                        hamburger.classList.remove('active');
-                        navMenu.style.display = 'flex';
-                        authButtons.style.display = 'flex';
-                        if (modeToggle) modeToggle.style.display = 'flex';
-                    }
-                }
-
-                
-
-            
-                // Navbar Scroll Effect
-                window.addEventListener('scroll', () => {
-                    const navbar = document.querySelector('.navbar');
-                    if (!navbar) return;
-                    
-                    if (window.scrollY > 50) {
-                        navbar.classList.add('scrolled');
-                    } else {
-                        navbar.classList.remove('scrolled');
-                    }
-                });
-
-                // Scroll Animations
-                const observerOptions = {
-                    threshold: 0.1,
-                    rootMargin: '0px 0px -50px 0px'
-                };
-
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('visible');
-                            
-                            if (entry.target.classList.contains('features')) {
-                                const featureItems = entry.target.querySelectorAll('.feature-item');
-                                featureItems.forEach((item, index) => {
-                                    setTimeout(() => {
-                                        item.classList.add('visible');
-                                    }, index * 200);
-                                });
-                            }
-                        }
-                    });
-                }, observerOptions);
-
-                document.querySelectorAll('.section').forEach(section => {
-                    observer.observe(section);
-                });
-
-                });
-
-            // Add loading animation for images
-            window.addEventListener('load', () => {
-                const images = document.querySelectorAll('img');
-                images.forEach(img => {
-                    img.style.opacity = '1';
-                });
-            });
-    </script>
-
-<script type="module">
-    import { showNotification } from './notification.js';
-    import { auth, db } from './firebase.js';
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-    import { doc, getDoc, collection, getDocs, query, where, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-    let currentUser = null;
-    let userEnrollments = [];
-
-
-
-    // Wait for DOM to load
-    document.addEventListener('DOMContentLoaded', () => {
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                await loadUserData(user);
-                await loadUserEnrollments(user);
-                
-                
-                await loadCoursesByType();
-            } else {
-                console.log("No user signed in");
-                window.location.href = 'sign_in.html';
-            }
-        });
-    });
-    
-    
-
-
-    async function loadUserData(user) {
-        try {
-            const userDoc = await getDoc(doc(db, "users", user.uid));
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-                const firstName = userData.firstName || "";
-                const lastName = userData.lastName || "";
-                const formattedName = firstName
-                    ? `${firstName} ${lastName.charAt(0).toUpperCase()}.`
-                    : user.displayName || "Student";
-
-                document.querySelectorAll('.user-name').forEach(el => {
-                    el.textContent = formattedName;
-                });
-
-                document.getElementById('userEmail').textContent = user.email;
-
-                // Update avatar initial
-                const avatarInitial = document.getElementById('avatarInitial');
-                if (firstName) {
-                    avatarInitial.textContent = firstName.charAt(0).toUpperCase();
-                } else if (user.displayName) {
-                    avatarInitial.textContent = user.displayName.charAt(0).toUpperCase();
-                }
-
-                if (userData.avatar) {
-                    document.getElementById('userAvatar').src = userData.avatar;
-                    document.getElementById('userAvatar').style.display = 'block';
-                    avatarInitial.style.display = 'none';
-                }
-            } else {
-                document.querySelectorAll('.user-name').forEach(el => {
-                    el.textContent = user.displayName || "Student";
-                });
-                document.getElementById('userEmail').textContent = user.email;
-            }
-        } catch (error) {
-            console.error("Error loading user data:", error);
-            document.querySelectorAll('.user-name').forEach(el => {
-                el.textContent = "Student";
-            });
-        }
-    }
-
-    async function loadUserEnrollments(user) {
-        try {
-            const enrolledQuery = query(
-                collection(db, "enrollments"), 
-                where("userId", "==", user.uid)
-            );
-            const querySnapshot = await getDocs(enrolledQuery);
-            userEnrollments = [];
-            querySnapshot.forEach((doc) => {
-                userEnrollments.push(doc.data().courseId);
-            });
-        } catch (error) {
-            console.error("Error loading user enrollments:", error);
-        }
-    }
-
-    async function loadCoursesByType() {
-        try {
-            const coursesSnapshot = await getDocs(collection(db, "courses"));
-            const classCoursesContainer = document.getElementById('classCoursesContainer');
-            const subjectCoursesContainer = document.getElementById('subjectCoursesContainer');
-            
-            if (coursesSnapshot.empty) {
-                classCoursesContainer.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-book"></i>
-                        <p>No class courses available yet</p>
-                        <p>An Error Occured. Try again Later.</p>
-                    </div>
-                `;
-                subjectCoursesContainer.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-book-open"></i>
-                        <p>No subject courses available yet</p>
-                        <p>An Error Occured. Try again Later.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            let classCoursesHTML = '';
-            let subjectCoursesHTML = '';
-
-            coursesSnapshot.forEach((doc) => {
-                const course = doc.data();
-                if (!course.isActive) return;
-
-                const courseId = doc.id;
-                const isEnrolled = userEnrollments.includes(courseId);
-                
-                if (course.type === 'class') {
-                    classCoursesHTML += createCourseCard(course, courseId, isEnrolled);
-                } else if (course.type === 'subject') {
-                    subjectCoursesHTML += createCourseCard(course, courseId, isEnrolled);
-                }
-            });
-
-            classCoursesContainer.innerHTML = classCoursesHTML || `
-                <div class="empty-state">
-                    <i class="fas fa-book"></i>
-                    <p>No class courses available</p>
+    <!-- Course Details Modal -->
+    <div id="courseModal" class="course-modal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="course-modal-backdrop" id="modalBackdrop"></div>
+        <div class="course-modal-panel" role="document" aria-labelledby="modalTitle">
+            <button class="modal-close" id="modalCloseBtn" aria-label="Close details">&times;</button>
+            <div class="modal-header">
+                <div class="modal-image" id="modalImage"></div>
+                <div class="modal-headline">
+                    <h2 id="modalTitle">Course Title</h2>
+                    <p id="modalSubtitle" class="muted">Course subtitle / summary</p>
                 </div>
-            `;
-            subjectCoursesContainer.innerHTML = subjectCoursesHTML || `
-                <div class="empty-state">
-                    <i class="fas fa-book-open"></i>
-                    <p>No subject courses available</p>
-                </div>
-            `;
-        } catch (error) {
-            console.error("Error loading courses:", error);
-            const errorHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p>Error loading courses</p>
-                    <p>${error.message}</p>
-                    <p>Please check Firebase permissions</p>
-                </div>
-            `;
-            document.getElementById('classCoursesContainer').innerHTML = errorHTML;
-            document.getElementById('subjectCoursesContainer').innerHTML = errorHTML;
-        }
-    }
+            </div>
 
-    function createCourseCard(course, courseId, isEnrolled) {
-        const backgroundClass = getBackgroundClass(course);
-        const isFree = course.status === 'free';
-        
-        // Determine if we should use an image or gradient background
-        const hasImage = course.imageUrl && course.imageUrl.trim() !== '';
-        const imageStyle = hasImage ? `style="background-image: url('${course.imageUrl}'); background-size: cover; background-position: center;"` : '';
-        const imageClass = hasImage ? '' : backgroundClass;
-        
-        return `
-            <div class="course-card">
-                <div class="course-image ${imageClass}" ${imageStyle}>
-                    ${hasImage ? '<div class="image-overlay"></div>' : ''}
-                    <span class="course-category">${course.type === 'class' ? course.classLevel : course.subject}</span>
-                    <span class="course-badge ${isFree ? 'badge-free' : 'badge-paid'}">
-                        ${isFree ? 'FREE' : 'PAID'}
-                    </span>
+            <div class="modal-body">
+                <div class="modal-meta">
+                    <span id="modalLessons"><i class="fas fa-play-circle"></i> 0 Lessons</span>
+                    <span id="modalDuration"><i class="fas fa-clock"></i> 0h</span>
+                    <span id="modalLevel"><i class="fas fa-user-graduate"></i> Level</span>
+                    <span id="modalPrice" class="modal-price"></span>
                 </div>
-                <div class="course-content">
-                    <h3>${course.title}</h3>
-                    <p>${course.description}</p>
-                    
-                    <div class="course-meta">
-                        <span><i class="fas fa-play-circle"></i> ${course.lessonCount || 10} Lessons</span>
-                        <span><i class="fas fa-clock"></i> ${course.duration || '6h'}</span>
-                        <span><i class="fas fa-user-graduate"></i> ${course.level || 'All Levels'}</span>
+
+                <!-- Tabs -->
+                <div class="modal-tabs" role="tablist" aria-label="Course sections">
+                    <button class="tab-btn active" role="tab" aria-selected="true" data-tab="overview">Overview</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-tab="curriculum">Curriculum</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-tab="instructor">Instructor</button>
+                    <button class="tab-btn" role="tab" aria-selected="false" data-tab="reviews">Reviews</button>
+                </div>
+
+                <div class="tab-panels">
+                    <div class="tab-panel active" data-panel="overview" role="tabpanel">
+                        <div id="panelOverview">Loading overview…</div>
                     </div>
-                    
-                    ${!isFree ? `
-                        <div class="course-price price-paid">$${course.price || '19.99'}</div>
-                    ` : `
-                        <div class="course-price price-free">Free</div>
-                    `}
-                    
-                    <div class="course-actions">
-                        ${isEnrolled ? `
-                            <a href="studentdashboard.html?id=${courseId}" class="btn-secondary">Continue Learning</a>
-                        ` : `
-                            <button class="btn-primary" onclick="enrollInCourse('${courseId}', ${isFree})">
-                                ${isFree ? 'Enroll Now' : 'Enroll Now'}
-                            </button>
-                        `}
-                        <button class="btn-outline" onclick="openCourseModal('${courseId}')">
-                            View Details
-                        </button>
+                    <div class="tab-panel" data-panel="curriculum" role="tabpanel" hidden>
+                        <div id="panelCurriculum">Loading curriculum…</div>
                     </div>
-                    
-                    <div class="course-details" id="details-${courseId}">
-                        ${course.subjects ? `
-                            <div class="subjects-list">
-                                <h4>Subjects Included:</h4>
-                                <div class="subjects-grid">
-                                    ${course.subjects.map(subject => `
-                                        <div class="subject-tag">${subject}</div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        ` : ''}
-                        
-                        <div class="course-features">
-                            <h4>Course Features:</h4>
-                            <ul class="features-list">
-                                ${(course.features || ['Interactive lessons', 'Progress tracking', 'Certificate of completion']).map(feature => `
-                                    <li><i class="fas fa-check"></i> ${feature}</li>
-                                `).join('')}
-                            </ul>
-                        </div>
+                    <div class="tab-panel" data-panel="instructor" role="tabpanel" hidden>
+                        <div id="panelInstructor">Loading instructor information…</div>
+                    </div>
+                    <div class="tab-panel" data-panel="reviews" role="tabpanel" hidden>
+                        <div id="panelReviews">Loading reviews…</div>
                     </div>
                 </div>
             </div>
-        `;
-    }
 
-    function getBackgroundClass(course) {
-        if (course.type === 'class') {
-            switch(course.classLevel) {
-                case 'SS1': return 'ss1-bg';
-                case 'SS2': return 'ss2-bg';
-                case 'SS3': return 'ss3-bg';
-                default: return 'math-bg';
+            <div class="modal-footer">
+                <button class="btn-outline" onclick="closeModal()">Close</button>
+                <a href="#" id="modalAction" class="btn-primary">
+                    <i class="fas fa-play-circle"></i> Start Learning
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('%c🚀 JAROMIND REVIEWS SYSTEM - VERSION 2.0 - DEBUG ENABLED 🚀', 'background: #4CAF50; color: white; font-size: 20px; padding: 10px; font-weight: bold;');
+        console.log('%cIf you see this, you are using the CORRECT debug version!', 'background: #2196F3; color: white; font-size: 14px; padding: 5px;');
+        
+        // API Configuration
+        const API_BASE_URL = 'https://jaromind-production-014b.up.railway.app';
+        // const API_BASE_URL = 'http://localhost:8080';
+        
+        // Global variables
+        let allCourses = [];
+        let filteredCourses = [];
+        let user = null;
+        let currentCourseId = null;
+
+        // DOM Content Loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Management
+            const savedTheme = localStorage.getItem('theme') || 'light-mode';
+            document.body.className = savedTheme;
+            updateModeIcon(savedTheme);
+
+            // Mode toggle
+            const modeToggle = document.getElementById('modeToggle');
+            if (modeToggle) {
+                modeToggle.addEventListener('click', toggleTheme);
             }
-        } else {
-            switch(course.subject?.toLowerCase()) {
-                case 'mathematics': return 'math-bg';
-                case 'physics': return 'science-bg';
-                case 'chemistry': return 'science-bg';
-                case 'biology': return 'science-bg';
-                case 'english language': return 'english-bg';
-                default: return 'history-bg';
+
+            // Check if user is logged in
+            checkAuthStatus();
+
+            // Setup filter tabs
+            setupFilterTabs();
+
+            // Setup search
+            setupSearch();
+
+            // Load courses
+            loadCoursesFromAPI();
+
+            // Initialize stats
+            updateStats();
+        });
+
+        // Theme functions
+        function toggleTheme() {
+            if (document.body.classList.contains('light-mode')) {
+                document.body.classList.replace('light-mode', 'dark-mode');
+                localStorage.setItem('theme', 'dark-mode');
+                updateModeIcon('dark-mode');
+            } else {
+                document.body.classList.replace('dark-mode', 'light-mode');
+                localStorage.setItem('theme', 'light-mode');
+                updateModeIcon('light-mode');
             }
         }
-    }
 
-    window.enrollInCourse = async function(courseId, isFree) {
-        try {
-            if (!currentUser) {
-                showNotification('Please log in to enroll in courses', 'error');
-                return;
+        function updateModeIcon(theme) {
+            const modeToggle = document.getElementById('modeToggle');
+            if (modeToggle) {
+                modeToggle.textContent = theme === 'dark-mode' ? '🌙' : '🌞';
             }
+        }
 
-            if (!isFree) {
-                showNotification('Payment integration would be implemented here!', 'error');
-                console.log(`Processing payment for course ${courseId}`);
-                return;
+        // Check authentication status
+        function checkAuthStatus() {
+            const userData = localStorage.getItem('user');
+            if (userData) {
+                user = JSON.parse(userData);
+                const userMenu = document.getElementById('userMenu');
+                if (userMenu) {
+                    userMenu.style.display = 'flex';
+                    document.querySelector('.user-name').textContent = user.name || 'User';
+                    document.getElementById('userEmail').textContent = user.email || '';
+                }
             }
+        }
 
-            // Check if already enrolled
-            if (userEnrollments.includes(courseId)) {
-                showNotification('You are already enrolled in this course!', 'error');
-                return;
-            }
-
-            // Add enrollment to Firestore
-            await addDoc(collection(db, "enrollments"), {
-                userId: currentUser.uid,
-                courseId: courseId,
-                enrolledAt: new Date(),
-                progress: 0,
-                completedLessons: []
+        // Filter tabs
+        function setupFilterTabs() {
+            const tabs = document.querySelectorAll('.filter-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    const filter = tab.dataset.filter;
+                    filterCourses(filter);
+                });
             });
-
-            // Update local state
-            userEnrollments.push(courseId);
-            
-            // Show success message
-            showNotification('Successfully enrolled in the course!', 'success');
-            
-            // Refresh the courses display
-            await loadCoursesByType();
-            
-        } catch (error) {
-            console.error("Error enrolling in course:", error);
-            showNotification('Error enrolling in course. Please try again.', 'error');
         }
-    }
 
-  // --- Dynamic modal functions ---
-window.openCourseModal = async function(courseId) {
-  try {
-    const modal = document.getElementById('courseModal');
-    const backdrop = document.getElementById('modalBackdrop');
-    const closeBtn = document.getElementById('modalCloseBtn');
+        // Search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('courseSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', debounce((e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    if (searchTerm) {
+                        filteredCourses = allCourses.filter(course => 
+                            course.title.toLowerCase().includes(searchTerm) ||
+                            course.description.toLowerCase().includes(searchTerm) ||
+                            (course.subject && course.subject.toLowerCase().includes(searchTerm)) ||
+                            (course.class_level && course.class_level.toLowerCase().includes(searchTerm))
+                        );
+                    } else {
+                        const activeTab = document.querySelector('.filter-tab.active');
+                        const filter = activeTab ? activeTab.dataset.filter : 'all';
+                        filterCourses(filter);
+                    }
+                    renderCourses();
+                }, 300));
+            }
+        }
 
-    // show loading placeholder quickly
-    showModalSkeleton();
+        // Debounce function for search
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
 
-    // fetch course doc from Firestore
-    const courseRef = doc(db, 'courses', courseId);
-    const snap = await getDoc(courseRef);
-    if (!snap.exists()) {
-      console.error('Course not found', courseId);
-      closeModal();
-      return;
-    }
-    const course = snap.data();
+        // Filter courses
+        function filterCourses(filter) {
+            if (filter === 'all') {
+                filteredCourses = [...allCourses];
+            } else if (filter === 'free') {
+                filteredCourses = allCourses.filter(course => !course.price || course.price === 0);
+            } else if (filter === 'class') {
+                filteredCourses = allCourses.filter(course => course.type === 'class' || course.class_level);
+            } else if (filter === 'subject') {
+                filteredCourses = allCourses.filter(course => course.type === 'subject' || course.subject);
+            }
+            
+            const searchInput = document.getElementById('courseSearch');
+            if (searchInput) searchInput.value = '';
+            
+            renderCourses();
+        }
 
-    // populate header
-    document.getElementById('modalTitle').textContent = course.title || 'Course';
-    document.getElementById('modalSubtitle').textContent = course.description || '';
-    document.getElementById('modalLessons').innerHTML = `<i class="fas fa-play-circle"></i> ${course.lessonCount || 0} Lessons`;
-    document.getElementById('modalDuration').innerHTML = `<i class="fas fa-clock"></i> ${course.duration || 'N/A'}`;
-    document.getElementById('modalLevel').innerHTML = `<i class="fas fa-user-graduate"></i> ${course.level || 'All Levels'}`;
-    document.getElementById('modalPrice').textContent = course.status === 'free' ? 'Free' : (course.price ? `$${course.price}` : '');
-    const imageEl = document.getElementById('modalImage');
-    if (course.imageUrl) {
-      imageEl.style.backgroundImage = `url('${course.imageUrl}')`;
-    } else {
-      imageEl.style.backgroundImage = '';
-      // fallback gradient by subject/class
-      const bgClass = getBackgroundClass(course);
-      // simple mapping for modal: set a gradient equivalent
-      if (bgClass.includes('math')) imageEl.style.background = 'linear-gradient(135deg,#4361ee,#3a0ca3)';
-      else if (bgClass.includes('science')) imageEl.style.background = 'linear-gradient(135deg,#4cc9f0,#3f37c9)';
-      else if (bgClass.includes('english')) imageEl.style.background = 'linear-gradient(135deg,#f72585,#b5179e)';
-      else imageEl.style.background = 'linear-gradient(135deg,#4895ef,#560bad)';
-    }
+        // Load courses from API
+        async function loadCoursesFromAPI() {
+            try {
+                showLoadingState('classCoursesContainer', 'Loading class courses...');
+                showLoadingState('subjectCoursesContainer', 'Loading subject courses...');
 
-    // populate overview
-    document.getElementById('panelOverview').innerHTML = `
-      <p>${course.longDescription || course.description || 'No overview available.'}</p>
-      ${course.subjects ? `<h4>Subjects</h4><div class="subjects-grid">${course.subjects.map(s => `<div class="subject-tag">${s}</div>`).join('')}</div>` : ''}
-      ${course.features ? `<h4>Features</h4><ul class="features-list">${course.features.map(f => `<li><i class="fas fa-check"></i> ${f}</li>`).join('')}</ul>` : ''}
-    `;
+                const response = await fetch(`${API_BASE_URL}/courses`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.courses) {
+                    allCourses = data.courses;
+                } else if (Array.isArray(data)) {
+                    allCourses = data;
+                } else {
+                    allCourses = [];
+                }
+                
+                allCourses = allCourses.filter(course => {
+                    const isActive = 
+                        course.is_active === true ||
+                        course.isActive === true ||
+                        course.status === 'published' ||
+                        course.status === 'active' ||
+                        (course.is_active !== false && course.isActive !== false);
+                    return isActive;
+                });
+                
+                filteredCourses = [...allCourses];
+                
+                const classCourses = allCourses.filter(course => 
+                    course.type === 'class' || course.class_level
+                );
+                
+                const subjectCourses = allCourses.filter(course => 
+                    course.type === 'subject' || course.subject
+                );
+                
+                renderSeparatedCourses(classCourses, subjectCourses);
+                updateStats();
+                
+            } catch (error) {
+                console.error("Error loading courses from API:", error);
+                showErrorState('classCoursesContainer', 'Error loading courses', error.message);
+                showErrorState('subjectCoursesContainer', 'Error loading courses', error.message);
+            }
+        }
 
-    // populate tutor
-    const tutorHtml = course.tutor ? `
-      <div class="tutor-card">
-        <strong>${course.tutor.name || 'Tutor'}</strong>
-        <p>${course.tutor.bio || ''}</p>
-        ${course.tutor.email ? `<p><small>Email: ${course.tutor.email}</small></p>` : ''}
-      </div>
-    ` : `<p>No tutor information available.</p>`;
-    document.getElementById('panelTutor').innerHTML = tutorHtml;
+        // Render separated courses
+        function renderSeparatedCourses(classCourses, subjectCourses) {
+            const classContainer = document.getElementById('classCoursesContainer');
+            const subjectContainer = document.getElementById('subjectCoursesContainer');
+            
+            if (classCourses.length === 0) {
+                classContainer.innerHTML = createEmptyState('No class courses available yet');
+            } else {
+                classContainer.innerHTML = classCourses.map(course => 
+                    createCourseCard(course, course._id || course.id)
+                ).join('');
+            }
+            
+            if (subjectCourses.length === 0) {
+                subjectContainer.innerHTML = createEmptyState('No subject courses available yet');
+            } else {
+                subjectContainer.innerHTML = subjectCourses.map(course => 
+                    createCourseCard(course, course._id || course.id)
+                ).join('');
+            }
+        }
 
-    // populate curriculum
-    if (course.curriculum && Array.isArray(course.curriculum)) {
-      document.getElementById('panelCurriculum').innerHTML = `
-        <ol>
-          ${course.curriculum.map(item => `<li><strong>${item.title || item}</strong> ${item.description ? ` - ${item.description}` : ''}</li>`).join('')}
-        </ol>
-      `;
-    } else {
-      // fallback use simple lessons list if present
-      document.getElementById('panelCurriculum').innerHTML = `
-        <p>No detailed curriculum available. ${course.lessonCount ? 'Number of lessons: ' + course.lessonCount : ''}</p>
-      `;
-    }
+        // Render all courses (for filtered view)
+        function renderCourses() {
+            const classContainer = document.getElementById('classCoursesContainer');
+            const subjectContainer = document.getElementById('subjectCoursesContainer');
+            
+            if (filteredCourses.length === 0) {
+                const emptyHTML = createEmptyState('No courses match your search');
+                classContainer.innerHTML = emptyHTML;
+                subjectContainer.innerHTML = emptyHTML;
+                return;
+            }
+            
+            const classCourses = filteredCourses.filter(course => 
+                course.type === 'class' || course.class_level
+            );
+            
+            const subjectCourses = filteredCourses.filter(course => 
+                course.type === 'subject' || course.subject
+            );
+            
+            renderSeparatedCourses(classCourses, subjectCourses);
+        }
 
-    // populate reviews
-    if (course.reviews && Array.isArray(course.reviews) && course.reviews.length) {
-      document.getElementById('panelReviews').innerHTML = `
-        <ul class="features-list">
-          ${course.reviews.map(r => `<li><strong>${r.user || 'Anonymous'}</strong> - ${r.rating ? `${r.rating}/5` : ''}<br>${r.comment || ''}</li>`).join('')}
-        </ul>
-      `;
-    } else {
-      document.getElementById('panelReviews').innerHTML = `<p>No reviews yet.</p>`;
-    }
+        // Create course card
+        function createCourseCard(course, courseId) {
+            const title = course.title || 'Untitled Course';
+            const description = course.description || 'No description available';
+            
+            let category = 'Course';
+            let categoryIcon = 'book';
+            let isClass = false;
+            
+            if (course.type === 'class' || course.class_level || course.classLevel) {
+                category = course.class_level || course.classLevel || 'Class';
+                categoryIcon = 'graduation-cap';
+                isClass = true;
+            } else if (course.type === 'subject' || course.subject) {
+                category = course.subject || 'Subject';
+                categoryIcon = 'atom';
+            }
+            
+            const isFree = !course.price || course.price === 0;
+            const price = course.price || '0';
+            const lessonCount = course.lesson_count || course.lessonCount || 0;
+            const duration = course.duration || 'N/A';
+            const level = course.level || 'All Levels';
+            
+            const quizCount = course.metadata?.quizCount || course.metadata?.quizzes?.length || 0;
+            const assignmentCount = course.metadata?.assignmentCount || course.metadata?.assignments?.length || 0;
+            
+            const backgroundClass = getBackgroundClass(course);
+            
+            const hasImage = course.image_url || course.imageUrl;
+            const imageUrl = course.image_url || course.imageUrl || '';
+            const imageStyle = hasImage 
+                ? `style="background-image: url('${imageUrl}'); background-size: cover; background-position: center;"`
+                : '';
+            const imageClass = hasImage ? '' : backgroundClass;
+            
+            const rating = course.rating || 4.5;
+            const stars = generateStars(rating);
+            
+            const levelClass = level.toLowerCase().replace(/\s+/g, '-');
+            
+            return `
+                <div class="course-card" data-course-id="${courseId}" style="animation-delay: ${Math.random() * 0.3}s">
+                    <div class="course-image ${imageClass}" ${imageStyle}>
+                        ${hasImage ? '<div class="image-overlay"></div>' : ''}
+                        <div class="course-badges">
+                            <span class="course-category">
+                                <i class="fas fa-${categoryIcon}"></i> ${category}
+                            </span>
+                            <span class="course-badge ${isFree ? 'badge-free' : 'badge-paid'}">
+                                ${isFree ? 'FREE' : '$' + price}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-header">
+                            <div class="course-rating">
+                                ${stars}
+                                <span class="rating-value">${rating.toFixed(1)}</span>
+                            </div>
+                            <span class="level-badge ${levelClass}">${level}</span>
+                        </div>
+                        
+                        <h3 class="course-title">${title}</h3>
+                        <p class="course-description">${description.length > 120 ? description.substring(0, 120) + '...' : description}</p>
+                        
+                        <div class="course-stats">
+                            ${lessonCount > 0 ? `
+                                <div class="stat-item">
+                                    <i class="fas fa-play-circle"></i>
+                                    <span>${lessonCount} ${lessonCount === 1 ? 'Lesson' : 'Lessons'}</span>
+                                </div>
+                            ` : ''}
+                            ${quizCount > 0 ? `
+                                <div class="stat-item">
+                                    <i class="fas fa-clipboard-question"></i>
+                                    <span>${quizCount} ${quizCount === 1 ? 'Quiz' : 'Quizzes'}</span>
+                                </div>
+                            ` : ''}
+                            ${assignmentCount > 0 ? `
+                                <div class="stat-item">
+                                    <i class="fas fa-file-invoice"></i>
+                                    <span>${assignmentCount} ${assignmentCount === 1 ? 'Task' : 'Tasks'}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="course-meta-grid">
+                            <div class="meta-item">
+                                <i class="fas fa-clock"></i>
+                                <span>${duration}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-users"></i>
+                                <span>${course.enrolled_count || course.enrollmentCount || 0} enrolled</span>
+                            </div>
+                        </div>
+                        
+                        <div class="course-actions">
+                            <button class="btn-primary btn-block" onclick="openCourseModal('${courseId}')">
+                                <i class="fas fa-eye"></i> View Details
+                            </button>
+                            ${user ? `
+                                <button class="btn-outline btn-block" onclick="enrollInCourse('${courseId}', ${isFree})">
+                                    <i class="fas fa-plus-circle"></i> Enroll Now
+                                </button>
+                            ` : `
+                                <a href="enrollment.html" class="btn-outline btn-block">
+                                    <i class="fas fa-user-plus"></i> Enroll
+                                </a>
+                            `}
+                        </div>
+                        
+                        ${course.updated_at || course.updatedAt ? `
+                            <div class="course-footer">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Updated ${formatDate(course.updated_at || course.updatedAt)}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
 
-    // set action URL (continue or enroll)
-    const actionBtn = document.getElementById('modalAction');
-    if (userEnrollments.includes(courseId)) {
-      actionBtn.textContent = 'Continue Learning';
-      actionBtn.href = `course.html?id=${courseId}`;
-    } else if (course.status === 'free') {
-      actionBtn.textContent = 'Enroll (Free)';
-      actionBtn.href = '#';
-      actionBtn.onclick = (e) => { e.preventDefault(); enrollInCourse(courseId, true); closeModal(); };
-    } else {
-      actionBtn.textContent = 'Enroll Now';
-      actionBtn.href = '#';
-      actionBtn.onclick = (e) => { e.preventDefault(); enrollInCourse(courseId, false); closeModal(); };
-    }
+        // Generate star rating HTML
+        function generateStars(rating) {
+            let stars = '';
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+            
+            for (let i = 1; i <= 5; i++) {
+                if (i <= fullStars) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else if (i === fullStars + 1 && hasHalfStar) {
+                    stars += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+            return stars;
+        }
 
-    // show modal
-    modal.classList.add('show');
-    modal.setAttribute('aria-hidden', 'false');
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'recently';
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) return 'today';
+            if (diffDays < 7) return `${diffDays} days ago`;
+            if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+            if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+            return `${Math.floor(diffDays / 365)} years ago`;
+        }
 
-    // activate tab behavior
-    setupModalTabs();
+        // Get background class
+        function getBackgroundClass(course) {
+            if (course.type === 'class' || course.class_level) {
+                const classLevel = course.class_level || '';
+                switch(classLevel.toUpperCase()) {
+                    case 'SS1': return 'ss1-bg';
+                    case 'SS2': return 'ss2-bg';
+                    case 'SS3': return 'ss3-bg';
+                    default: return 'math-bg';
+                }
+            } else {
+                const subject = (course.subject || '').toLowerCase();
+                switch(subject) {
+                    case 'mathematics':
+                    case 'math': return 'math-bg';
+                    case 'physics': 
+                    case 'chemistry': 
+                    case 'biology': return 'science-bg';
+                    case 'english language': 
+                    case 'english': return 'english-bg';
+                    case 'history':
+                    case 'government': 
+                    case 'geography': return 'history-bg';
+                    case 'economics':
+                    case 'commerce': return 'economics-bg';
+                    default: return 'general-bg';
+                }
+            }
+        }
 
-    // close handlers
-    backdrop.onclick = closeModal;
-    closeBtn.onclick = closeModal;
-    document.addEventListener('keydown', escCloseHandler);
-  } catch (err) {
-    console.error('Error opening modal', err);
-  }
-};
+        // Loading state
+        function showLoadingState(containerId, message) {
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.innerHTML = `
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p>${message}</p>
+                    </div>
+                `;
+            }
+        }
 
-function showModalSkeleton() {
-  // quick skeleton while fetch finishes
-  document.getElementById('modalTitle').textContent = 'Loading...';
-  document.getElementById('panelOverview').innerHTML = '<div class="spinner"></div>';
-  // show modal immediately
-  const modal = document.getElementById('courseModal');
-  modal.classList.add('show');
-  modal.setAttribute('aria-hidden', 'false');
-}
+        // Empty state
+        function createEmptyState(message) {
+            return `
+                <div class="empty-state">
+                    <i class="fas fa-book"></i>
+                    <p>${message}</p>
+                    <button class="btn-outline" onclick="filterCourses('all')">
+                        View All Courses
+                    </button>
+                </div>
+            `;
+        }
 
-function closeModal() {
-  const modal = document.getElementById('courseModal');
-  modal.classList.remove('show');
-  modal.setAttribute('aria-hidden', 'true');
-  // cleanup listeners
-  document.removeEventListener('keydown', escCloseHandler);
-}
+        // Error state
+        function showErrorState(containerId, title, error) {
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>${title}</p>
+                        <p style="font-size: 0.9rem; opacity: 0.7;">${error}</p>
+                        <button class="btn-outline" onclick="loadCoursesFromAPI()">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
 
-function escCloseHandler(e) {
-  if (e.key === 'Escape') closeModal();
-}
+        // Update stats
+        function updateStats() {
+            document.getElementById('totalCourses').textContent = allCourses.length;
+            const freeCount = allCourses.filter(course => !course.price || course.price === 0).length;
+            document.getElementById('freeCourses').textContent = freeCount;
+        }
 
-function setupModalTabs() {
-  const tabBtns = Array.from(document.querySelectorAll('.tab-btn'));
-  const panels = Array.from(document.querySelectorAll('.tab-panel'));
+        // Modal functions
+        window.openCourseModal = async function(courseId) {
+            try {
+                currentCourseId = courseId;
 
-  tabBtns.forEach(btn => {
-    btn.onclick = () => {
-      // set active button
-      tabBtns.forEach(b => {
-        b.classList.toggle('active', b === btn);
-        b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
-      });
-      // show panels accordingly
-      panels.forEach(panel => {
-        const shouldShow = panel.dataset.panel === btn.dataset.tab;
-        panel.hidden = !shouldShow;
-        panel.classList.toggle('active', shouldShow);
-      });
-      // keep focus on the selected tab for keyboard users
-      btn.focus();
-    };
-  });
-}
+                // Reset all panels loaded flags
+                const panels = document.querySelectorAll('.tab-panel');
+                panels.forEach(panel => {
+                    panel.dataset.loaded = 'false';
+                });
+                
+                const modal = document.getElementById('courseModal');
+                const backdrop = document.getElementById('modalBackdrop');
+                const closeBtn = document.getElementById('modalCloseBtn');
 
+                showModalSkeleton();
 
-</script>
+                const response = await fetch(`${API_BASE_URL}/courses/${courseId}`);
+                if (!response.ok) throw new Error('Course not found');
+                
+                const course = await response.json();
+                
+                populateModal(course, courseId);
 
+                modal.classList.add('show');
+                modal.setAttribute('aria-hidden', 'false');
 
-<!-- Course Details Modal -->
-<div id="courseModal" class="course-modal" aria-hidden="true" role="dialog" aria-modal="true">
-  <div class="course-modal-backdrop" id="modalBackdrop"></div>
-  <div class="course-modal-panel" role="document" aria-labelledby="modalTitle">
-    <button class="modal-close" id="modalCloseBtn" aria-label="Close details">&times;</button>
-    <div class="modal-header">
-      <div class="modal-image" id="modalImage"></div>
-      <div class="modal-headline">
-        <h2 id="modalTitle">Course Title</h2>
-        <p id="modalSubtitle" class="muted">Course subtitle / summary</p>
-      </div>
-    </div>
+                backdrop.onclick = closeModal;
+                closeBtn.onclick = closeModal;
+                document.addEventListener('keydown', escCloseHandler);
 
-    <div class="modal-body">
-      <div class="modal-meta">
-        <span id="modalLessons"><i class="fas fa-play-circle"></i> 0 Lessons</span>
-        <span id="modalDuration"><i class="fas fa-clock"></i> 0h</span>
-        <span id="modalLevel"><i class="fas fa-user-graduate"></i> Level</span>
-        <span id="modalPrice" class="modal-price"></span>
-      </div>
+            } catch (error) {
+                console.error('Error opening modal:', error);
+                showNotification('Error loading course details', 'error');
+                closeModal();
+            }
+        };
 
-      <!-- Tabs -->
-      <div class="modal-tabs" role="tablist" aria-label="Course sections">
-        <button class="tab-btn active" role="tab" aria-selected="true" data-tab="overview">Overview</button>
-    
-        <button class="tab-btn" role="tab" aria-selected="false" data-tab="curriculum">Curriculum</button>
-        <button class="tab-btn" role="tab" aria-selected="false" data-tab="reviews">Reviews</button>
-      </div>
+        function showModalSkeleton() {
+            document.getElementById('modalTitle').textContent = 'Loading...';
+            document.getElementById('modalSubtitle').textContent = 'Please wait';
+            document.getElementById('panelOverview').innerHTML = '<div class="spinner"></div>';
+            
+            const modal = document.getElementById('courseModal');
+            modal.classList.add('show');
+        }
 
-      <div class="tab-panels">
-        <div class="tab-panel active" data-panel="overview" role="tabpanel">
-          <div id="panelOverview">Loading overview…</div>
-        </div>
-        <div class="tab-panel" data-panel="tutor" role="tabpanel" hidden>
-          <div id="panelTutor">Loading tutor…</div>
-        </div>
-        <div class="tab-panel" data-panel="curriculum" role="tabpanel" hidden>
-          <div id="panelCurriculum">Loading curriculum…</div>
-        </div>
-        <div class="tab-panel" data-panel="reviews" role="tabpanel" hidden>
-          <div id="panelReviews">Loading reviews…</div>
-        </div>
-      </div>
-    </div>
+        function populateModal(course, courseId) {
+            const courseData = course.course || course.data || course;
+            
+            // Basic info
+            const title = courseData.title || courseData.name || 'Course';
+            const description = courseData.description || courseData.short_description || '';
+            const longDesc = courseData.longDescription || courseData.long_description || courseData.description || 'No detailed description available.';
+            
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalSubtitle').textContent = description;
+            
+            // Extract counts
+            const lessonCount = courseData.lessonCount || courseData.lesson_count || 
+                            courseData.lessons?.length || courseData.curriculum?.length || 0;
+            
+            const quizCount = courseData.metadata?.quizCount || courseData.metadata?.quizzes?.length || 
+                            courseData.quizCount || courseData.quiz_count || 0;
+            
+            const assignmentCount = courseData.metadata?.assignmentCount || courseData.metadata?.assignments?.length || 
+                                courseData.assignmentCount || courseData.assignment_count || 0;
+            
+            const duration = courseData.duration || courseData.estimated_time || 'Self-paced';
+            const level = courseData.level || courseData.difficulty || 'All Levels';
+            const price = courseData.price !== undefined ? courseData.price : 0;
+            const enrolled = courseData.enrollmentCount || courseData.enrollment_count || 
+                            courseData.enrolled_count || courseData.students || 0;
+            
+            const rating = courseData.rating || courseData.average_rating || 4.5;
+            
+            // Meta info
+            document.getElementById('modalLessons').innerHTML = 
+                `<i class="fas fa-play-circle"></i> ${lessonCount} ${lessonCount === 1 ? 'Lesson' : 'Lessons'}`;
+            document.getElementById('modalDuration').innerHTML = 
+                `<i class="fas fa-clock"></i> ${duration}`;
+            document.getElementById('modalLevel').innerHTML = 
+                `<i class="fas fa-user-graduate"></i> ${level}`;
+            
+            // Price display
+            const priceEl = document.getElementById('modalPrice');
+            if (price && price > 0) {
+                priceEl.textContent = `$${price}`;
+                priceEl.classList.remove('free');
+            } else {
+                priceEl.textContent = 'Free';
+                priceEl.classList.add('free');
+            }
+            
+            // Image
+            const imageEl = document.getElementById('modalImage');
+            const imageUrl = courseData.imageUrl || courseData.image_url || courseData.thumbnail || courseData.image;
+            
+            if (imageUrl) {
+                imageEl.style.backgroundImage = `url('${imageUrl}')`;
+                imageEl.style.backgroundSize = 'cover';
+                imageEl.style.backgroundPosition = 'center';
+            } else {
+                const bgClass = getBackgroundClass(courseData);
+                const gradients = {
+                    'math': 'linear-gradient(135deg,#4361ee,#3a0ca3)',
+                    'science': 'linear-gradient(135deg,#4cc9f0,#3f37c9)',
+                    'english': 'linear-gradient(135deg,#f72585,#b5179e)',
+                    'ss': 'linear-gradient(135deg,#7209b7,#3a0ca3)',
+                    'default': 'linear-gradient(135deg,#4895ef,#560bad)'
+                };
+                
+                let gradient = gradients.default;
+                for (let key in gradients) {
+                    if (bgClass.includes(key)) {
+                        gradient = gradients[key];
+                        break;
+                    }
+                }
+                imageEl.style.background = gradient;
+            }
+            
+            // OVERVIEW TAB
+            let overviewHTML = `
+                <div class="modal-content-section">
+                    <h4><i class="fas fa-info-circle"></i> Course Description</h4>
+                    <p style="line-height: 1.8; color: var(--text-color);">${longDesc}</p>
+                </div>
+            `;
+            
+            overviewHTML += `
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-card-icon">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div class="info-card-label">Lessons</div>
+                        <div class="info-card-value">${lessonCount}</div>
+                    </div>
+            `;
+            
+            if (quizCount > 0) {
+                overviewHTML += `
+                    <div class="info-card">
+                        <div class="info-card-icon">
+                            <i class="fas fa-clipboard-question"></i>
+                        </div>
+                        <div class="info-card-label">Quizzes</div>
+                        <div class="info-card-value">${quizCount}</div>
+                    </div>
+                `;
+            }
+            
+            if (assignmentCount > 0) {
+                overviewHTML += `
+                    <div class="info-card">
+                        <div class="info-card-icon">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div class="info-card-label">Assignments</div>
+                        <div class="info-card-value">${assignmentCount}</div>
+                    </div>
+                `;
+            }
+            
+            overviewHTML += `
+                    <div class="info-card">
+                        <div class="info-card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="info-card-label">Students</div>
+                        <div class="info-card-value">${enrolled}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Course Stats Summary
+            overviewHTML += `
+                <div class="modal-content-section">
+                    <h4><i class="fas fa-chart-bar"></i> Course Statistics</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div style="padding: 1rem; background: var(--bg-color); border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <i class="fas fa-star" style="color: #ffc107;"></i>
+                                <strong>Rating</strong>
+                            </div>
+                            <div style="font-size: 1.5rem; font-weight: 700;">${rating.toFixed(1)}/5.0</div>
+                        </div>
+                        <div style="padding: 1rem; background: var(--bg-color); border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <i class="fas fa-clock" style="color: var(--primary-color);"></i>
+                                <strong>Duration</strong>
+                            </div>
+                            <div style="font-size: 1.5rem; font-weight: 700;">${duration}</div>
+                        </div>
+                        <div style="padding: 1rem; background: var(--bg-color); border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <i class="fas fa-signal" style="color: var(--success-color);"></i>
+                                <strong>Level</strong>
+                            </div>
+                            <div style="font-size: 1.2rem; font-weight: 700;">${level}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Learning Goals
+            const learningGoals = courseData.learningGoals || courseData.learning_goals || 
+                                courseData.objectives || courseData.what_you_learn;
+            
+            if (learningGoals && Array.isArray(learningGoals) && learningGoals.length > 0) {
+                overviewHTML += `
+                    <div class="modal-content-section">
+                        <h4><i class="fas fa-bullseye"></i> What You'll Learn</h4>
+                        <ul class="features-list">
+                            ${learningGoals.map(goal => `
+                                <li><i class="fas fa-check-circle"></i> <span>${goal}</span></li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('panelOverview').innerHTML = overviewHTML;
+            
+            // CURRICULUM TAB
+            const curriculum = courseData.curriculum || courseData.lessons || courseData.syllabus || [];
+            
+            if (curriculum && curriculum.length > 0) {
+                let curriculumHTML = `
+                    <div class="modal-content-section">
+                        <p style="margin-bottom: 1.5rem; color: #666;">
+                            This course includes <strong>${curriculum.length}</strong> comprehensive ${curriculum.length === 1 ? 'lesson' : 'lessons'} covering all essential topics.
+                        </p>
+                        <div class="curriculum-list">
+                `;
+                
+                curriculum.forEach((item, index) => {
+                    const itemTitle = item.title || item.name || `Lesson ${index + 1}`;
+                    const itemDesc = item.description || item.summary || '';
+                    const itemDuration = item.duration || item.length || '';
+                    const itemVideo = item.videoUrl || item.video_url || item.video || item.hasVideo;
+                    const itemFree = item.isFree || item.is_free || item.preview;
+                    
+                    curriculumHTML += `
+                        <div class="curriculum-item">
+                            <div class="lesson-number">${index + 1}</div>
+                            <div class="lesson-info">
+                                <h5>${itemTitle}</h5>
+                                ${itemDesc ? `<p>${itemDesc}</p>` : ''}
+                                <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                                    ${itemDuration ? `
+                                        <span class="lesson-duration">
+                                            <i class="fas fa-clock"></i> ${itemDuration}
+                                        </span>
+                                    ` : ''}
+                                    ${itemVideo ? `
+                                        <span class="lesson-duration">
+                                            <i class="fas fa-video"></i> Video lesson
+                                        </span>
+                                    ` : ''}
+                                    ${itemFree ? `
+                                        <span class="lesson-duration" style="background: #d1fae5; color: #065f46; border-color: #065f46;">
+                                            <i class="fas fa-unlock"></i> Free preview
+                                        </span>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                curriculumHTML += `
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('panelCurriculum').innerHTML = curriculumHTML;
+            } else {
+                document.getElementById('panelCurriculum').innerHTML = `
+                    <div style="text-align: center; padding: 3rem 1rem; color: #666;">
+                        <i class="fas fa-book-open" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>Detailed curriculum will be available soon.</p>
+                    </div>
+                `;
+            }
+            
+            // INSTRUCTOR TAB
+            const instructor = courseData.instructor || courseData.tutor || courseData.teacher || courseData.author;
+            
+            if (instructor && typeof instructor === 'object') {
+                const instName = instructor.name || instructor.full_name || 'Course Instructor';
+                const instTitle = instructor.title || instructor.role || instructor.position || 'Professional Educator';
+                const instBio = instructor.bio || instructor.description || instructor.about || 'Experienced educator dedicated to student success.';
+                const instAvatar = instructor.avatar || instructor.photo || instructor.image;
+                
+                let instructorHTML = `
+                    <div class="instructor-card">
+                        <div class="instructor-header">
+                            <div class="instructor-avatar">
+                `;
+                
+                if (instAvatar) {
+                    instructorHTML += `<img src="${instAvatar}" alt="${instName}">`;
+                } else {
+                    instructorHTML += `<span>${instName.charAt(0).toUpperCase()}</span>`;
+                }
+                
+                instructorHTML += `
+                            </div>
+                            <div class="instructor-info">
+                                <h4>${instName}</h4>
+                                <p>${instTitle}</p>
+                            </div>
+                        </div>
+                        <p style="margin: 1.5rem 0; line-height: 1.8;">${instBio}</p>
+                    </div>
+                `;
+                
+                document.getElementById('panelInstructor').innerHTML = instructorHTML;
+            } else {
+                document.getElementById('panelInstructor').innerHTML = `
+                    <div style="text-align: center; padding: 3rem 1rem; color: #666;">
+                        <i class="fas fa-user-tie" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>Instructor information will be available soon.</p>
+                    </div>
+                `;
+            }
+            
+            // REVIEWS TAB - Initialize with loading state
+            const panelReviews = document.querySelector('.tab-panel[data-panel="reviews"]');
+            if (panelReviews) {
+                panelReviews.innerHTML = `
+                    <div style="text-align: center; padding: 3rem 1rem; color: var(--text-color);">
+                        <div class="spinner"></div>
+                        <p>Click here to load reviews...</p>
+                    </div>
+                `;
+                panelReviews.dataset.courseId = courseId;
+                panelReviews.dataset.loaded = 'false';
+            }
+            
+            // Action button
+            const actionBtn = document.getElementById('modalAction');
+            if (user) {
+                actionBtn.innerHTML = `<i class="fas fa-${price && price > 0 ? 'shopping-cart' : 'play-circle'}"></i> ${price && price > 0 ? 'Enroll Now' : 'Start Learning'}`;
+                actionBtn.href = `course.html?id=${courseId}`;
+            } else {
+                actionBtn.innerHTML = '<i class="fas fa-user-plus"></i> Enroll Now';
+                actionBtn.href = 'enrollment.html';
+            }
+            
+            setupModalTabs();
+        }
 
-    <div class="modal-footer">
-      <a href="#" id="modalAction" class="btn-primary">Go to Course</a>
-    </div>
-  </div>
-</div>
+        // ==============================================
+        // REVIEWS SYSTEM - COMPLETE IMPLEMENTATION
+        // ==============================================
 
+        /**
+         * Extract reviews array from various API response formats
+         * Handles: { reviews: [] }, { data: [] }, [...], { review: {} }, {success: true}, etc.
+         */
+        function extractReviewsArray(data) {
+            if (!data) {
+                console.log('❌ No data provided');
+                return [];
+            }
+            
+            // Direct array response
+            if (Array.isArray(data)) {
+                console.log('✅ Reviews found as direct array:', data.length);
+                return data;
+            }
+            
+            // Handle {success: true} with no reviews (empty state)
+            if (data.success === true && Object.keys(data).length === 1) {
+                console.log('✅ Empty response with success=true, treating as no reviews');
+                return [];
+            }
+            
+            // Check common property names
+            const reviewProps = ['reviews', 'data', 'review', 'items', 'content', 'results'];
+            
+            for (const prop of reviewProps) {
+                if (data[prop]) {
+                    const value = data[prop];
+                    const reviews = Array.isArray(value) ? value : [value];
+                    console.log(`✅ Reviews found in data.${prop}:`, reviews.length);
+                    return reviews;
+                }
+            }
+            
+            // Last resort: search for any array property
+            for (const key in data) {
+                if (Array.isArray(data[key]) && data[key].length > 0) {
+                    console.log(`✅ Reviews found in data.${key}:`, data[key].length);
+                    return data[key];
+                }
+            }
+            
+            console.log('ℹ️ No reviews found in response (probably empty)');
+            return [];
+        }
 
+        /**
+         * Load reviews for the reviews tab
+         */
+        async function loadReviewsForTab(panel, courseId) {
+            try {
+                console.log('=== LOADING REVIEWS FOR TAB ===');
+                console.log('Course ID:', courseId);
+                
+                // Show loading state
+                panel.innerHTML = `
+                    <div style="text-align: center; padding: 3rem 1rem; color: var(--text-color);">
+                        <div class="spinner"></div>
+                        <p>Loading reviews...</p>
+                    </div>
+                `;
+                
+                // Fetch course data for rating
+                const courseResponse = await fetch(`${API_BASE_URL}/courses/${courseId}`);
+                if (!courseResponse.ok) {
+                    throw new Error('Failed to fetch course data');
+                }
+                
+                const courseData = await courseResponse.json();
+                const course = courseData.course || courseData.data || courseData;
+                const courseRating = course.rating || course.average_rating || 4.5;
+                
+                console.log('Course rating:', courseRating);
+                
+                // Fetch reviews from API with cache-busting timestamp
+                const timestamp = Date.now();
+                const reviewsResponse = await fetch(
+                    `${API_BASE_URL}/courses/${courseId}/reviews?t=${timestamp}`,
+                    {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    }
+                );
+                
+                console.log('Reviews API status:', reviewsResponse.status);
+                
+                let reviews = [];
+                
+                if (reviewsResponse.ok) {
+                    const reviewsData = await reviewsResponse.json();
+                    console.log('Raw reviews response:', reviewsData);
+                    
+                    // Use helper function to extract reviews
+                    reviews = extractReviewsArray(reviewsData);
+                    console.log(`Successfully extracted ${reviews.length} reviews`);
+                } else {
+                    console.warn('Failed to fetch reviews:', reviewsResponse.status);
+                    const errorText = await reviewsResponse.text();
+                    console.warn('Error response:', errorText);
+                }
+                
+                // Render the reviews tab content
+                renderReviewsTabContent(panel, reviews, courseRating, courseId);
+                
+                // Mark as loaded
+                panel.dataset.loaded = 'true';
+                panel.dataset.courseId = courseId;
+                
+                console.log('✅ Reviews tab rendered successfully');
+                
+            } catch (error) {
+                console.error('❌ Error in loadReviewsForTab:', error);
+                
+                // Show error state
+                panel.innerHTML = `
+                    <div style="text-align: center; padding: 3rem 1rem; color: var(--text-color);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; color: #ef4444;"></i>
+                        <p style="font-size: 1.1rem; font-weight: 600;">Failed to load reviews</p>
+                        <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 0.5rem;">${error.message}</p>
+                        <button class="btn-outline" onclick="retryLoadReviews('${courseId}')" style="margin-top: 1.5rem;">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                `;
+                
+                panel.dataset.loaded = 'error';
+            }
+        }
+
+        /**
+         * Render the reviews tab content
+         */
+        function renderReviewsTabContent(panel, reviews, courseRating, courseId) {
+            console.log('=== RENDERING REVIEWS TAB ===');
+            console.log('Reviews count:', reviews.length);
+            console.log('Course rating:', courseRating);
+            console.log('User logged in:', !!user);
+            
+            panel.setAttribute('data-course-id', courseId);
+            
+            let reviewsHTML = '';
+            
+            if (reviews && reviews.length > 0) {
+                reviewsHTML = `
+                    <div class="modal-content-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
+                            <div>
+                                <h3 style="margin: 0; font-size: 2rem;">${courseRating.toFixed(1)} <span style="font-size: 1rem; color: #666; font-weight: normal;">out of 5</span></h3>
+                                <div class="course-rating" style="margin-top: 0.5rem;">
+                                    ${generateStars(courseRating)}
+                                    <span style="margin-left: 0.5rem; color: #666;">${reviews.length} ${reviews.length === 1 ? 'review' : 'reviews'}</span>
+                                </div>
+                            </div>
+                            ${user ? `
+                                <button class="btn-primary" onclick="showReviewForm('${courseId}')" id="writeReviewBtn_${courseId}">
+                                    <i class="fas fa-star"></i> Write a Review
+                                </button>
+                            ` : `
+                                <button class="btn-primary" onclick="window.location.href='sign_in.html'">
+                                    <i class="fas fa-sign-in-alt"></i> Login to Review
+                                </button>
+                            `}
+                        </div>
+                        <div class="reviews-list">
+                `;
+                
+                reviews.forEach(review => {
+                    const reviewerName = review.user_name || review.userName || review.name || review.student_name || 'Anonymous';
+                    const reviewRating = review.rating || 5;
+                    const reviewComment = review.comment || review.review || review.text || 'Great course!';
+                    const reviewDate = review.date || review.created_at || review.createdAt || review.timestamp;
+                    
+                    reviewsHTML += `
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="reviewer-info">
+                                    <div class="reviewer-avatar">${reviewerName.charAt(0).toUpperCase()}</div>
+                                    <div>
+                                        <h5>${reviewerName}</h5>
+                                        <div class="review-rating">
+                                            ${generateStars(reviewRating)}
+                                            ${reviewDate ? `<span>${formatDate(reviewDate)}</span>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p>${reviewComment}</p>
+                        </div>
+                    `;
+                });
+                
+                reviewsHTML += `
+                        </div>
+                    </div>
+                `;
+            } else {
+                // No reviews yet - show empty state
+                reviewsHTML = `
+                    <div style="text-align: center; padding: 3rem 1rem; color: #666;">
+                        <i class="fas fa-comments" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No reviews yet</p>
+                        <p style="font-size: 0.9rem; opacity: 0.8;">Be the first to share your experience with this course!</p>
+                        ${user ? `
+                            <button class="btn-primary" style="margin-top: 1.5rem;" onclick="showReviewForm('${courseId}')" id="writeReviewBtn_${courseId}">
+                                <i class="fas fa-star"></i> Write the First Review
+                            </button>
+                        ` : `
+                            <button class="btn-primary" style="margin-top: 1.5rem;" onclick="window.location.href='sign_in.html'">
+                                <i class="fas fa-sign-in-alt"></i> Login to Write a Review
+                            </button>
+                        `}
+                    </div>
+                `;
+            }
+            
+            // Add review form for logged-in users
+            if (user) {
+                reviewsHTML += `
+                    <div class="modal-content-section" id="reviewFormSection_${courseId}" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-color);">
+                        <h4><i class="fas fa-edit"></i> Write Your Review</h4>
+                        <form id="reviewForm_${courseId}" onsubmit="submitReview(event, '${courseId}')">
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Your Rating *</label>
+                                <div class="star-rating-input" id="starRatingInput_${courseId}">
+                                    <i class="far fa-star" data-rating="1"></i>
+                                    <i class="far fa-star" data-rating="2"></i>
+                                    <i class="far fa-star" data-rating="3"></i>
+                                    <i class="far fa-star" data-rating="4"></i>
+                                    <i class="far fa-star" data-rating="5"></i>
+                                </div>
+                                <input type="hidden" id="ratingValue_${courseId}" name="rating" value="0" required>
+                                <span id="ratingError_${courseId}" style="color: #ef4444; font-size: 0.875rem; display: none;">Please select a rating</span>
+                            </div>
+                            <div style="margin-bottom: 1.5rem;">
+                                <label for="reviewComment_${courseId}" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Your Review *</label>
+                                <textarea 
+                                    id="reviewComment_${courseId}" 
+                                    name="comment" 
+                                    rows="5" 
+                                    placeholder="Share your experience with this course..."
+                                    required
+                                    style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; resize: vertical;"
+                                ></textarea>
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <button type="submit" class="btn-primary" id="submitReviewBtn_${courseId}">
+                                    <i class="fas fa-paper-plane"></i> Submit Review
+                                </button>
+                                <button type="button" class="btn-outline" onclick="hideReviewForm('${courseId}')">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+            }
+            
+            panel.innerHTML = reviewsHTML;
+            
+            // Setup star rating if form exists
+            if (user) {
+                setTimeout(() => setupStarRating(courseId), 150);
+            }
+            
+            console.log('✅ Reviews tab content rendered');
+        }
+
+        /**
+         * Setup star rating interaction
+         */
+        function setupStarRating(courseId) {
+            console.log(`Setting up star rating for course: ${courseId}`);
+            
+            setTimeout(() => {
+                const formSection = document.querySelector(`#reviewFormSection_${courseId}`);
+                
+                if (!formSection) {
+                    console.error(`❌ Form section not found: #reviewFormSection_${courseId}`);
+                    return;
+                }
+                
+                const starContainer = formSection.querySelector(`#starRatingInput_${courseId}`);
+                if (!starContainer) {
+                    console.error('❌ Star container not found');
+                    return;
+                }
+                
+                const stars = starContainer.querySelectorAll('i');
+                const ratingInput = formSection.querySelector(`#ratingValue_${courseId}`);
+                const ratingError = formSection.querySelector(`#ratingError_${courseId}`);
+                
+                if (!stars.length || !ratingInput) {
+                    console.error('❌ Required elements not found');
+                    return;
+                }
+                
+                // Clone stars to remove old event listeners
+                const newStars = [];
+                stars.forEach((star, index) => {
+                    const newStar = star.cloneNode(true);
+                    star.parentNode.replaceChild(newStar, star);
+                    newStars.push(newStar);
+                });
+                
+                // Add click listeners
+                newStars.forEach((star, index) => {
+                    star.addEventListener('click', function() {
+                        const rating = index + 1;
+                        ratingInput.value = rating;
+                        
+                        if (ratingError) ratingError.style.display = 'none';
+                        
+                        newStars.forEach((s, i) => {
+                            if (i < rating) {
+                                s.classList.remove('far');
+                                s.classList.add('fas');
+                            } else {
+                                s.classList.remove('fas');
+                                s.classList.add('far');
+                            }
+                        });
+                    });
+                    
+                    star.addEventListener('mouseenter', function() {
+                        newStars.forEach((s, i) => {
+                            s.classList.toggle('active', i <= index);
+                        });
+                    });
+                });
+                
+                starContainer.addEventListener('mouseleave', function() {
+                    const currentRating = parseInt(ratingInput.value) || 0;
+                    newStars.forEach((s, i) => {
+                        s.classList.remove('active');
+                        if (i < currentRating) {
+                            s.classList.add('fas');
+                            s.classList.remove('far');
+                        } else {
+                            s.classList.add('far');
+                            s.classList.remove('fas');
+                        }
+                    });
+                });
+                
+                console.log('✅ Star rating setup complete');
+                
+            }, 150);
+        }
+
+        /**
+         * Show review form
+         */
+        window.showReviewForm = function(courseId) {
+            console.log('=== SHOW REVIEW FORM ===');
+            const courseIdToUse = courseId || currentCourseId;
+            
+            if (!courseIdToUse) {
+                console.error('❌ No course ID available');
+                return;
+            }
+            
+            const formSection = document.querySelector(`#reviewFormSection_${courseIdToUse}`);
+            
+            if (!formSection) {
+                console.error(`❌ Form section not found`);
+                return;
+            }
+            
+            formSection.style.display = 'block';
+            
+            const writeReviewBtn = document.querySelector(`#writeReviewBtn_${courseIdToUse}`);
+            if (writeReviewBtn) {
+                writeReviewBtn.style.display = 'none';
+            }
+            
+            formSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            setupStarRating(courseIdToUse);
+            
+            setTimeout(() => {
+                const textarea = document.querySelector(`#reviewComment_${courseIdToUse}`);
+                if (textarea) textarea.focus();
+            }, 300);
+            
+            console.log('✅ Review form shown');
+        };
+
+        /**
+         * Hide review form
+         */
+        window.hideReviewForm = function(courseId) {
+            const courseIdToUse = courseId || currentCourseId;
+            if (!courseIdToUse) return;
+            
+            const formSection = document.querySelector(`#reviewFormSection_${courseIdToUse}`);
+            
+            if (formSection) {
+                formSection.style.display = 'none';
+                
+                const form = formSection.querySelector(`#reviewForm_${courseIdToUse}`);
+                if (form) form.reset();
+                
+                const stars = formSection.querySelectorAll(`#starRatingInput_${courseIdToUse} i`);
+                stars.forEach(s => {
+                    s.classList.remove('fas', 'active');
+                    s.classList.add('far');
+                });
+                
+                const ratingInput = formSection.querySelector(`#ratingValue_${courseIdToUse}`);
+                if (ratingInput) ratingInput.value = '0';
+                
+                const ratingError = formSection.querySelector(`#ratingError_${courseIdToUse}`);
+                if (ratingError) ratingError.style.display = 'none';
+            }
+            
+            const writeReviewBtn = document.querySelector(`#writeReviewBtn_${courseIdToUse}`);
+            if (writeReviewBtn) {
+                writeReviewBtn.style.display = 'inline-flex';
+            }
+        };
+
+        /**
+         * Submit review
+         */
+        window.submitReview = async function(event, courseId) {
+            event.preventDefault();
+            console.log('=== SUBMITTING REVIEW ===');
+            
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                showNotification('Please log in to submit a review', 'error');
+                setTimeout(() => window.location.href = 'sign_in.html', 1500);
+                return;
+            }
+            
+            const ratingInput = document.querySelector(`#ratingValue_${courseId}`);
+            const commentInput = document.querySelector(`#reviewComment_${courseId}`);
+            const ratingError = document.querySelector(`#ratingError_${courseId}`);
+            const submitBtn = document.querySelector(`#submitReviewBtn_${courseId}`);
+            
+            if (!ratingInput || !commentInput) {
+                showNotification('Error: Form elements not found', 'error');
+                return;
+            }
+            
+            const rating = parseInt(ratingInput.value);
+            const comment = commentInput.value.trim();
+            
+            // Validation
+            if (!rating || rating === 0) {
+                if (ratingError) ratingError.style.display = 'block';
+                showNotification('Please select a rating', 'error');
+                return;
+            }
+            
+            if (!comment) {
+                showNotification('Please write a review', 'error');
+                commentInput.focus();
+                return;
+            }
+            
+            if (comment.length < 10) {
+                showNotification('Please write at least 10 characters', 'error');
+                commentInput.focus();
+                return;
+            }
+            
+            // Disable submit button
+            if (submitBtn) {
+                submitBtn.classList.add('btn-loading');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            }
+            
+            try {
+                const reviewData = {
+                    rating: rating,
+                    comment: comment
+                };
+                
+                const response = await fetch(`${API_BASE_URL}/user/courses/${courseId}/review`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(reviewData)
+                });
+                
+                if (response.status === 401 || response.status === 403) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    showNotification('Session expired. Please log in again.', 'error');
+                    setTimeout(() => window.location.href = 'sign_in.html', 2000);
+                    return;
+                }
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Failed to submit review');
+                }
+                
+                const result = await response.json();
+                console.log('✅ Review submitted:', result);
+                console.log('🔍 Checking result.review:', result.review);
+                console.log('🔍 Review exists?', !!result.review);
+                
+                showNotification('Review submitted successfully! Thank you for your feedback.', 'success');
+                hideReviewForm(courseId);
+                
+                // Display the submitted review immediately
+                if (result && result.review) {
+                    console.log('📝 Displaying submitted review immediately');
+                    console.log('📝 Review data:', result.review);
+                    console.log('📝 User data:', user);
+                    
+                    // Format the review to match expected structure
+                    const newReview = {
+                        user_name: user.name || user.username || 'You',
+                        userName: user.name || user.username || 'You',
+                        rating: result.review.rating,
+                        comment: result.review.comment,
+                        created_at: result.review.createdAt || result.review.created_at || new Date().toISOString(),
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    console.log('📝 Formatted review:', newReview);
+                    
+                    // Get the reviews panel
+                    const reviewsPanel = document.querySelector('.tab-panel[data-panel="reviews"].active');
+                    console.log('📝 Reviews panel found?', !!reviewsPanel);
+                    
+                    if (reviewsPanel) {
+                        console.log('📝 Rendering review immediately...');
+                        
+                        // Fetch course rating and display review
+                        fetch(`${API_BASE_URL}/courses/${courseId}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                const course = data.course || data.data || data;
+                                const courseRating = course.rating || course.average_rating || 4.5;
+                                
+                                console.log('📝 Rendering with course rating:', courseRating);
+                                // Render with the new review
+                                renderReviewsTabContent(reviewsPanel, [newReview], courseRating, courseId);
+                                reviewsPanel.dataset.loaded = 'true';
+                                console.log('✅ Review displayed successfully!');
+                            })
+                            .catch(err => {
+                                console.error('❌ Error fetching course data:', err);
+                                // Fallback: display review with default rating
+                                console.log('📝 Using fallback rating 4.5');
+                                renderReviewsTabContent(reviewsPanel, [newReview], 4.5, courseId);
+                                reviewsPanel.dataset.loaded = 'true';
+                                console.log('✅ Review displayed successfully (fallback)!');
+                            });
+                    } else {
+                        console.error('❌ No active reviews panel found');
+                    }
+                } else {
+                    console.log('⚠️ No review in response, falling back to reload');
+                    console.log('⚠️ Result structure:', Object.keys(result || {}));
+                    
+                    // Fallback: reload reviews normally if backend returns full list
+                    const reviewsPanel = document.querySelector('.tab-panel[data-panel="reviews"].active');
+                    if (reviewsPanel) {
+                        console.log('📝 Reloading reviews from API...');
+                        reviewsPanel.dataset.loaded = 'false';
+                        setTimeout(() => loadReviewsForTab(reviewsPanel, courseId), 500);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('❌ Error submitting review:', error);
+                showNotification(error.message || 'Failed to submit review. Please try again.', 'error');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.classList.remove('btn-loading');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Review';
+                }
+            }
+        };
+
+        /**
+         * Retry loading reviews
+         */
+        window.retryLoadReviews = function(courseId) {
+            const panel = document.querySelector(`.tab-panel[data-panel="reviews"]`);
+            if (panel) {
+                panel.dataset.loaded = 'false';
+                loadReviewsForTab(panel, courseId);
+            }
+        };
+
+        /**
+         * Setup modal tabs with reviews loading
+         */
+        function setupModalTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const panels = document.querySelectorAll('.tab-panel');
+            
+            console.log('🔧 Setting up modal tabs...');
+            
+            // Remove existing listeners
+            tabBtns.forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+            });
+            
+            const newTabBtns = document.querySelectorAll('.tab-btn');
+            
+            newTabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    console.log('📍 Tab clicked:', btn.dataset.tab);
+                    
+                    // Update tab states
+                    newTabBtns.forEach(b => {
+                        b.classList.remove('active');
+                        b.setAttribute('aria-selected', 'false');
+                    });
+                    btn.classList.add('active');
+                    btn.setAttribute('aria-selected', 'true');
+                    
+                    const tabName = btn.dataset.tab;
+                    
+                    // Show/hide panels
+                    panels.forEach(panel => {
+                        const shouldShow = panel.dataset.panel === tabName;
+                        panel.hidden = !shouldShow;
+                        panel.classList.toggle('active', shouldShow);
+                        
+                        // Load reviews when clicked
+                        if (shouldShow && tabName === 'reviews' && currentCourseId) {
+                            console.log('🔍 Reviews tab activated via click');
+                            if (!panel.dataset.loaded || panel.dataset.loaded === 'false' || panel.dataset.loaded === 'error') {
+                                console.log('📥 Loading reviews...');
+                                loadReviewsForTab(panel, currentCourseId);
+                            } else {
+                                console.log('✅ Reviews already loaded');
+                            }
+                        }
+                    });
+                    
+                    btn.focus();
+                });
+            });
+            
+            // 🔥 FIX: Check if Reviews tab is ALREADY active when modal opens
+            // This handles the case where the last opened modal had Reviews tab active
+            console.log('🔍 Checking if Reviews tab is already active...');
+            const activeReviewsTab = Array.from(newTabBtns).find(btn => 
+                btn.classList.contains('active') && btn.dataset.tab === 'reviews'
+            );
+            
+            if (activeReviewsTab && currentCourseId) {
+                console.log('⚠️ Reviews tab is already active! Loading reviews automatically...');
+                const reviewsPanel = document.querySelector('.tab-panel[data-panel="reviews"].active');
+                
+                if (reviewsPanel && (!reviewsPanel.dataset.loaded || reviewsPanel.dataset.loaded === 'false')) {
+                    console.log('📥 Auto-loading reviews for already-active tab...');
+                    loadReviewsForTab(reviewsPanel, currentCourseId);
+                } else if (reviewsPanel) {
+                    console.log('✅ Reviews already loaded in active tab');
+                }
+            } else {
+                console.log('ℹ️ Reviews tab is not active (default state)');
+            }
+            
+            console.log('✅ Modal tabs setup complete');
+        }
+
+        window.closeModal = function() {
+            console.log('🚪 Closing modal...');
+            
+            const modal = document.getElementById('courseModal');
+            if (modal) {
+                modal.classList.remove('show');
+                document.removeEventListener('keydown', escCloseHandler);
+                
+                // Reset all panels
+                const panels = document.querySelectorAll('.tab-panel');
+                panels.forEach(panel => {
+                    panel.dataset.loaded = 'false';
+                });
+                
+                // 🔥 FIX: Reset tabs to Overview tab (first tab)
+                console.log('🔄 Resetting tabs to Overview...');
+                const tabBtns = document.querySelectorAll('.tab-btn');
+                tabBtns.forEach((btn, index) => {
+                    if (index === 0) {
+                        // First tab (Overview) should be active
+                        btn.classList.add('active');
+                        btn.setAttribute('aria-selected', 'true');
+                    } else {
+                        btn.classList.remove('active');
+                        btn.setAttribute('aria-selected', 'false');
+                    }
+                });
+                
+                // Reset panels - only Overview should be active
+                panels.forEach((panel, index) => {
+                    if (index === 0) {
+                        // First panel (Overview) should be visible
+                        panel.classList.add('active');
+                        panel.hidden = false;
+                    } else {
+                        panel.classList.remove('active');
+                        panel.hidden = true;
+                    }
+                });
+                
+                currentCourseId = null;
+                console.log('✅ Modal closed and reset');
+            }
+        }
+
+        function escCloseHandler(e) {
+            if (e.key === 'Escape') closeModal();
+        }
+
+        window.enrollInCourse = async function(courseId, isFree) {
+            if (!user) {
+                window.location.href = 'sign_in.html';
+                return;
+            }
+            
+            if (!isFree) {
+                showNotification('Payment integration would be implemented here!', 'info');
+                return;
+            }
+            
+            showNotification('Successfully enrolled in the course!', 'success');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                color: white;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                z-index: 9999;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Debug helpers
+        window.debugReviewsSystem = function() {
+            console.log('=== REVIEWS SYSTEM DEBUG ===');
+            console.log('1. Current course ID:', currentCourseId);
+            console.log('2. User logged in:', !!user);
+            console.log('3. Token exists:', !!localStorage.getItem('token'));
+            
+            const reviewsPanel = document.querySelector('.tab-panel[data-panel="reviews"]');
+            if (reviewsPanel) {
+                console.log('4. Reviews panel loaded:', reviewsPanel.dataset.loaded);
+                console.log('5. Reviews panel course ID:', reviewsPanel.dataset.courseId);
+            }
+            
+            console.log('=== END DEBUG ===');
+        };
+
+        // Add CSS for animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        console.log('✅ All systems loaded - Use window.debugReviewsSystem() for debugging');
+    </script>
 </body>
 </html>
