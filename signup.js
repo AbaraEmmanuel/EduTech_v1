@@ -67,7 +67,8 @@ document.querySelector('.sign-up-form').addEventListener('submit', async (e) => 
                 Name: fullName,
                 Email: email,
                 Phone: phoneNumber,
-                Password: password
+                Password: password,
+                Level: "spark" 
             })
         });
 
