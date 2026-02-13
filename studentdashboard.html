@@ -1,266 +1,399 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chaart Dashboard - Exact Implementation</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-main: #FDFCFB;
-            --bg-sidebar: #FFFFFF;
-            --bg-calendar: #FDF7F2;
-            --text-dark: #1F1F1F;
-            --text-gray: #9E9E9E;
-            --purple: #6B46C1;
-            --teal: #81C7C2;
-            --orange: #FF7D52;
-            --border: #F0F0F0;
-            --transition: all 0.3s ease-in-out;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chaart Dashboard</title>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-dark); overflow-x: hidden; }
+<!-- Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
 
-        /* --- MOBILE HEADER (Icons Only on Mobile) --- */
-        .mobile-navbar {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            height: 60px;
-            background: white;
-            z-index: 2000;
-            padding: 0 20px;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-        }
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        /* --- SIDEBAR --- */
-        .sidebar {
-            width: 240px;
-            background: var(--bg-sidebar);
-            padding: 40px 24px;
-            border-right: 1px solid var(--border);
-            height: 100vh;
-            position: sticky;
-            top: 0;
-            transition: var(--transition);
-            z-index: 1001;
-        }
-
-        /* --- CALENDAR --- */
-        .calendar-section {
-            width: 300px;
-            background: var(--bg-calendar);
-            padding: 40px 24px;
-            border-left: 1px solid var(--border);
-            height: 100vh;
-            position: sticky;
-            top: 0;
-            transition: var(--transition);
-            z-index: 1001;
-        }
-
-        /* --- MAIN CONTENT --- */
-        .main-content { flex-grow: 1; padding: 40px; }
-        .dashboard-container { display: flex; min-height: 100vh; }
-
-        /* --- EXACT DESIGN ELEMENTS --- */
-        .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.2rem; margin-bottom: 35px; }
-        .logo-box { width: 18px; height: 18px; background: linear-gradient(to bottom, #6B46C1, #FF7D52); border-radius: 4px; }
-        
-        .profile-area { text-align: center; margin-bottom: 30px; }
-        .avatar { width: 70px; height: 70px; border-radius: 50%; margin-bottom: 10px; object-fit: cover; }
-        
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; color: var(--text-gray); text-decoration: none; border-radius: 12px; margin-bottom: 5px; font-size: 0.9rem; }
-        .nav-item.active { background: #F8F9FF; color: var(--purple); font-weight: 600; }
-
-        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .btn-new { background: #111; color: white; padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; }
-
-        /* Project Cards */
-        .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
-        .project-card { padding: 25px; border-radius: 20px; color: white; position: relative; }
-        .card-purple { background-color: var(--purple); }
-        .card-teal { background-color: var(--teal); }
-        .card-orange { background-color: var(--orange); }
-
-        .progress-track { height: 6px; background: rgba(255,255,255,0.2); border-radius: 10px; margin-top: 15px; }
-        .progress-fill { height: 100%; background: white; border-radius: 10px; }
-
-        /* Task List */
-        .task-card { background: white; padding: 20px; border-radius: 15px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .task-tag { width: 4px; height: 25px; border-radius: 4px; }
-
-        .pro-plan { background: #FFF0ED; padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
-
-        /* --- RESPONSIVENESS & TOGGLES --- */
-        @media (max-width: 1200px) {
-            .project-grid { grid-template-columns: repeat(2, 1fr); }
-            .calendar-section { position: fixed; right: -300px; top: 0; box-shadow: -10px 0 30px rgba(0,0,0,0.05); }
-            .calendar-section.show { right: 0; }
-            .mobile-navbar { display: flex; }
-            .main-content { padding-top: 80px; }
-        }
-
-        @media (max-width: 900px) {
-            .sidebar { position: fixed; left: -240px; top: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.05); }
-            .sidebar.show { left: 0; }
-            .project-grid { grid-template-columns: 1fr; }
-            .two-col { display: block !important; }
-        }
-
-        .icon-btn { border: none; background: #F5F5F5; padding: 10px; border-radius: 10px; cursor: pointer; }
-        .icon-btn.active { background: #111; color: white; }
-
-        #theme-toggle {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+<style>
+:root {
+  --bg-main: #FDFCFB;
+  --bg-sidebar: #FFFFFF;
+  --bg-calendar: #FDF7F2;
+  --text-dark: #1F1F1F;
+  --text-gray: #9E9E9E;
+  --purple: #6B46C1;
+  --teal: #81C7C2;
+  --orange: #FF7D52;
+  --border: #F0F0F0;
+  --transition: all .3s ease;
 }
 
-@media (max-width: 768px) {
-  #theme-toggle {
-    top: auto;
-    bottom: 20px;
+* {
+  margin:0; padding:0; box-sizing:border-box;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/*body { background: var(--bg-main); color: var(--text-dark); overflow: hidden; }*/
+body { background: var(--bg-main); color: var(--text-dark); }
+
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-thumb { background:#ddd; border-radius:10px; }
+
+.dashboard-container { display:flex; height:100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: 240px; background: var(--bg-sidebar); padding:40px 24px;
+  border-right:1px solid var(--border); overflow-y:auto; transition:var(--transition);
+}
+.logo { display:flex; align-items:center; gap:10px; font-weight:700; margin-bottom:30px; }
+.logo-box { width:18px; height:18px; background:linear-gradient(#6B46C1,#FF7D52); border-radius:4px; }
+.profile-area { text-align:center; margin-bottom:30px; }
+.avatar { width:70px; height:70px; border-radius:50%; margin-bottom:10px; }
+.plan-badge { display:inline-block; padding:4px 12px; border-radius:20px; font-size:.7rem; font-weight:600; color:white; margin-top:6px; }
+.plan-spark { background: #9E9E9E; }
+.plan-prime { background: var(--purple); }
+.plan-apex { background: var(--orange); }
+.upgrade-btn { margin-top:8px; padding:6px 14px; border-radius:8px; border:none; cursor:pointer; background:#111; color:white; transition:var(--transition);}
+.nav-item { display:flex; gap:12px; padding:12px; border-radius:12px; color:var(--text-gray); margin-bottom:6px; cursor:pointer; transition:var(--transition); text-decoration:none;}
+.nav-item.active, .nav-item:hover { background:#F8F9FF; color:var(--purple); }
+
+/* Main */
+.main-content { flex:1; padding:40px; overflow-y:auto; }
+.header-row { display:flex; justify-content:space-between; margin-bottom:30px; align-items:center; }
+.header-actions { display:flex; gap:10px; align-items:center; }
+.icon-btn { border:none; background:#F5F5F5; padding:10px; border-radius:10px; cursor:pointer; }
+.btn-new { background:#111; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; }
+
+/* Projects */
+.project-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-bottom:40px; }
+.project-card { padding:25px; border-radius:20px; color:white; transition:transform .3s ease, box-shadow .3s ease; }
+.project-card:hover { transform:translateY(-6px); box-shadow:0 20px 40px rgba(0,0,0,.15);}
+.card-purple { background: var(--purple); }
+.card-teal { background: var(--teal); }
+.card-orange { background: var(--orange); }
+.progress-track { height:6px; background:rgba(255,255,255,.3); border-radius:10px; margin-top:15px; }
+.progress-fill { height:100%; background:white; border-radius:10px; }
+
+/* Tasks */
+.task-card { background:white; padding:20px; border-radius:15px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; transition:var(--transition);}
+.task-card.completed { opacity:.6; text-decoration:line-through; }
+.task-tag { width:4px; height:25px; border-radius:4px; }
+
+/* Panels */
+.slide-panel {
+  position: fixed;
+  top: 0;
+  right: -320px; /* Slide from right */
+  width: 320px;
+  height: 100%;
+  background: white;
+  border-left: 1px solid var(--border); /* Left border for separation */
+  padding: 30px;
+  transition: var(--transition);
+  overflow-y: auto;
+  z-index: 3000;
+}
+.slide-panel.show { right: 0; }
+.panel-item { padding:12px; border-radius:12px; margin-bottom:10px; background:#F7F7F7; font-size:.85rem; }
+.purple { border-left:4px solid var(--purple); }
+.orange { border-left:4px solid var(--orange); }
+
+/* Responsive */
+@media(max-width:1200px){ .project-grid{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:800px){ .project-grid{grid-template-columns:1fr;} }
+
+/* Mobile Sidebar */
+@media(max-width:1200px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -240px; /* Hidden by default */
+    height: 100%;
+    z-index: 2000;
+    transition: var(--transition);
+  }
+  .sidebar.show { left: 0; }
+}
+
+/* Panels already slide from right */
+@media(max-width:1200px){
+  .slide-panel {
+    width: 280px;
   }
 }
-    </style>
+
+/* Mobile header adjustments */
+
+@media(max-width:800px){
+  .header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .btn-new {
+    flex: 1;
+  }
+
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Mobile Navbar (hidden on desktop) */
+.mobile-navbar {
+  display: none;
+}
+
+.sidebar {
+  z-index: 2600;
+}
+
+
+/* Show mobile navbar on smaller screens */
+@media(max-width:1200px) {
+  .mobile-navbar {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    z-index: 2500;
+    padding: 0 20px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* Push main content down */
+  .main-content {
+    padding-top: 90px;
+  }
+
+  .dashboard-container {
+  flex-direction: column;
+}
+
+}
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  display: none;
+  z-index: 2700;
+}
+
+#overlay.show {
+  display: block;
+}
+
+
+</style>
 </head>
+
 <body>
 
-    <div class="mobile-navbar">
-        <button class="icon-btn" id="hamToggle" onclick="handleToggle('sidebar')"><i data-lucide="menu"></i></button>
-        <span style="font-weight: 700;">Chaart</span>
-        <button class="icon-btn" id="calToggle" onclick="handleToggle('calendar')"><i data-lucide="calendar"></i></button>
+  <!-- Mobile Header -->
+<div class="mobile-navbar">
+  <button class="icon-btn" onclick="togglePanel('sidebar')"><i data-lucide="menu"></i></button>
+  <b>Chaart</b>
+</div>
+
+
+<!-- Notification Panel -->
+<div class="slide-panel" id="notificationsPanel">
+  <h3>Notifications</h3>
+  <div id="notificationsList"></div>
+</div>
+
+<!-- Calendar Panel -->
+<div class="slide-panel" id="calendarPanel">
+  <h3>Academic Calendar</h3>
+  <div id="calendarEventsList"></div>
+</div>
+
+<div class="dashboard-container">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo"><div class="logo-box"></div>Chaart</div>
+    <div class="profile-area">
+      <img src="https://i.pravatar.cc/150?u=sarah" class="avatar">
+      <h4 id="username">Sarah Connor</h4>
+      <p style="font-size:.75rem;color:var(--text-gray)" id="email">sarahc@gmail.com</p>
+      <span id="planBadge" class="plan-badge plan-spark">SPARK</span>
+      <button class="upgrade-btn" onclick="upgradePlan()">Upgrade</button>
+    </div>
+    <nav>
+      <a class="nav-item active"><i data-lucide="layout-dashboard"></i>Dashboard</a>
+      <a class="nav-item"><i data-lucide="bar-chart-2"></i>Analytics</a>
+      <a class="nav-item"><i data-lucide="check-square"></i>Tasks</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="main-content">
+    <div class="header-row">
+      <div>
+        <h2 id="greeting">Hello, Sarah 👋</h2>
+        <p style="color:var(--text-gray)">Welcome back</p>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="togglePanel('notificationsPanel')"><i data-lucide="bell"></i></button>
+        <button class="icon-btn" onclick="togglePanel('calendarPanel')"><i data-lucide="calendar"></i></button>
+        <button class="btn-new" onclick="addProject()">New Project</button>
+      </div>
     </div>
 
-    <div class="dashboard-container">
-        <aside class="sidebar" id="sidebar">
-            <div class="logo"><div class="logo-box"></div><span>Chaart</span></div>
-            <div class="profile-area">
-                <img src="https://i.pravatar.cc/150?u=sarah" class="avatar">
-                <h4>Sarah Connor</h4>
-                <p style="color:var(--text-gray); font-size: 0.75rem;">sarahc@gmail.com</p>
-            </div>
-            <nav>
-                <a href="#" class="nav-item active"><i data-lucide="layout-dashboard"></i> Dashboard</a>
-                <a href="#" class="nav-item"><i data-lucide="bar-chart-2"></i> Analytics</a>
-                <a href="#" class="nav-item"><i data-lucide="check-square"></i> Task List</a>
-                <a href="#" class="nav-item"><i data-lucide="clock"></i> Tracking</a>
-            </nav>
-        </aside>
+    <div class="project-grid" id="projects"></div>
 
-        <main class="main-content">
-            <div class="header-row">
-                <div>
-                    <h2>Hello, Sara</h2>
-                    <p style="color:var(--text-gray); font-size: 0.9rem;">Today is Monday, 20 October 2021</p>
-                </div>
-                <button class="btn-new"> New Project</button>
-            </div>
+    <h3 style="margin-bottom:15px">Tasks</h3>
+    <div id="tasks"></div>
 
-            <div class="project-grid" id="projects"></div>
+  </main>
+</div>
 
-            <div class="two-col" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px;">
-                <div>
-                    <h3 style="margin-bottom: 20px;">Tasks for today</h3>
-                    <div id="tasks"></div>
-                </div>
+<script>
+/* ====================== DATA ====================== */
+let user = { name:"Sarah Connor", email:"sarahc@gmail.com", plan:"spark" };
+let projects = [
+  { id:1, title:'Web Development', tasks:10, progress:95, color:'purple' },
+  { id:2, title:'Mobile App Design', tasks:12, progress:48, color:'teal' },
+  { id:3, title:'Brand UI Kit', tasks:22, progress:73, color:'orange' }
+];
+let tasks = [
+  { id:1, title:'Prepare Figma', project:'Mobile App', done:false, color:'orange' },
+  { id:2, title:'UX Wireframes', project:'Web Dev', done:false, color:'purple' },
+  { id:3, title:'Research', project:'Brand Kit', done:true, color:'teal' }
+];
+let notifications = [
+  { id:1,text:"Purple group project assigned" },
+  { id:2,text:"Tutorial scheduled for Friday" }
+];
+let calendarEvents = [
+  { date:"Mar 10", title:"Purple Group Project", group:"purple" },
+  { date:"Mar 18", title:"Orange Group Review", group:"orange" }
+];
 
-                <div>
-                    <h3 style="margin-bottom: 20px;">Statistics</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <div style="background:white; padding: 20px; border-radius: 15px; border:1px solid var(--border); text-align: center;">
-                            <h2 style="font-size: 1.5rem;">28 h</h2><p style="font-size: 0.7rem; color: var(--text-gray);">Tracked time</p>
-                        </div>
-                        <div style="background:white; padding: 20px; border-radius: 15px; border:1px solid var(--border); text-align: center;">
-                            <h2 style="font-size: 1.5rem;">18</h2><p style="font-size: 0.7rem; color: var(--text-gray);">Finished tasks</p>
-                        </div>
-                    </div>
-                    <div class="pro-plan">
-                        <div>
-                            <p style="font-weight: 700; font-size: 1.1rem;">$9.99 <small>p/m</small></p>
-                            <p style="font-size: 0.8rem; margin: 4px 0;"><b>Pro Plan</b></p>
-                            <p style="font-size: 0.7rem; color: var(--text-gray);">More productivity with premium!</p>
-                        </div>
-                        <i data-lucide="zap" style="color: var(--orange); fill: var(--orange);"></i>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <aside class="calendar-section" id="calendar">
-            <h3 style="margin-bottom: 25px;">Calendar</h3>
-            <div id="calEvents"></div>
-        </aside>
+/* ====================== RENDER ====================== */
+function renderUser(){
+  document.getElementById('username').textContent = user.name;
+  document.getElementById('email').textContent = user.email;
+  const badge = document.getElementById('planBadge');
+  badge.textContent = user.plan.toUpperCase();
+  badge.className = `plan-badge plan-${user.plan}`;
+  document.getElementById('greeting').textContent = `Hello, ${user.name.split(' ')[0]} 👋`;
+}
+function renderProjects(){
+  document.getElementById('projects').innerHTML = projects.map(p=>`
+    <div class="project-card card-${p.color}">
+      <b>${p.title}</b>
+      <p style="font-size:.75rem">${p.tasks} tasks • ${p.progress}%</p>
+      <div class="progress-track"><div class="progress-fill" style="width:${p.progress}%"></div></div>
     </div>
+  `).join('');
+}
+function renderTasks(){
+  document.getElementById('tasks').innerHTML = tasks.map(t=>`
+    <div class="task-card ${t.done?'completed':''}">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="task-tag" style="background:var(--${t.color})"></div>
+        <div>
+          <b>${t.project}</b>
+          <p style="font-size:.75rem;color:var(--text-gray)">${t.title}</p>
+        </div>
+      </div>
+      <button class="icon-btn" onclick="toggleTask(${t.id})">
+        <i data-lucide="${t.done?'check-circle':'circle'}"></i>
+      </button>
+    </div>
+  `).join('');
+}
+function renderNotifications(){
+  document.getElementById('notificationsList').innerHTML = notifications.map(n=>`
+    <div class="panel-item">${n.text}</div>
+  `).join('');
+}
+function renderCalendar(){
+  document.getElementById('calendarEventsList').innerHTML = calendarEvents.map(e=>`
+    <div class="panel-item ${e.group}">
+      <b>${e.date}</b><br>${e.title}
+    </div>
+  `).join('');
+}
 
-    <script>
-        // Dynamic Data
-        const projectItems = [
-            { title: 'Web Development', tasks: 10, prog: 95, color: 'purple' },
-            { title: 'Mobile App Design', tasks: 12, prog: 48, color: 'teal' },
-            { title: 'Facebook Brand UI Kit', tasks: 22, prog: 73, color: 'orange' }
-        ];
+/* ====================== ACTIONS ====================== */
+function toggleTask(id){
+  tasks = tasks.map(t=>t.id===id?{...t,done:!t.done}:t);
+  renderTasks(); lucide.createIcons();
+}
+function addProject(){
+  const title = prompt("Project name?");
+  if(!title) return;
+  projects.push({ id:Date.now(), title, tasks:0, progress:0, color:['purple','teal','orange'][Math.floor(Math.random()*3)] });
+  renderProjects();
+}
+//function togglePanel(id){ document.getElementById(id).classList.toggle('show'); }
+function upgradePlan(){
+  if(user.plan==='spark') user.plan='prime';
+  else if(user.plan==='prime') user.plan='apex';
+  else { alert("You're already on Apex 🚀"); return; }
+  renderUser();
+}
 
-        // Toggle Function (Double-Click to close logic)
-        function handleToggle(targetId) {
-            const target = document.getElementById(targetId);
-            const isClosing = target.classList.contains('show');
-            
-            // Close everything first
-            document.querySelectorAll('.sidebar, .calendar-section, .icon-btn').forEach(el => {
-                el.classList.remove('show', 'active');
-            });
 
-            // If it wasn't open, open it
-            if (!isClosing) {
-                target.classList.add('show');
-                if (targetId === 'sidebar') document.getElementById('hamToggle').classList.add('active');
-                if (targetId === 'calendar') document.getElementById('calToggle').classList.add('active');
-            }
-        }
 
-        // Render Functions
-        function render() {
-            document.getElementById('projects').innerHTML = projectItems.map(p => `
-                <div class="project-card card-${p.color}">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:15px"><i data-lucide="layers" style="width:16px"></i><i data-lucide="more-horizontal" style="width:16px"></i></div>
-                    <p style="font-weight: 600;">${p.title}</p>
-                    <p style="font-size: 0.7rem; opacity: 0.8; margin-top: 5px;">${p.tasks} tasks | ${p.prog}%</p>
-                    <div class="progress-track"><div class="progress-fill" style="width: ${p.prog}%"></div></div>
-                </div>
-            `).join('');
 
-            document.getElementById('tasks').innerHTML = [
-                {t: 'Mobile App', d: 'Prepare Figma file', c: 'orange'},
-                {t: 'UX wireframes', d: 'Design UX wireframes', c: 'purple'},
-                {t: 'Mobile App', d: 'Research', c: 'teal'}
-            ].map(t => `
-                <div class="task-card">
-                    <div style="display:flex; gap:12px; align-items:center;">
-                        <div class="task-tag" style="background:var(--${t.c})"></div>
-                        <div><p style="font-weight:700; font-size:0.85rem;">${t.t}</p><p style="color:var(--text-gray); font-size:0.75rem;">${t.d}</p></div>
-                    </div>
-                    <i data-lucide="circle" style="color:#EEE; width:20px"></i>
-                </div>
-            `).join('');
+/* ====================== INITIAL RENDER ====================== */
+renderUser();
+renderProjects();
+renderTasks();
+renderNotifications();
+renderCalendar();
+lucide.createIcons();
 
-            document.getElementById('calEvents').innerHTML = `
-                <p style="color:var(--text-gray); font-size:0.7rem; margin-bottom:15px;">Oct 20, 2021</p>
-                <div style="padding:10px 0; border-bottom:1px solid #EEE; display:flex; gap:10px; font-size:0.8rem;"><b>10:00</b> <span>Dribbble shot</span></div>
-                <div style="padding:10px 0; border-bottom:1px solid #EEE; display:flex; gap:10px; font-size:0.8rem;"><b>13:20</b> <span>Design Task</span></div>
-            `;
 
-            lucide.createIcons();
-        }
 
-        document.addEventListener('DOMContentLoaded', render);
-        
-    </script>
-    <script src="theme.js"></script>
+
+
+function togglePanel(id){
+
+  const panels = ['sidebar','notificationsPanel','calendarPanel'];
+  const overlay = document.getElementById('overlay');
+  const target = document.getElementById(id);
+
+  const isOpening = !target.classList.contains('show');
+
+  // Close everything first
+  panels.forEach(panel => {
+    document.getElementById(panel).classList.remove('show');
+  });
+
+  if(isOpening){
+    target.classList.add('show');
+    overlay.classList.add('show');
+  } else {
+    overlay.classList.remove('show');
+  }
+}
+
+function closeAllPanels(){
+  document.getElementById('sidebar').classList.remove('show');
+  document.getElementById('notificationsPanel').classList.remove('show');
+  document.getElementById('calendarPanel').classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+
+
+</script>
+<div id="overlay" onclick="closeAllPanels()"></div>
+
 </body>
 </html>
