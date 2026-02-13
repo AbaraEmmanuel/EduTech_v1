@@ -164,8 +164,8 @@
         <div class="navbar-left">
             <img src="ht9.png" class="logo_img">
             <a href="index.html" class="nav-link">JaroMind</a>
-            <a href="dashboard.html" class="nav-link">Dashboard</a>
-            <a href="courses.html" class="nav-link active">Courses</a>
+            <!-- <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="courses.html" class="nav-link active">Courses</a> -->
         </div>
         <div class="navbar-right">
             <button class="mode-toggle" id="modeToggle">🌞</button>
@@ -250,14 +250,14 @@
             <div class="cta-content">
                 <h2>Ready to Master Your Subjects?</h2>
                 <p>Join thousands of students who are already learning with JaroMind</p>
-                <div class="cta-buttons">
+                <!-- <div class="cta-buttons">
                     <a href="sign_up.html" class="btn-primary btn-large btn-glow">
                         <i class="fas fa-rocket"></i> Start Free Trial
                     </a>
                     <a href="#featured" class="btn-outline btn-large">
                         <i class="fas fa-play-circle"></i> View Demo
                     </a>
-                </div>
+                </div>-->
             </div>
         </div>
     </div>
@@ -558,7 +558,34 @@
             renderSeparatedCourses(classCourses, subjectCourses);
         }
 
-        // Create course card
+        function canAccessCourse(studentLevel, courseRequiredLevels) {
+            // Free courses (no required levels) are accessible to all
+            if (!courseRequiredLevels || courseRequiredLevels.length === 0) {
+                return true;
+            }
+            
+            // Normalize student level to uppercase
+            const normalizedStudentLevel = (studentLevel || 'SPARK').toUpperCase();
+            
+            // Define hierarchy: higher tiers can access lower tier content
+            const levelPriority = { 
+                SPARK: 1,  // Free tier
+                PRIME: 2,  // Premium tier
+                APEX: 3    // Ultra-premium tier
+            };
+            
+            const studentPriority = levelPriority[normalizedStudentLevel] || 1; // Default to SPARK (free)
+            
+            // Find the minimum required level for this course
+            const minRequiredPriority = Math.min(
+                ...courseRequiredLevels.map(level => levelPriority[level] || 1)
+            );
+            
+            // Student can access if their level >= minimum required level
+            return studentPriority >= minRequiredPriority;
+        }
+
+
         function createCourseCard(course, courseId) {
             const title = course.title || 'Untitled Course';
             const description = course.description || 'No description available';
@@ -599,17 +626,77 @@
             
             const levelClass = level.toLowerCase().replace(/\s+/g, '-');
             
+            // ===== UPDATED: CHECK ACCESS LEVEL WITH HIERARCHY =====
+            const studentLevel = user?.level || 'SPARK'; // Default to SPARK if no user
+            const requiredLevels = course.requiredLevels || course.required_levels || [];
+            const hasAccess = canAccessCourse(studentLevel, requiredLevels);
+            
+            // Determine course badge and access status
+            let courseBadgeHTML = '';
+            let accessBadgeHTML = '';
+            
+            if (requiredLevels.length > 0) {
+                // Get LOWEST required level (minimum to access)
+                const levelPriority = { SPARK: 1, PRIME: 2, APEX: 3 };
+                const lowestLevel = requiredLevels.reduce((lowest, level) => {
+                    return (levelPriority[level] || 1) < (levelPriority[lowest] || 1) ? level : lowest;
+                }, requiredLevels[0]);
+                
+                // Badge styling
+                let badgeStyle = '';
+                let badgeIcon = '';
+                let badgeText = '';
+                
+                if (lowestLevel === 'SPARK') {
+                    badgeStyle = 'background: linear-gradient(135deg, #32cd32, #28a428); color: white;';
+                    badgeIcon = '⚡';
+                    badgeText = 'FREE';
+                } else if (lowestLevel === 'PRIME') {
+                    badgeStyle = 'background: linear-gradient(135deg, #667eea, #764ba2); color: white;';
+                    badgeIcon = '👑';
+                    badgeText = 'PRIME';
+                } else if (lowestLevel === 'APEX') {
+                    badgeStyle = 'background: linear-gradient(135deg, #c42e00, #9d2400); color: white;';
+                    badgeIcon = '💎';
+                    badgeText = 'APEX';
+                }
+                
+                courseBadgeHTML = `
+                    <span class="course-badge" style="${badgeStyle} padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                        ${badgeIcon} ${badgeText}
+                    </span>
+                `;
+                
+                // Show lock icon if student doesn't have access
+                if (!hasAccess && user) {
+                    accessBadgeHTML = `
+                        <span class="course-badge" style="background: rgba(239, 68, 68, 0.9); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                            <i class="fas fa-lock"></i> Locked
+                        </span>
+                    `;
+                }
+            } else {
+                // No required levels = completely free
+                courseBadgeHTML = `
+                    <span class="course-badge" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                        ⚡ FREE
+                    </span>
+                `;
+            }
+            
+            // Card opacity for locked courses
+            const cardOpacity = (!hasAccess && user && requiredLevels.length > 0) ? 'opacity: 0.75;' : '';
+            
             return `
-                <div class="course-card" data-course-id="${courseId}" style="animation-delay: ${Math.random() * 0.3}s">
+                <div class="course-card" data-course-id="${courseId}" data-has-access="${hasAccess}" style="animation-delay: ${Math.random() * 0.3}s; ${cardOpacity}">
                     <div class="course-image ${imageClass}" ${imageStyle}>
                         ${hasImage ? '<div class="image-overlay"></div>' : ''}
                         <div class="course-badges">
                             <span class="course-category">
                                 <i class="fas fa-${categoryIcon}"></i> ${category}
                             </span>
-                            <span class="course-badge ${isFree ? 'badge-free' : 'badge-paid'}">
-                                ${isFree ? 'FREE' : '$' + price}
-                            </span>
+                            ${courseBadgeHTML}
+                            ${accessBadgeHTML}
                         </div>
                     </div>
                     <div class="course-content">
@@ -623,6 +710,25 @@
                         
                         <h3 class="course-title">${title}</h3>
                         <p class="course-description">${description.length > 120 ? description.substring(0, 120) + '...' : description}</p>
+                        
+                        ${requiredLevels.length > 0 ? `
+                            <div style="margin: 10px 0; padding: 8px; background: var(--bg-color); border-radius: 8px; border: 1px solid var(--border-color);">
+                                <small style="color: #666; display: block; margin-bottom: 4px;">
+                                    ${requiredLevels.includes('SPARK') && requiredLevels.length === 1 ? 'Free for all members' : `Minimum Level: ${requiredLevels.reduce((lowest, level) => {
+                                        const priority = { SPARK: 1, PRIME: 2, APEX: 3 };
+                                        return (priority[level] || 1) < (priority[lowest] || 1) ? level : lowest;
+                                    }, requiredLevels[0])}`}
+                                </small>
+                                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                    ${requiredLevels.map(lvl => {
+                                        const lvlIcon = lvl === 'SPARK' ? '⚡' : lvl === 'PRIME' ? '👑' : '💎';
+                                        const lvlColor = lvl === 'SPARK' ? '#32cd32' : lvl === 'PRIME' ? '#667eea' : '#c42e00';
+                                        const lvlText = lvl === 'SPARK' ? 'Free' : lvl;
+                                        return `<span style="background: ${lvlColor}20; color: ${lvlColor}; padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; border: 1px solid ${lvlColor}40;">${lvlIcon} ${lvlText}</span>`;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
                         
                         <div class="course-stats">
                             ${lessonCount > 0 ? `
@@ -661,12 +767,18 @@
                                 <i class="fas fa-eye"></i> View Details
                             </button>
                             ${user ? `
-                                <button class="btn-outline btn-block" onclick="enrollInCourse('${courseId}', ${isFree})">
-                                    <i class="fas fa-plus-circle"></i> Enroll Now
-                                </button>
+                                ${hasAccess ? `
+                                    <button class="btn-outline btn-block" onclick="enrollInCourse('${courseId}', ${isFree}, ${JSON.stringify(requiredLevels).replace(/"/g, '&quot;')})">
+                                        <i class="fas fa-plus-circle"></i> Enroll Now
+                                    </button>
+                                ` : `
+                                    <button class="btn-outline btn-block" style="background: #ef4444; color: white; border-color: #ef4444;" onclick="showUpgradePrompt('${courseId}', ${JSON.stringify(requiredLevels).replace(/"/g, '&quot;')})">
+                                        <i class="fas fa-lock"></i> Upgrade to Access
+                                    </button>
+                                `}
                             ` : `
-                                <a href="enrollment.html" class="btn-outline btn-block">
-                                    <i class="fas fa-user-plus"></i> Enroll
+                                <a href="sign_in.html" class="btn-outline btn-block">
+                                    <i class="fas fa-user-plus"></i> Sign In to Enroll
                                 </a>
                             `}
                         </div>
@@ -1877,9 +1989,17 @@
             if (e.key === 'Escape') closeModal();
         }
 
-        window.enrollInCourse = async function(courseId, isFree) {
+        window.enrollInCourse = async function(courseId, isFree, requiredLevels = []) {
             if (!user) {
                 window.location.href = 'sign_in.html';
+                return;
+            }
+            
+            // Check access before enrolling
+            const hasAccess = canAccessCourse(user.level, requiredLevels);
+            
+            if (!hasAccess) {
+                showUpgradePrompt(courseId, requiredLevels);
                 return;
             }
             
@@ -1888,39 +2008,111 @@
                 return;
             }
             
-            showNotification('Successfully enrolled in the course!', 'success');
+            // Proceed with enrollment
+            try {
+                const token = localStorage.getItem('token');
+                
+                const response = await fetch(`${API_BASE_URL}/user/courses/${courseId}/enroll`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    showNotification('Successfully enrolled in the course!', 'success');
+                    setTimeout(() => {
+                        window.location.href = `course.html?id=${courseId}`;
+                    }, 1500);
+                } else {
+                    throw new Error('Enrollment failed');
+                }
+            } catch (error) {
+                console.error('Enrollment error:', error);
+                showNotification('Failed to enroll. Please try again.', 'error');
+            }
         }
 
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                <span>${message}</span>
+        window.showUpgradePrompt = function(courseId, requiredLevels) {
+            const studentLevel = (user?.level || 'SPARK').toUpperCase();
+            
+            // Find the minimum level needed (lowest priority that's still higher than student's)
+            const levelPriority = { SPARK: 1, PRIME: 2, APEX: 3 };
+            const studentPriority = levelPriority[studentLevel] || 1;
+            
+            // Get the lowest required level that's higher than student's current level
+            const neededLevel = requiredLevels
+                .filter(level => levelPriority[level] > studentPriority)
+                .reduce((lowest, level) => {
+                    return (levelPriority[level] || 999) < (levelPriority[lowest] || 999) ? level : lowest;
+                }, requiredLevels[0]);
+            
+            const levelIcons = { SPARK: '⚡', PRIME: '👑', APEX: '💎' };
+            const levelColors = { SPARK: '#32cd32', PRIME: '#667eea', APEX: '#c42e00' };
+            const levelNames = { SPARK: 'Free', PRIME: 'Premium', APEX: 'Ultra-Premium' };
+            
+            const upgradeHTML = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px;" id="upgradePromptModal">
+                    <div style="background: var(--bg-color); border-radius: 16px; padding: 2rem; max-width: 500px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                        <div style="text-align: center; margin-bottom: 1.5rem;">
+                            <div style="width: 80px; height: 80px; margin: 0 auto 1rem; background: ${levelColors[neededLevel]}20; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">
+                                ${levelIcons[neededLevel]}
+                            </div>
+                            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.5rem;">Upgrade to ${neededLevel}</h3>
+                            <p style="color: #666; margin: 0;">Unlock this course and many more with ${levelNames[neededLevel]}</p>
+                        </div>
+                        
+                        <div style="background: var(--border-color); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                            <div style="margin-bottom: 1rem;">
+                                <small style="color: #666; display: block; margin-bottom: 0.5rem;">Your Current Level:</small>
+                                <span style="background: ${levelColors[studentLevel]}20; color: ${levelColors[studentLevel]}; padding: 8px 16px; border-radius: 8px; display: inline-block; font-weight: 600; border: 1px solid ${levelColors[studentLevel]}40;">
+                                    ${levelIcons[studentLevel]} ${studentLevel} ${studentLevel === 'SPARK' ? '(Free)' : ''}
+                                </span>
+                            </div>
+                            <div>
+                                <small style="color: #666; display: block; margin-bottom: 0.5rem;">Upgrade to access:</small>
+                                <span style="background: ${levelColors[neededLevel]}; color: white; padding: 8px 16px; border-radius: 8px; display: inline-block; font-weight: 600;">
+                                    ${levelIcons[neededLevel]} ${neededLevel} ${levelNames[neededLevel]}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div style="background: #f0fdf4; border: 1px solid #86efac; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                            <div style="display: flex; align-items: start; gap: 0.5rem;">
+                                <i class="fas fa-info-circle" style="color: #16a34a; margin-top: 2px;"></i>
+                                <small style="color: #15803d;">
+                                    ${neededLevel === 'PRIME' ? 'PRIME members get access to all SPARK and PRIME courses' : 'APEX members get unlimited access to all courses on the platform'}
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 1rem;">
+                            <button onclick="closeUpgradePrompt()" class="btn-outline" style="flex: 1;">
+                                Maybe Later
+                            </button>
+                            <button onclick="window.location.href='pricing.html'" class="btn-primary" style="flex: 1; background: ${levelColors[neededLevel]};">
+                                <i class="fas fa-crown"></i> Upgrade Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
             `;
+            window.closeUpgradePrompt = function() {
+                const modal = document.getElementById('upgradePromptModal');
+                if (modal) {
+                    modal.remove();
+                }
+            }
             
-            notification.style.cssText = `
-                position: fixed;
-                top: 80px;
-                right: 20px;
-                padding: 12px 20px;
-                border-radius: 8px;
-                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-                color: white;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                z-index: 9999;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                animation: slideIn 0.3s ease;
-            `;
+            document.body.insertAdjacentHTML('beforeend', upgradeHTML);
             
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
+            // Close on backdrop click
+            document.getElementById('upgradePromptModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeUpgradePrompt();
+                }
+            });
         }
 
         // Debug helpers
