@@ -321,7 +321,7 @@
         console.log('%cIf you see this, you are using the CORRECT debug version!', 'background: #2196F3; color: white; font-size: 14px; padding: 5px;');
         
         // API Configuration
-        const API_BASE_URL = 'https://jaromind-production-014b.up.railway.app';
+        const API_BASE_URL = 'https://jaromind-production-3060.up.railway.app';
         // const API_BASE_URL = 'http://localhost:8080';
         
         // Global variables
@@ -1989,50 +1989,28 @@
             if (e.key === 'Escape') closeModal();
         }
 
-        window.enrollInCourse = async function(courseId, isFree, requiredLevels = []) {
+        window.enrollInCourse = function(courseId, isFree, requiredLevels = []) {
+            // Optional: check if user is logged in
             if (!user) {
                 window.location.href = 'sign_in.html';
                 return;
             }
-            
-            // Check access before enrolling
+
+            // Optional: check if user has access to the course
             const hasAccess = canAccessCourse(user.level, requiredLevels);
-            
             if (!hasAccess) {
                 showUpgradePrompt(courseId, requiredLevels);
                 return;
             }
-            
-            if (!isFree) {
-                showNotification('Payment integration would be implemented here!', 'info');
-                return;
-            }
-            
-            // Proceed with enrollment
+
+            // Redirect straight to enrollment page
             try {
-                const token = localStorage.getItem('token');
-                
-                const response = await fetch(`${API_BASE_URL}/user/courses/${courseId}/enroll`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (response.ok) {
-                    showNotification('Successfully enrolled in the course!', 'success');
-                    setTimeout(() => {
-                        window.location.href = `course.html?id=${courseId}`;
-                    }, 1500);
-                } else {
-                    throw new Error('Enrollment failed');
-                }
+                window.location.href = 'enrollment.html';
             } catch (error) {
-                console.error('Enrollment error:', error);
-                showNotification('Failed to enroll. Please try again.', 'error');
+                console.error('Error navigating to enrollment page:', error);
             }
-        }
+        };
+
 
         window.showUpgradePrompt = function(courseId, requiredLevels) {
             const studentLevel = (user?.level || 'SPARK').toUpperCase();
