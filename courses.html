@@ -2005,7 +2005,7 @@
 
             // Redirect straight to enrollment page
             try {
-                window.location.href = 'enrollment.html';
+                 window.location.href = `enrollment.html?courseId=${courseId}`;
             } catch (error) {
                 console.error('Error navigating to enrollment page:', error);
             }
