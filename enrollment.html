@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Enrollment - EduTech</title>
+    <link rel="stylesheet" href="notification.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="enrollment.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="light-mode">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="index.html" class="name">EduTech</a>
+        </div>
+        <div class="navbar-right">
+            <button class="mode-toggle" id="modeToggle">🌞</button>
+        </div>
+    </nav>
+
+    <div class="enrollment-container">
+        <!-- Header -->
+        <div class="enrollment-header">
+            <h1><span class="gradient-text">Course Enrollment</span></h1>
+            <p>Complete the steps below to enroll in your selected course</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-steps">
+            <div class="progress-line" id="progressLine"></div>
+            <div class="step active" data-step="1">
+                <div class="step-number">
+                    <span>1</span>
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="step-label">Course Details</div>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-number">
+                    <span>2</span>
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="step-label">Personal Info</div>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-number">
+                    <span>3</span>
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="step-label">Learning Goals</div>
+            </div>
+            <div class="step" data-step="4">
+                <div class="step-number">
+                    <span>4</span>
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="step-label">Payment</div>
+            </div>
+            <div class="step" data-step="5">
+                <div class="step-number">
+                    <span>5</span>
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="step-label">Confirmation</div>
+            </div>
+        </div>
+
+        <!-- Course Summary (Fixed at top) -->
+        <div class="course-summary" id="courseSummary" style="display: none;">
+            <div class="course-summary-header">
+                <div class="course-thumbnail" id="courseThumbnail"></div>
+                <div class="course-info">
+                    <h3 id="courseTitle">Course Title</h3>
+                    <div class="course-meta">
+                        <span><i class="fas fa-play-circle"></i> <span id="courseLessons">0 Lessons</span></span>
+                        <span><i class="fas fa-clock"></i> <span id="courseDuration">0 hours</span></span>
+                        <span><i class="fas fa-signal"></i> <span id="courseLevel">All Levels</span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="course-price">
+                <span class="label">Course Price:</span>
+                <span class="price" id="coursePrice">$0</span>
+            </div>
+        </div>
+
+        <!-- Enrollment Form -->
+        <div class="enrollment-form-container">
+            <div class="error-message" id="errorMessage"></div>
+
+            <form id="enrollmentForm">
+                <!-- Step 1: Course Selection / Details -->
+                <div class="form-step active" data-step="1" id="courseSelectionStep">
+                    <div id="courseSelectedView" style="display: none;">
+                        <h2 class="form-step-title">
+                            <i class="fas fa-check-circle" style="color: var(--success-color);"></i> Course Selected
+                        </h2>
+                        <p style="color: #666; margin-bottom: 1.5rem;">
+                            You are enrolling in the following course. Review the details below.
+                        </p>
+                        
+                        <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
+                            <div style="display: flex; gap: 1rem; align-items: start;">
+                                <div id="quickCourseThumbnail" style="width: 80px; height: 80px; border-radius: 8px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); flex-shrink: 0;"></div>
+                                <div style="flex: 1;">
+                                    <h3 id="quickCourseTitle" style="margin: 0 0 0.5rem 0;">Course Title</h3>
+                                    <p id="quickCourseDescription" style="margin: 0 0 1rem 0; color: #666; font-size: 0.9rem;">Course description</p>
+                                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.875rem;">
+                                        <span id="quickCourseLessons" style="display: flex; align-items: center; gap: 0.25rem; color: #666;">
+                                            <i class="fas fa-play-circle"></i> 0 Lessons
+                                        </span>
+                                        <span id="quickCourseDuration" style="display: flex; align-items: center; gap: 0.25rem; color: #666;">
+                                            <i class="fas fa-clock"></i> 0 hours
+                                        </span>
+                                        <span id="quickCoursePrice" style="display: flex; align-items: center; gap: 0.25rem; font-weight: 600;">
+                                            <i class="fas fa-tag"></i> Free
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1.5rem; padding: 1rem; background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px;">
+                            <div style="display: flex; align-items: start; gap: 0.5rem;">
+                                <i class="fas fa-info-circle" style="color: #16a34a; margin-top: 2px;"></i>
+                                <small style="color: #15803d;">
+                                    <strong>Ready to start?</strong> Click "Next" to provide your information and complete the enrollment process.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="courseManualSelectView">
+                        <h2 class="form-step-title">
+                            <i class="fas fa-book"></i> Select Your Course
+                        </h2>
+
+                        <div class="form-group">
+                            <label for="courseSelect">Choose a course <span class="required">*</span></label>
+                            <select id="courseSelect" name="courseId" required>
+                                <option value="">Loading courses...</option>
+                            </select>
+                            <small>Select the course you want to enroll in</small>
+                        </div>
+
+                        <div id="courseDetailsPreview" style="display: none; margin-top: 2rem;">
+                            <h3 style="margin-bottom: 1rem;">Course Overview</h3>
+                            <div style="padding: 1rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px;">
+                                <p id="courseDescription">Course description will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Personal Information -->
+                <div class="form-step" data-step="2">
+                    <h2 class="form-step-title">
+                        <i class="fas fa-user"></i> Personal Information
+                    </h2>
+
+                    <div class="form-group">
+                        <label for="fullName">Full Name <span class="required">*</span></label>
+                        <input type="text" id="fullName" name="fullName" required placeholder="Enter your full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address <span class="required">*</span></label>
+                        <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+                        <small>We'll send course updates to this email</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number <span class="required">*</span></label>
+                        <input type="tel" id="phone" name="phone" required placeholder="+234">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="education">Current Education Level <span class="required">*</span></label>
+                        <select id="education" name="education" required>
+                            <option value="">Select your level</option>
+                            <option value="JSS1">JSS 1</option>
+                            <option value="JSS2">JSS 2</option>
+                            <option value="JSS3">JSS 3</option>
+                            <option value="SS1">SS 1</option>
+                            <option value="SS2">SS 2</option>
+                            <option value="SS3">SS 3</option>
+                            <option value="graduate">Graduate</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="experience">Previous Experience with this Subject</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="experience" value="beginner">
+                                <div>
+                                    <strong>Beginner</strong>
+                                    <p style="margin: 0; font-size: 0.875rem; color: #666;">No prior experience</p>
+                                </div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="experience" value="intermediate" checked>
+                                <div>
+                                    <strong>Intermediate</strong>
+                                    <p style="margin: 0; font-size: 0.875rem; color: #666;">Some basic knowledge</p>
+                                </div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="experience" value="advanced">
+                                <div>
+                                    <strong>Advanced</strong>
+                                    <p style="margin: 0; font-size: 0.875rem; color: #666;">Strong foundation</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Learning Goals & Preferences -->
+                <div class="form-step" data-step="3">
+                    <h2 class="form-step-title">
+                        <i class="fas fa-bullseye"></i> Learning Goals & Preferences
+                    </h2>
+
+                    <div class="form-group">
+                        <label for="learningGoal">What do you hope to achieve from this course? <span class="required">*</span></label>
+                        <textarea id="learningGoal" name="learningGoal" required placeholder="Example: I want to improve my mathematics skills to prepare for WAEC exams..."></textarea>
+                        <small>Tell us about your goals (minimum 20 characters)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Preferred Learning Schedule</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="schedule" value="weekdays" checked>
+                                <div>
+                                    <strong>Weekdays (Mon-Fri)</strong>
+                                    <p style="margin: 0; font-size: 0.875rem; color: #666;">Study during the week</p>
+                                </div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="schedule" value="weekends">
+                                <div>
+                                    <strong>Weekends (Sat-Sun)</strong>
+                                    <p style="margin: 0; font-size: 0.875rem; color: #666;">Study on weekends</p>
+                                </div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="schedule" value="flexible">
+                                <div>
+                                    <strong>Flexible</strong>
+                                    <p style="margin: 0; font-size: 0.875rem; color: #666;">Learn at my own pace</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Study Time Preference</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="studyTime" value="morning">
+                                <div>
+                                    <strong>Morning (6am - 12pm)</strong>
+                                </div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="studyTime" value="afternoon" checked>
+                                <div>
+                                    <strong>Afternoon (12pm - 6pm)</strong>
+                                </div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="studyTime" value="evening">
+                                <div>
+                                    <strong>Evening (6pm - 10pm)</strong>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>How did you hear about us?</label>
+                        <select name="referralSource">
+                            <option value="">Select an option</option>
+                            <option value="google">Google Search</option>
+                            <option value="social">Social Media</option>
+                            <option value="friend">Friend/Family</option>
+                            <option value="school">School</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Step 4: Payment (for paid courses) -->
+                <div class="form-step" data-step="4">
+                    <h2 class="form-step-title">
+                        <i class="fas fa-credit-card"></i> Payment Method
+                    </h2>
+
+                    <div id="freeCourseBanner" style="display: none; background: #d1fae5; border: 1px solid #10b981; color: #065f46; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-gift" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <strong>This is a free course!</strong>
+                                <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem;">No payment required. Click "Complete Enrollment" to start learning.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="paymentMethodsSection">
+                        <div class="form-group">
+                            <label>Select Payment Method <span class="required">*</span></label>
+                            <div class="payment-method">
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="card" checked>
+                                    <div class="payment-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                                        <i class="fas fa-credit-card" style="color: white;"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Credit/Debit Card</strong>
+                                        <p style="margin: 0; font-size: 0.875rem; color: #666;">Pay securely with your card</p>
+                                    </div>
+                                </label>
+
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="bank">
+                                    <div class="payment-icon" style="background: linear-gradient(135deg, #4361ee, #3a0ca3);">
+                                        <i class="fas fa-university" style="color: white;"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Bank Transfer</strong>
+                                        <p style="margin: 0; font-size: 0.875rem; color: #666;">Direct bank transfer</p>
+                                    </div>
+                                </label>
+
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="paystack">
+                                    <div class="payment-icon" style="background: linear-gradient(135deg, #00C3F9, #0084C7);">
+                                        <i class="fas fa-mobile-alt" style="color: white;"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Paystack</strong>
+                                        <p style="margin: 0; font-size: 0.875rem; color: #666;">Mobile money & cards</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 2rem; padding: 1rem; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px;">
+                            <div style="display: flex; align-items: start; gap: 0.5rem;">
+                                <i class="fas fa-info-circle" style="color: #d97706; margin-top: 2px;"></i>
+                                <div style="font-size: 0.875rem; color: #92400e;">
+                                    <strong>Secure Payment</strong>
+                                    <p style="margin: 0.25rem 0 0 0;">Your payment information is encrypted and secure. You'll be redirected to complete the payment after enrollment.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-option">
+                            <input type="checkbox" id="termsAccept" name="termsAccept" required>
+                            <div style="font-size: 0.875rem;">
+                                I agree to the <a href="#" style="color: var(--primary-color);">Terms & Conditions</a> and <a href="#" style="color: var(--primary-color);">Refund Policy</a>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step 5: Confirmation -->
+                <div class="form-step" data-step="5">
+                    <div class="confirmation-screen">
+                        <div class="success-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <h2>Enrollment Successful!</h2>
+                        <p>
+                            Congratulations! You have successfully enrolled in the course.<br>
+                            A confirmation email has been sent to your registered email address.
+                        </p>
+
+                        <div class="confirmation-details">
+                            <div class="detail-row">
+                                <span class="detail-label">Course:</span>
+                                <span class="detail-value" id="confirmCourse">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Student Name:</span>
+                                <span class="detail-value" id="confirmName">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Email:</span>
+                                <span class="detail-value" id="confirmEmail">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Enrollment Date:</span>
+                                <span class="detail-value" id="confirmDate">-</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Payment Status:</span>
+                                <span class="detail-value" id="confirmPayment">-</span>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                            <a href="dashboard.html" class="btn btn-primary">
+                                <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                            </a>
+                            <a href="courses.html" class="btn btn-outline">
+                                <i class="fas fa-book"></i> Browse More Courses
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Navigation -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn" style="display: none;">
+                        <i class="fas fa-check-circle"></i> Complete Enrollment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'https://jaromind-production-3060.up.railway.app';
+        // const API_BASE_URL = 'http://localhost:8080';
+
+        let currentStep = 1;
+        const totalSteps = 5;
+        let selectedCourse = null;
+        let user = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Management
+            const savedTheme = localStorage.getItem('theme') || 'light-mode';
+            document.body.className = savedTheme;
+            updateModeIcon(savedTheme);
+
+            const modeToggle = document.getElementById('modeToggle');
+            if (modeToggle) {
+                modeToggle.addEventListener('click', toggleTheme);
+            }
+
+            // Check authentication
+            checkAuthStatus();
+
+            // Load courses
+            loadCourses();
+
+            // Setup event listeners
+            setupEventListeners();
+
+            // Update progress
+            updateProgress();
+
+            // Check if course ID is in URL (coming from course.html)
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseIdFromUrl = urlParams.get('courseId') || urlParams.get('course');
+            
+            if (courseIdFromUrl) {
+                console.log('Auto-selecting course from URL:', courseIdFromUrl);
+                
+                // Hide manual select view, show selected view
+                const manualView = document.getElementById('courseManualSelectView');
+                const selectedView = document.getElementById('courseSelectedView');
+                
+                if (manualView) manualView.style.display = 'none';
+                if (selectedView) selectedView.style.display = 'block';
+                
+                // Wait for courses to load, then auto-select
+                const checkCoursesLoaded = setInterval(() => {
+                    const courseSelect = document.getElementById('courseSelect');
+                    if (courseSelect && courseSelect.options.length > 1) { // More than just "Loading courses..."
+                        clearInterval(checkCoursesLoaded);
+                        
+                        // Find and select the course
+                        let courseFound = false;
+                        for (let i = 0; i < courseSelect.options.length; i++) {
+                            if (courseSelect.options[i].value === courseIdFromUrl) {
+                                courseSelect.selectedIndex = i;
+                                courseFound = true;
+                                break;
+                            }
+                        }
+                        
+                        if (courseFound) {
+                            // Get course data and display
+                            const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+                            if (selectedOption && selectedOption.dataset.course) {
+                                selectedCourse = JSON.parse(selectedOption.dataset.course);
+                                
+                                // Display in both summary and quick view
+                                displayCourseSummary(selectedCourse);
+                                displayQuickCourseView(selectedCourse);
+                                
+                                console.log('✅ Course auto-selected:', selectedCourse.title);
+                            }
+                        } else {
+                            console.error('❌ Course not found:', courseIdFromUrl);
+                            showError('Course not found. Please select a course manually.');
+                            // Show manual select view
+                            if (manualView) manualView.style.display = 'block';
+                            if (selectedView) selectedView.style.display = 'none';
+                        }
+                    }
+                }, 100);
+                
+                // Timeout after 5 seconds
+                setTimeout(() => {
+                    clearInterval(checkCoursesLoaded);
+                }, 5000);
+            }
+        });
+
+        // Theme functions
+        function toggleTheme() {
+            if (document.body.classList.contains('light-mode')) {
+                document.body.classList.replace('light-mode', 'dark-mode');
+                localStorage.setItem('theme', 'dark-mode');
+                updateModeIcon('dark-mode');
+            } else {
+                document.body.classList.replace('dark-mode', 'light-mode');
+                localStorage.setItem('theme', 'light-mode');
+                updateModeIcon('light-mode');
+            }
+        }
+
+        function updateModeIcon(theme) {
+            const modeToggle = document.getElementById('modeToggle');
+            if (modeToggle) {
+                modeToggle.textContent = theme === 'dark-mode' ? '🌙' : '🌞';
+            }
+        }
+
+        // Check authentication
+        function checkAuthStatus() {
+            const userData = localStorage.getItem('user');
+            if (userData) {
+                user = JSON.parse(userData);
+                
+                // Pre-fill user information
+                document.getElementById('fullName').value = user.name || '';
+                document.getElementById('email').value = user.email || '';
+                document.getElementById('phone').value = user.phone || '';
+            }
+        }
+
+        // Load courses from API
+        async function loadCourses() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/courses`);
+                if (!response.ok) throw new Error('Failed to load courses');
+
+                const data = await response.json();
+                const courses = data.courses || data;
+
+                const courseSelect = document.getElementById('courseSelect');
+                courseSelect.innerHTML = '<option value="">Select a course</option>';
+
+                courses.forEach(course => {
+                    if (course.is_active || course.isActive) {
+                        const option = document.createElement('option');
+                        option.value = course._id || course.id;
+                        option.textContent = course.title;
+                        option.dataset.course = JSON.stringify(course);
+                        courseSelect.appendChild(option);
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error loading courses:', error);
+                showError('Failed to load courses. Please refresh the page.');
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Course selection
+            document.getElementById('courseSelect').addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (selectedOption.value) {
+                    selectedCourse = JSON.parse(selectedOption.dataset.course);
+                    displayCoursePreview(selectedCourse);
+                    displayCourseSummary(selectedCourse);
+                } else {
+                    selectedCourse = null;
+                    document.getElementById('courseDetailsPreview').style.display = 'none';
+                    document.getElementById('courseSummary').style.display = 'none';
+                }
+            });
+
+            // Radio options styling
+            document.querySelectorAll('.radio-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const radio = this.querySelector('input[type="radio"]');
+                    const group = radio.name;
+                    
+                    // Remove selected class from all options in group
+                    document.querySelectorAll(`input[name="${group}"]`).forEach(r => {
+                        r.closest('.radio-option').classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked option
+                    radio.checked = true;
+                    this.classList.add('selected');
+                });
+            });
+
+            // Payment option styling
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const radio = this.querySelector('input[type="radio"]');
+                    
+                    // Remove selected class from all payment options
+                    document.querySelectorAll('.payment-option').forEach(p => {
+                        p.classList.remove('selected');
+                    });
+                    
+                    // Add selected class
+                    radio.checked = true;
+                    this.classList.add('selected');
+                });
+            });
+
+            // Form submission
+            document.getElementById('enrollmentForm').addEventListener('submit', handleSubmit);
+        }
+
+        // Display course preview
+        function displayCoursePreview(course) {
+            const preview = document.getElementById('courseDetailsPreview');
+            const description = document.getElementById('courseDescription');
+            
+            description.textContent = course.description || 'No description available';
+            preview.style.display = 'block';
+        }
+
+        // Display course summary
+        function displayCourseSummary(course) {
+            const summary = document.getElementById('courseSummary');
+            const thumbnail = document.getElementById('courseThumbnail');
+            const title = document.getElementById('courseTitle');
+            const lessons = document.getElementById('courseLessons');
+            const duration = document.getElementById('courseDuration');
+            const level = document.getElementById('courseLevel');
+            const price = document.getElementById('coursePrice');
+
+            // Set thumbnail
+            if (course.image_url || course.imageUrl) {
+                thumbnail.style.backgroundImage = `url('${course.image_url || course.imageUrl}')`;
+            }
+
+            title.textContent = course.title;
+            lessons.textContent = `${course.lesson_count || course.lessonCount || 0} Lessons`;
+            duration.textContent = course.duration || 'Self-paced';
+            level.textContent = course.level || 'All Levels';
+
+            const isFree = !course.price || course.price === 0;
+            price.textContent = isFree ? 'Free' : `₦${course.price}`;
+            price.className = isFree ? 'price free' : 'price';
+
+            summary.style.display = 'block';
+
+            // Update payment step based on course price
+            updatePaymentStep(isFree);
+        }
+
+        // Display quick course view in Step 1
+        function displayQuickCourseView(course) {
+            const thumbnail = document.getElementById('quickCourseThumbnail');
+            const title = document.getElementById('quickCourseTitle');
+            const description = document.getElementById('quickCourseDescription');
+            const lessons = document.getElementById('quickCourseLessons');
+            const duration = document.getElementById('quickCourseDuration');
+            const priceEl = document.getElementById('quickCoursePrice');
+
+            // Set thumbnail
+            if (course.image_url || course.imageUrl) {
+                thumbnail.style.backgroundImage = `url('${course.image_url || course.imageUrl}')`;
+                thumbnail.style.backgroundSize = 'cover';
+                thumbnail.style.backgroundPosition = 'center';
+            }
+
+            title.textContent = course.title;
+            description.textContent = course.description || 'No description available';
+            lessons.innerHTML = `<i class="fas fa-play-circle"></i> ${course.lesson_count || course.lessonCount || 0} Lessons`;
+            duration.innerHTML = `<i class="fas fa-clock"></i> ${course.duration || 'Self-paced'}`;
+
+            const isFree = !course.price || course.price === 0;
+            priceEl.innerHTML = `<i class="fas fa-tag"></i> ${isFree ? 'Free' : '₦' + course.price}`;
+            priceEl.style.color = isFree ? 'var(--success-color)' : 'var(--primary-color)';
+        }
+
+        // Update payment step for free courses
+        function updatePaymentStep(isFree) {
+            const freeBanner = document.getElementById('freeCourseBanner');
+            const paymentSection = document.getElementById('paymentMethodsSection');
+
+            if (isFree) {
+                freeBanner.style.display = 'block';
+                paymentSection.style.display = 'none';
+                // Remove required from payment method
+                document.querySelectorAll('input[name="paymentMethod"]').forEach(input => {
+                    input.removeAttribute('required');
+                });
+            } else {
+                freeBanner.style.display = 'none';
+                paymentSection.style.display = 'block';
+                // Add required to payment method
+                document.querySelector('input[name="paymentMethod"]:checked').setAttribute('required', 'required');
+            }
+        }
+
+        // Change step
+        window.changeStep = function(direction) {
+            // Validate current step before moving forward
+            if (direction === 1 && !validateStep(currentStep)) {
+                return;
+            }
+
+            currentStep += direction;
+
+            // Update step display
+            const steps = document.querySelectorAll('.form-step');
+            steps.forEach((step, index) => {
+                if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+
+            // Update progress indicators
+            updateProgress();
+
+            // Update buttons
+            updateButtons();
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        // Validate step
+        function validateStep(step) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.classList.remove('show');
+
+            if (step === 1) {
+                // Check if course is selected (either manually or from URL)
+                if (!selectedCourse) {
+                    showError('Please select a course');
+                    return false;
+                }
+                // If coming from URL, course is already selected, so validation passes
+                return true;
+            }
+
+            if (step === 2) {
+                const fullName = document.getElementById('fullName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const education = document.getElementById('education').value;
+
+                if (!fullName) {
+                    showError('Please enter your full name');
+                    return false;
+                }
+                if (!email || !isValidEmail(email)) {
+                    showError('Please enter a valid email address');
+                    return false;
+                }
+                if (!phone) {
+                    showError('Please enter your phone number');
+                    return false;
+                }
+                if (!education) {
+                    showError('Please select your education level');
+                    return false;
+                }
+            }
+
+            if (step === 3) {
+                const learningGoal = document.getElementById('learningGoal').value.trim();
+                if (!learningGoal || learningGoal.length < 20) {
+                    showError('Please describe your learning goals (minimum 20 characters)');
+                    return false;
+                }
+            }
+
+            if (step === 4) {
+                const termsAccept = document.getElementById('termsAccept').checked;
+                if (!termsAccept) {
+                    showError('Please accept the terms and conditions');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // Update progress
+        function updateProgress() {
+            const steps = document.querySelectorAll('.step');
+            const progressLine = document.getElementById('progressLine');
+
+            steps.forEach((step, index) => {
+                const stepNumber = index + 1;
+                if (stepNumber < currentStep) {
+                    step.classList.add('completed');
+                    step.classList.remove('active');
+                } else if (stepNumber === currentStep) {
+                    step.classList.add('active');
+                    step.classList.remove('completed');
+                } else {
+                    step.classList.remove('active', 'completed');
+                }
+            });
+
+            // Update progress line
+            const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            progressLine.style.width = `${progress}%`;
+        }
+
+        // Update buttons
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Show/hide previous button
+            if (currentStep === 1) {
+                prevBtn.style.display = 'none';
+            } else if (currentStep === 5) {
+                prevBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'inline-flex';
+            }
+
+            // Show/hide next/submit button
+            if (currentStep === 4) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-flex';
+            } else if (currentStep === 5) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'none';
+            } else {
+                nextBtn.style.display = 'inline-flex';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        // Handle form submission
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            if (!validateStep(4)) {
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.classList.add('btn-loading');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            try {
+                const formData = new FormData(e.target);
+                const enrollmentData = {
+                    courseId: selectedCourse._id || selectedCourse.id,
+                    fullName: formData.get('fullName'),
+                    email: formData.get('email'),
+                    phone: formData.get('phone'),
+                    education: formData.get('education'),
+                    experience: formData.get('experience'),
+                    learningGoal: formData.get('learningGoal'),
+                    schedule: formData.get('schedule'),
+                    studyTime: formData.get('studyTime'),
+                    referralSource: formData.get('referralSource'),
+                    paymentMethod: formData.get('paymentMethod'),
+                    termsAccepted: formData.get('termsAccept') === 'on'
+                };
+
+                // Simulate API call (replace with actual API endpoint)
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // Show confirmation
+                displayConfirmation(enrollmentData);
+
+                // Move to confirmation step
+                currentStep = 5;
+                updateProgress();
+                const steps = document.querySelectorAll('.form-step');
+                steps.forEach((step, index) => {
+                    step.classList.toggle('active', index + 1 === 5);
+                });
+                updateButtons();
+
+            } catch (error) {
+                console.error('Enrollment error:', error);
+                showError('Failed to complete enrollment. Please try again.');
+            } finally {
+                submitBtn.classList.remove('btn-loading');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Complete Enrollment';
+            }
+        }
+
+        // Display confirmation
+        function displayConfirmation(data) {
+            document.getElementById('confirmCourse').textContent = selectedCourse.title;
+            document.getElementById('confirmName').textContent = data.fullName;
+            document.getElementById('confirmEmail').textContent = data.email;
+            document.getElementById('confirmDate').textContent = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            const isFree = !selectedCourse.price || selectedCourse.price === 0;
+            document.getElementById('confirmPayment').textContent = isFree ? 'Free Course' : 'Payment Pending';
+            document.getElementById('confirmPayment').style.color = isFree ? 'var(--success-color)' : '#f59e0b';
+        }
+
+        // Utility functions
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+            errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 5000);
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+    </script>
+</body>
+</html>
