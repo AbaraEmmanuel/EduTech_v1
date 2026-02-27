@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JaroMind – Course</title>
+  <link rel="stylesheet" href="course1.css" />
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a href="dashboard.html" class="logo">
+    <div class="logo-icon">🧠</div>
+    <span class="logo-text">JaroMind</span>
+  </a>
+
+  <div class="course-select-wrap">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    <select id="courseDropdown" onchange="switchCourse(this.value)">
+      <option value="">Select Course</option>
+      <option value="math101">Math 101</option>
+      <option value="physics201">Physics 201</option>
+      <option value="chemistry101">Chemistry 101</option>
+      <option value="history101">History 101</option>
+    </select>
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+
+  <div class="topbar-right">
+    <button class="topbar-btn">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    </button>
+    <div class="topbar-avatar">E</div>
+  </div>
+</header>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- COURSE HEADER -->
+  <div class="course-header">
+    <div class="course-header-left">
+      <a href="studendashboard.html" class="back-link">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to Dashboard
+      </a>
+      <h1 id="courseTitle">Loading...</h1>
+      <div class="instructor-row">Instructor: <span id="instructorName">–</span></div>
+      <div class="progress-row">
+        <span class="progress-label-text">Progress:</span>
+        <div class="progress-bar-wrap">
+          <div class="progress-fill" id="progressBar" style="width:0%"></div>
+        </div>
+        <span id="progressPercent">0%</span>
+      </div>
+    </div>
+    <button class="btn-primary" id="nextLessonBtn">
+      Continue Next Lesson
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="course-layout">
+
+    <!-- VIDEO CARD -->
+    <div class="video-card">
+      <div class="video-lesson-title" id="currentLessonTitle">Lesson</div>
+      <div class="video-wrapper">
+        <!-- If real video URLs are added, use <video> tag. For now showing a styled placeholder -->
+        <div class="video-placeholder" id="videoPlaceholder">
+          <div class="play-circle" onclick="playVideo()">
+            <svg width="28" height="28" fill="white" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <span id="videoLabel" style="font-size:15px;font-weight:600;color:rgba(255,255,255,0.7)">Click to play</span>
+        </div>
+        <video id="videoPlayer" controls style="display:none">
+          <source id="videoSource" src="" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <div class="video-caption" id="videoCaption">Select a lesson from the outline to begin.</div>
+    </div>
+
+    <!-- OUTLINE SIDEBAR -->
+    <div class="outline-card">
+      <div class="outline-header">Course Outline</div>
+      <ul class="outline-list" id="outlineList"></ul>
+      <div class="outline-footer" id="lessonsCompleted">Lessons Completed: – / –</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── COURSE DATA OBJECT ──
+  const courses = {
+    math101: {
+      title: 'Math 101 – Introduction to Algebra',
+      instructor: 'Prof. Johnson',
+      progress: 45,
+      currentLesson: 4,
+      videoSrc: '',  // Replace with real URL e.g. 'videos/math101.mp4'
+      lessons: [
+        { title: 'Introduction',               done: true  },
+        { title: 'Lesson 1: Basic Concepts',   done: true  },
+        { title: 'Lesson 2: Variables and Expressions', done: true },
+        { title: 'Lesson 3: Order of Operations',       done: true },
+        { title: 'Lesson 4: Working with Fractions',    done: false },
+        { title: 'Lesson 5: Solving Equations',         done: false, active: true },
+        { title: 'Lesson 6: Inequalities',              done: false },
+        { title: 'Lesson 7: Quiz & Review',             done: false }
+      ]
+    },
+    physics201: {
+      title: 'Physics 201 – Fundamentals of Physics',
+      instructor: 'Dr. Adeyemi',
+      progress: 20,
+      currentLesson: 1,
+      videoSrc: '',
+      lessons: [
+        { title: 'Introduction to Physics',     done: true  },
+        { title: 'Lesson 1: Mechanics Basics',  done: true, active: true },
+        { title: 'Lesson 2: Motion & Velocity', done: false },
+        { title: 'Lesson 3: Forces',            done: false },
+        { title: 'Lesson 4: Energy',            done: false },
+        { title: 'Lesson 5: Waves',             done: false },
+        { title: 'Lesson 6: Quiz & Review',     done: false }
+      ]
+    },
+    chemistry101: {
+      title: 'Chemistry 101 – Introduction to Chemistry',
+      instructor: 'Prof. Okonkwo',
+      progress: 10,
+      currentLesson: 0,
+      videoSrc: '',
+      lessons: [
+        { title: 'Introduction', done: true, active: true },
+        { title: 'Lesson 1: Atomic Structure',  done: false },
+        { title: 'Lesson 2: Periodic Table',    done: false },
+        { title: 'Lesson 3: Chemical Bonds',    done: false },
+        { title: 'Lesson 4: Reactions',         done: false },
+        { title: 'Lesson 5: Acids & Bases',     done: false },
+        { title: 'Lesson 6: Quiz & Review',     done: false }
+      ]
+    },
+    history101: {
+      title: 'History 101 – World History Overview',
+      instructor: 'Dr. Mensah',
+      progress: 0,
+      currentLesson: 0,
+      videoSrc: '',
+      lessons: [
+        { title: 'Introduction',                     done: false, active: true },
+        { title: 'Lesson 1: Ancient Civilizations',  done: false },
+        { title: 'Lesson 2: Medieval Period',        done: false },
+        { title: 'Lesson 3: Renaissance',            done: false },
+        { title: 'Lesson 4: Industrial Revolution',  done: false },
+        { title: 'Lesson 5: World Wars',             done: false },
+        { title: 'Lesson 6: Modern Era',             done: false }
+      ]
+    }
+  };
+
+  let currentCourse = null;
+
+  function loadCourse(id) {
+    const data = courses[id];
+    if (!data) {
+      document.getElementById('courseTitle').textContent = 'Course not found.';
+      return;
+    }
+
+    currentCourse = id;
+
+    // Update header
+    document.getElementById('courseTitle').textContent = data.title;
+    document.getElementById('instructorName').textContent = data.instructor;
+    document.getElementById('progressBar').style.width = data.progress + '%';
+    document.getElementById('progressPercent').textContent = data.progress + '%';
+    document.title = 'JaroMind – ' + data.title;
+
+    // Update dropdown
+    const dropdown = document.getElementById('courseDropdown');
+    dropdown.value = id;
+
+    // Set active lesson title
+    const active = data.lessons.find(l => l.active) || data.lessons[data.currentLesson];
+    if (active) {
+      document.getElementById('currentLessonTitle').textContent = active.title;
+      document.getElementById('videoLabel').textContent = active.title;
+      document.getElementById('videoCaption').textContent = data.instructor + ' • ' + data.title;
+    }
+
+    // Set video
+    const videoEl = document.getElementById('videoPlayer');
+    const videoSrc = document.getElementById('videoSource');
+    if (data.videoSrc) {
+      videoSrc.src = data.videoSrc;
+      videoEl.load();
+      videoEl.style.display = 'block';
+      document.getElementById('videoPlaceholder').style.display = 'none';
+    } else {
+      videoEl.style.display = 'none';
+      document.getElementById('videoPlaceholder').style.display = 'flex';
+    }
+
+    // Render outline
+    renderOutline(data);
+  }
+
+  function renderOutline(data) {
+    const list = document.getElementById('outlineList');
+    list.innerHTML = data.lessons.map((lesson, i) => {
+      const checkClass = lesson.done ? 'done' : lesson.active ? '' : 'upcoming';
+      const checkIcon = lesson.done ? '✓' : lesson.active ? '✓' : '';
+      const isActive = lesson.active;
+      const isCompleted = lesson.done && i === 0;
+      return `
+        <li class="outline-item ${isActive ? 'active' : ''}" onclick="selectLesson(${i})">
+          <div class="lesson-check ${checkClass}">${checkIcon}</div>
+          <span class="lesson-title">${lesson.title}</span>
+          ${isCompleted ? '<span class="lesson-badge">• Completed</span>' : ''}
+        </li>
+      `;
+    }).join('');
+
+    const doneCount = data.lessons.filter(l => l.done).length;
+    document.getElementById('lessonsCompleted').textContent =
+      `Lessons Completed: ${doneCount} / ${data.lessons.length}`;
+  }
+
+  function selectLesson(index) {
+    if (!currentCourse) return;
+    const data = courses[currentCourse];
+    data.lessons.forEach((l, i) => l.active = (i === index));
+    renderOutline(data);
+    document.getElementById('currentLessonTitle').textContent = data.lessons[index].title;
+    document.getElementById('videoLabel').textContent = data.lessons[index].title;
+
+    // Reset video if present
+    const videoEl = document.getElementById('videoPlayer');
+    if (courses[currentCourse].videoSrc) {
+      videoEl.currentTime = 0;
+      videoEl.play();
+    }
+  }
+
+  function switchCourse(id) {
+    if (id) {
+      window.location.href = 'course.html?course=' + id;
+    }
+  }
+
+  function playVideo() {
+    // Placeholder interaction
+    const label = document.getElementById('videoLabel');
+    label.textContent = 'No video source set. Add videoSrc to course data.';
+  }
+
+  document.getElementById('nextLessonBtn').addEventListener('click', () => {
+    if (!currentCourse) return;
+    const data = courses[currentCourse];
+    const idx = data.lessons.findIndex(l => l.active);
+    const next = idx + 1 < data.lessons.length ? idx + 1 : idx;
+    selectLesson(next);
+  });
+
+  // ── INIT ──
+  function init() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('course') || 'math101';
+    loadCourse(id);
+  }
+
+  init();
+</script>
+</body>
+</html>
