@@ -137,7 +137,7 @@
                     <div id="courseManualSelectView">
                         <h2 class="form-step-title">
                             <i class="fas fa-book"></i> Select Your Course
-                        </h2>
+                        </2>
 
                         <div class="form-group">
                             <label for="courseSelect">Choose a course <span class="required">*</span></label>
@@ -438,7 +438,7 @@
     <script>
         // API Configuration
         const API_BASE_URL = 'https://jaromind-production-3060.up.railway.app';
-        // const API_BASE_URL = 'http://localhost:8080';
+        //const API_BASE_URL = 'http://localhost:8080';
 
         let currentStep = 1;
         const totalSteps = 5;
@@ -447,6 +447,8 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Enrollment page initialized');
+            
             // Theme Management
             const savedTheme = localStorage.getItem('theme') || 'light-mode';
             document.body.className = savedTheme;
@@ -486,7 +488,7 @@
                 // Wait for courses to load, then auto-select
                 const checkCoursesLoaded = setInterval(() => {
                     const courseSelect = document.getElementById('courseSelect');
-                    if (courseSelect && courseSelect.options.length > 1) { // More than just "Loading courses..."
+                    if (courseSelect && courseSelect.options.length > 1) {
                         clearInterval(checkCoursesLoaded);
                         
                         // Find and select the course
@@ -500,31 +502,23 @@
                         }
                         
                         if (courseFound) {
-                            // Get course data and display
                             const selectedOption = courseSelect.options[courseSelect.selectedIndex];
                             if (selectedOption && selectedOption.dataset.course) {
                                 selectedCourse = JSON.parse(selectedOption.dataset.course);
-                                
-                                // Display in both summary and quick view
                                 displayCourseSummary(selectedCourse);
                                 displayQuickCourseView(selectedCourse);
-                                
                                 console.log('✅ Course auto-selected:', selectedCourse.title);
                             }
                         } else {
                             console.error('❌ Course not found:', courseIdFromUrl);
                             showError('Course not found. Please select a course manually.');
-                            // Show manual select view
                             if (manualView) manualView.style.display = 'block';
                             if (selectedView) selectedView.style.display = 'none';
                         }
                     }
                 }, 100);
                 
-                // Timeout after 5 seconds
-                setTimeout(() => {
-                    clearInterval(checkCoursesLoaded);
-                }, 5000);
+                setTimeout(() => clearInterval(checkCoursesLoaded), 5000);
             }
         });
 
@@ -551,24 +545,41 @@
         // Check authentication
         function checkAuthStatus() {
             const userData = localStorage.getItem('user');
-            if (userData) {
+            const token = localStorage.getItem('token');
+            
+            if (userData && token) {
                 user = JSON.parse(userData);
+                console.log('✅ User authenticated:', user.name);
                 
                 // Pre-fill user information
                 document.getElementById('fullName').value = user.name || '';
                 document.getElementById('email').value = user.email || '';
                 document.getElementById('phone').value = user.phone || '';
+            } else {
+                console.log('⚠️ User not authenticated');
             }
         }
 
         // Load courses from API
         async function loadCourses() {
             try {
-                const response = await fetch(`${API_BASE_URL}/courses`);
-                if (!response.ok) throw new Error('Failed to load courses');
+                console.log('📚 Loading courses from API...');
+                
+                const response = await fetch(`${API_BASE_URL}/courses`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
                 const data = await response.json();
                 const courses = data.courses || data;
+                console.log(`✅ Loaded ${courses.length} courses`);
 
                 const courseSelect = document.getElementById('courseSelect');
                 courseSelect.innerHTML = '<option value="">Select a course</option>';
@@ -584,7 +595,7 @@
                 });
 
             } catch (error) {
-                console.error('Error loading courses:', error);
+                console.error('❌ Error loading courses:', error);
                 showError('Failed to load courses. Please refresh the page.');
             }
         }
@@ -611,12 +622,10 @@
                     const radio = this.querySelector('input[type="radio"]');
                     const group = radio.name;
                     
-                    // Remove selected class from all options in group
                     document.querySelectorAll(`input[name="${group}"]`).forEach(r => {
                         r.closest('.radio-option').classList.remove('selected');
                     });
                     
-                    // Add selected class to clicked option
                     radio.checked = true;
                     this.classList.add('selected');
                 });
@@ -627,12 +636,10 @@
                 option.addEventListener('click', function() {
                     const radio = this.querySelector('input[type="radio"]');
                     
-                    // Remove selected class from all payment options
                     document.querySelectorAll('.payment-option').forEach(p => {
                         p.classList.remove('selected');
                     });
                     
-                    // Add selected class
                     radio.checked = true;
                     this.classList.add('selected');
                 });
@@ -661,9 +668,10 @@
             const level = document.getElementById('courseLevel');
             const price = document.getElementById('coursePrice');
 
-            // Set thumbnail
             if (course.image_url || course.imageUrl) {
                 thumbnail.style.backgroundImage = `url('${course.image_url || course.imageUrl}')`;
+                thumbnail.style.backgroundSize = 'cover';
+                thumbnail.style.backgroundPosition = 'center';
             }
 
             title.textContent = course.title;
@@ -676,8 +684,6 @@
             price.className = isFree ? 'price free' : 'price';
 
             summary.style.display = 'block';
-
-            // Update payment step based on course price
             updatePaymentStep(isFree);
         }
 
@@ -690,7 +696,6 @@
             const duration = document.getElementById('quickCourseDuration');
             const priceEl = document.getElementById('quickCoursePrice');
 
-            // Set thumbnail
             if (course.image_url || course.imageUrl) {
                 thumbnail.style.backgroundImage = `url('${course.image_url || course.imageUrl}')`;
                 thumbnail.style.backgroundSize = 'cover';
@@ -715,28 +720,27 @@
             if (isFree) {
                 freeBanner.style.display = 'block';
                 paymentSection.style.display = 'none';
-                // Remove required from payment method
                 document.querySelectorAll('input[name="paymentMethod"]').forEach(input => {
                     input.removeAttribute('required');
                 });
             } else {
                 freeBanner.style.display = 'none';
                 paymentSection.style.display = 'block';
-                // Add required to payment method
-                document.querySelector('input[name="paymentMethod"]:checked').setAttribute('required', 'required');
+                const checkedPayment = document.querySelector('input[name="paymentMethod"]:checked');
+                if (checkedPayment) {
+                    checkedPayment.setAttribute('required', 'required');
+                }
             }
         }
 
         // Change step
         window.changeStep = function(direction) {
-            // Validate current step before moving forward
             if (direction === 1 && !validateStep(currentStep)) {
                 return;
             }
 
             currentStep += direction;
 
-            // Update step display
             const steps = document.querySelectorAll('.form-step');
             steps.forEach((step, index) => {
                 if (index + 1 === currentStep) {
@@ -746,13 +750,8 @@
                 }
             });
 
-            // Update progress indicators
             updateProgress();
-
-            // Update buttons
             updateButtons();
-
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
@@ -762,12 +761,10 @@
             errorMessage.classList.remove('show');
 
             if (step === 1) {
-                // Check if course is selected (either manually or from URL)
                 if (!selectedCourse) {
                     showError('Please select a course');
                     return false;
                 }
-                // If coming from URL, course is already selected, so validation passes
                 return true;
             }
 
@@ -832,7 +829,6 @@
                 }
             });
 
-            // Update progress line
             const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
             progressLine.style.width = `${progress}%`;
         }
@@ -843,16 +839,12 @@
             const nextBtn = document.getElementById('nextBtn');
             const submitBtn = document.getElementById('submitBtn');
 
-            // Show/hide previous button
-            if (currentStep === 1) {
-                prevBtn.style.display = 'none';
-            } else if (currentStep === 5) {
+            if (currentStep === 1 || currentStep === 5) {
                 prevBtn.style.display = 'none';
             } else {
                 prevBtn.style.display = 'inline-flex';
             }
 
-            // Show/hide next/submit button
             if (currentStep === 4) {
                 nextBtn.style.display = 'none';
                 submitBtn.style.display = 'inline-flex';
@@ -865,7 +857,7 @@
             }
         }
 
-        // Handle form submission
+        // 🔥 THIS IS THE FIX: Handle form submission with ACTUAL API CALL
         async function handleSubmit(e) {
             e.preventDefault();
 
@@ -895,8 +887,43 @@
                     termsAccepted: formData.get('termsAccept') === 'on'
                 };
 
-                // Simulate API call (replace with actual API endpoint)
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                console.log('📝 Submitting enrollment to API...');
+                console.log('🔗 URL:', `${API_BASE_URL}/enrollments`);
+                console.log('📦 Data:', enrollmentData);
+
+                // Get auth token
+                const token = localStorage.getItem('token');
+                console.log('🔐 Token present:', !!token);
+
+                // ✅ ACTUAL API CALL TO BACKEND
+                const response = await fetch(`${API_BASE_URL}/enrollments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        ...(token && { 'Authorization': `Bearer ${token}` })
+                    },
+                    body: JSON.stringify(enrollmentData)
+                });
+
+                console.log('📡 Response status:', response.status);
+
+                const responseText = await response.text();
+                console.log('📦 Raw response:', responseText);
+
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (e) {
+                    console.error('❌ Failed to parse response:', responseText);
+                    throw new Error('Server returned an invalid response');
+                }
+
+                if (!response.ok) {
+                    throw new Error(result.message || result.error || 'Failed to submit enrollment');
+                }
+
+                console.log('✅ Enrollment successful:', result);
 
                 // Show confirmation
                 displayConfirmation(enrollmentData);
@@ -910,9 +937,11 @@
                 });
                 updateButtons();
 
+                document.getElementById('errorMessage').classList.remove('show');
+
             } catch (error) {
-                console.error('Enrollment error:', error);
-                showError('Failed to complete enrollment. Please try again.');
+                console.error('❌ Enrollment error:', error);
+                showError(error.message || 'Failed to complete enrollment. Please try again.');
             } finally {
                 submitBtn.classList.remove('btn-loading');
                 submitBtn.disabled = false;
@@ -943,7 +972,6 @@
             errorMessage.classList.add('show');
             errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-            // Auto-hide after 5 seconds
             setTimeout(() => {
                 errorMessage.classList.remove('show');
             }, 5000);
@@ -952,6 +980,24 @@
         function isValidEmail(email) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
+
+        // Debug tools
+        window.enrollmentDebug = {
+            getCurrentStep: () => currentStep,
+            getSelectedCourse: () => selectedCourse,
+            getUser: () => user,
+            checkAuth: () => {
+                const token = localStorage.getItem('token');
+                const user = localStorage.getItem('user');
+                console.log('🔐 Auth Status:');
+                console.log('  Token:', token ? 'EXISTS' : 'MISSING');
+                console.log('  User:', user ? JSON.parse(user) : 'MISSING');
+                return { hasToken: !!token, hasUser: !!user };
+            }
+        };
+
+        console.log('✅ Enrollment page loaded WITH API integration');
+        console.log('💡 Debug tools: window.enrollmentDebug');
     </script>
 </body>
 </html>

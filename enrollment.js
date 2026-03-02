@@ -4,8 +4,25 @@
 
 // API Configuration
 const API_BASE_URL = 'https://jaromind-production-3060.up.railway.app';
-// const API_BASE_URL = 'http://localhost:8080'; // Uncomment for local development
+ //const API_BASE_URL = 'http://localhost:8080'; // Uncomment for local development
 
+ console.log('🔧 Using API URL:', API_BASE_URL);
+
+// Test backend connection immediately
+(async function testBackendConnection() {
+    try {
+        console.log('🔄 Testing backend connection...');
+        const response = await fetch(`${API_BASE_URL}/health`);
+        const data = await response.json();
+        console.log('✅ Backend connected successfully:', data);
+    } catch (error) {
+        console.error('❌ Backend connection failed:', error);
+        console.log('💡 Make sure:');
+        console.log('   1. The backend server is running');
+        console.log('   2. CORS is configured correctly');
+        console.log('   3. The URL is correct:', API_BASE_URL);
+    }
+})();
 // Global State
 let currentStep = 1;
 const totalSteps = 5;
@@ -101,6 +118,7 @@ function checkAuthStatus() {
 async function loadCourses() {
     try {
         console.log('📚 Loading courses from API...');
+        console.log('🔗 API URL:', `${API_BASE_URL}/courses`);
         
         const response = await fetch(`${API_BASE_URL}/courses`, {
             method: 'GET',
@@ -110,31 +128,63 @@ async function loadCourses() {
             }
         });
 
+        console.log('📡 Response status:', response.status);
+        console.log('📡 Response ok:', response.ok);
+        console.log('📡 Response headers:', [...response.headers.entries()]);
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
+        console.log('📦 Raw response data:', data);
+        
         const courses = data.courses || data;
-
+        console.log('📚 Parsed courses array:', courses);
         console.log(`✅ Loaded ${courses.length} courses`);
+
+        // Log first course for inspection
+        if (courses.length > 0) {
+            console.log('🔍 First course structure:', courses[0]);
+            console.log('🔍 First course ID field:', courses[0].id);
+            console.log('🔍 First course _id field:', courses[0]._id);
+            console.log('🔍 First course isActive:', courses[0].isActive);
+        }
 
         // Populate dropdown
         const courseSelect = document.getElementById('courseSelect');
         courseSelect.innerHTML = '<option value="">Select a course</option>';
 
-        courses.forEach(course => {
+        let activeCoursesCount = 0;
+        courses.forEach((course, index) => {
+            console.log(`Course ${index + 1}:`, {
+                title: course.title,
+                id: course.id,
+                _id: course._id,
+                isActive: course.isActive,
+                is_active: course.is_active
+            });
+
             if (course.is_active || course.isActive) {
                 const option = document.createElement('option');
                 option.value = course._id || course.id;
                 option.textContent = course.title;
                 option.dataset.course = JSON.stringify(course);
                 courseSelect.appendChild(option);
+                activeCoursesCount++;
+                console.log(`✅ Added course to dropdown: ${course.title}`);
+            } else {
+                console.log(`❌ Skipped inactive course: ${course.title}`);
             }
         });
 
+        console.log(`✅ Total active courses in dropdown: ${activeCoursesCount}`);
+
     } catch (error) {
         console.error('❌ Error loading courses:', error);
+        console.error('❌ Error name:', error.name);
+        console.error('❌ Error message:', error.message);
+        console.error('❌ Error stack:', error.stack);
         showError('Failed to load courses. Please refresh the page.');
     }
 }
@@ -146,11 +196,17 @@ async function submitEnrollment(enrollmentData) {
     try {
         const token = localStorage.getItem('token');
         
+        console.log('🔐 Token from localStorage:', token ? 'EXISTS' : 'MISSING');
+        console.log('🔐 Token length:', token ? token.length : 0);
+        console.log('🔐 Token preview:', token ? token.substring(0, 20) + '...' : 'N/A');
+        
         if (!token) {
             throw new Error('Authentication required. Please log in.');
         }
 
-        console.log('📝 Submitting enrollment:', enrollmentData);
+        console.log('📝 Submitting enrollment...');
+        console.log('📝 Enrollment data:', enrollmentData);
+        console.log('🔗 API URL:', `${API_BASE_URL}/enrollments`);
 
         const response = await fetch(`${API_BASE_URL}/enrollments`, {
             method: 'POST',
@@ -162,21 +218,93 @@ async function submitEnrollment(enrollmentData) {
             body: JSON.stringify(enrollmentData)
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Failed to submit enrollment');
+        console.log('📡 Response status:', response.status);
+        console.log('📡 Response ok:', response.ok);
+        console.log('📡 Response headers:', [...response.headers.entries()]);
+
+        const responseText = await response.text();
+        console.log('📦 Raw response text:', responseText);
+
+        let result;
+        try {
+            result = JSON.parse(responseText);
+            console.log('📦 Parsed response:', result);
+        } catch (parseError) {
+            console.error('❌ Failed to parse response as JSON:', parseError);
+            throw new Error('Invalid response from server');
         }
 
-        const result = await response.json();
-        console.log('✅ Enrollment successful:', result);
+        if (!response.ok) {
+            console.error('❌ Server error response:', result);
+            throw new Error(result.error || result.message || 'Failed to submit enrollment');
+        }
+
+        console.log('✅ Enrollment successful!');
+        console.log('✅ Result:', result);
         
         return result;
 
     } catch (error) {
         console.error('❌ Error submitting enrollment:', error);
+        console.error('❌ Error name:', error.name);
+        console.error('❌ Error message:', error.message);
+        console.error('❌ Error stack:', error.stack);
         throw error;
     }
 }
+
+// Add test functions to window object
+window.enrollmentDebug = {
+    getCurrentStep: () => currentStep,
+    getSelectedCourse: () => selectedCourse,
+    getUser: () => user,
+    reloadCourses: loadCourses,
+    testSubmit: submitEnrollment,
+    
+    // New debug functions
+    testBackend: async () => {
+        console.log('🧪 Testing backend connection...');
+        try {
+            const response = await fetch(`${API_BASE_URL}/health`);
+            const data = await response.json();
+            console.log('✅ Backend health check:', data);
+            return data;
+        } catch (error) {
+            console.error('❌ Backend health check failed:', error);
+            return null;
+        }
+    },
+    
+    testCourses: async () => {
+        console.log('🧪 Testing courses endpoint...');
+        try {
+            const response = await fetch(`${API_BASE_URL}/courses`);
+            const data = await response.json();
+            console.log('✅ Courses response:', data);
+            return data;
+        } catch (error) {
+            console.error('❌ Courses test failed:', error);
+            return null;
+        }
+    },
+    
+    checkAuth: () => {
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
+        console.log('🔐 Auth Status:');
+        console.log('  Token:', token ? 'EXISTS' : 'MISSING');
+        console.log('  User:', user ? JSON.parse(user) : 'MISSING');
+        return { hasToken: !!token, hasUser: !!user };
+    }
+};
+
+console.log('✅ Enrollment.js loaded successfully WITH DEBUGGING');
+console.log('💡 Debug tools available at: window.enrollmentDebug');
+console.log('💡 Run these in console:');
+console.log('  - enrollmentDebug.testBackend()');
+console.log('  - enrollmentDebug.testCourses()');
+console.log('  - enrollmentDebug.checkAuth()');
+
 
 /**
  * Get course details by ID
@@ -208,19 +336,16 @@ async function getCourseById(courseId) {
 // AUTO-SELECT FROM URL
 // ================================================
 
+// ================================================
+// AUTO-SELECT FROM URL
+// ================================================
+
 function handleAutoSelectFromURL() {
     const urlParams = new URLSearchParams(window.location.search);
     const courseIdFromUrl = urlParams.get('courseId') || urlParams.get('course');
     
     if (courseIdFromUrl) {
         console.log('🔗 Auto-selecting course from URL:', courseIdFromUrl);
-        
-        // Hide manual select view, show selected view
-        const manualView = document.getElementById('courseManualSelectView');
-        const selectedView = document.getElementById('courseSelectedView');
-        
-        if (manualView) manualView.style.display = 'none';
-        if (selectedView) selectedView.style.display = 'block';
         
         // Wait for courses to load, then auto-select
         const checkCoursesLoaded = setInterval(() => {
@@ -234,26 +359,38 @@ function handleAutoSelectFromURL() {
                     if (courseSelect.options[i].value === courseIdFromUrl) {
                         courseSelect.selectedIndex = i;
                         courseFound = true;
+                        
+                        // Get the selected course data
+                        const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+                        if (selectedOption && selectedOption.dataset.course) {
+                            selectedCourse = JSON.parse(selectedOption.dataset.course);
+                            
+                            // Display course info in ALL views
+                            displayCoursePreview(selectedCourse);
+                            displayCourseSummary(selectedCourse);
+                            displayQuickCourseView(selectedCourse);
+                            
+                            // Update UI to show selected view
+                            const manualView = document.getElementById('courseManualSelectView');
+                            const selectedView = document.getElementById('courseSelectedView');
+                            
+                            if (manualView) manualView.style.display = 'none';
+                            if (selectedView) selectedView.style.display = 'block';
+                            
+                            console.log('✅ Course auto-selected:', selectedCourse.title);
+                        }
                         break;
                     }
                 }
                 
-                if (courseFound) {
-                    const selectedOption = courseSelect.options[courseSelect.selectedIndex];
-                    if (selectedOption && selectedOption.dataset.course) {
-                        selectedCourse = JSON.parse(selectedOption.dataset.course);
-                        
-                        // Display course info
-                        displayCourseSummary(selectedCourse);
-                        displayQuickCourseView(selectedCourse);
-                        
-                        console.log('✅ Course auto-selected:', selectedCourse.title);
-                    }
-                } else {
-                    console.error('❌ Course not found:', courseIdFromUrl);
+                if (!courseFound) {
+                    console.error('❌ Course not found in dropdown:', courseIdFromUrl);
                     showError('Course not found. Please select a course manually.');
                     
                     // Show manual select view
+                    const manualView = document.getElementById('courseManualSelectView');
+                    const selectedView = document.getElementById('courseSelectedView');
+                    
                     if (manualView) manualView.style.display = 'block';
                     if (selectedView) selectedView.style.display = 'none';
                 }
@@ -263,6 +400,19 @@ function handleAutoSelectFromURL() {
         // Timeout after 5 seconds
         setTimeout(() => {
             clearInterval(checkCoursesLoaded);
+            
+            // Check if course was selected, if not show error
+            if (!selectedCourse) {
+                console.error('❌ Timeout: Course not loaded within 5 seconds');
+                showError('Failed to load course. Please select manually.');
+                
+                // Show manual select view
+                const manualView = document.getElementById('courseManualSelectView');
+                const selectedView = document.getElementById('courseSelectedView');
+                
+                if (manualView) manualView.style.display = 'block';
+                if (selectedView) selectedView.style.display = 'none';
+            }
         }, 5000);
     }
 }
@@ -337,33 +487,38 @@ function displayCoursePreview(course) {
 
 function displayCourseSummary(course) {
     const summary = document.getElementById('courseSummary');
-    const thumbnail = document.getElementById('courseThumbnail');
-    const title = document.getElementById('courseTitle');
-    const lessons = document.getElementById('courseLessons');
-    const duration = document.getElementById('courseDuration');
-    const level = document.getElementById('courseLevel');
-    const price = document.getElementById('coursePrice');
+    
+    // Make sure summary is visible
+    if (summary) {
+        const thumbnail = document.getElementById('courseThumbnail');
+        const title = document.getElementById('courseTitle');
+        const lessons = document.getElementById('courseLessons');
+        const duration = document.getElementById('courseDuration');
+        const level = document.getElementById('courseLevel');
+        const price = document.getElementById('coursePrice');
 
-    // Set thumbnail
-    if (course.image_url || course.imageUrl) {
-        thumbnail.style.backgroundImage = `url('${course.image_url || course.imageUrl}')`;
-        thumbnail.style.backgroundSize = 'cover';
-        thumbnail.style.backgroundPosition = 'center';
+        // Set thumbnail
+        if (course.image_url || course.imageUrl) {
+            thumbnail.style.backgroundImage = `url('${course.image_url || course.imageUrl}')`;
+            thumbnail.style.backgroundSize = 'cover';
+            thumbnail.style.backgroundPosition = 'center';
+        }
+
+        title.textContent = course.title;
+        lessons.textContent = `${course.lesson_count || course.lessonCount || 0} Lessons`;
+        duration.textContent = course.duration || 'Self-paced';
+        level.textContent = course.level || 'All Levels';
+
+        const isFree = !course.price || course.price === 0;
+        price.textContent = isFree ? 'Free' : `₦${course.price}`;
+        price.className = isFree ? 'price free' : 'price';
+
+        // Show the summary
+        summary.style.display = 'block';
+
+        // Update payment step based on course price
+        updatePaymentStep(isFree);
     }
-
-    title.textContent = course.title;
-    lessons.textContent = `${course.lesson_count || course.lessonCount || 0} Lessons`;
-    duration.textContent = course.duration || 'Self-paced';
-    level.textContent = course.level || 'All Levels';
-
-    const isFree = !course.price || course.price === 0;
-    price.textContent = isFree ? 'Free' : `₦${course.price}`;
-    price.className = isFree ? 'price free' : 'price';
-
-    summary.style.display = 'block';
-
-    // Update payment step based on course price
-    updatePaymentStep(isFree);
 }
 
 function displayQuickCourseView(course) {
@@ -374,11 +529,18 @@ function displayQuickCourseView(course) {
     const duration = document.getElementById('quickCourseDuration');
     const priceEl = document.getElementById('quickCoursePrice');
 
+    if (!thumbnail || !title || !description || !lessons || !duration || !priceEl) {
+        console.error('❌ Quick course view elements not found');
+        return;
+    }
+
     // Set thumbnail
     if (course.image_url || course.imageUrl) {
         thumbnail.style.backgroundImage = `url('${course.image_url || course.imageUrl}')`;
         thumbnail.style.backgroundSize = 'cover';
         thumbnail.style.backgroundPosition = 'center';
+    } else {
+        thumbnail.style.background = 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))';
     }
 
     title.textContent = course.title;
@@ -559,6 +721,8 @@ function isValidEmail(email) {
 // FORM SUBMISSION
 // ================================================
 
+// Handle form submission
+// Handle form submission
 async function handleSubmit(e) {
     e.preventDefault();
 
@@ -588,10 +752,45 @@ async function handleSubmit(e) {
             termsAccepted: formData.get('termsAccept') === 'on'
         };
 
-        // Submit to API
-        const result = await submitEnrollment(enrollmentData);
+        console.log('📝 Submitting enrollment to API...');
+        console.log('🔗 URL:', `${API_BASE_URL}/enrollments`);
+        console.log('📦 Data:', enrollmentData);
 
-        console.log('✅ Enrollment complete:', result);
+        // Get auth token
+        const token = localStorage.getItem('token');
+        console.log('🔐 Token present:', !!token);
+
+        // MAKE THE ACTUAL API CALL - THIS IS WHAT WAS MISSING!
+        const response = await fetch(`${API_BASE_URL}/enrollments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            },
+            body: JSON.stringify(enrollmentData)
+        });
+
+        console.log('📡 Response status:', response.status);
+
+        // Get response text
+        const responseText = await response.text();
+        console.log('📦 Raw response:', responseText);
+
+        // Try to parse as JSON
+        let result;
+        try {
+            result = JSON.parse(responseText);
+        } catch (e) {
+            console.error('❌ Failed to parse response:', responseText);
+            throw new Error('Server returned an invalid response');
+        }
+
+        if (!response.ok) {
+            throw new Error(result.message || result.error || 'Failed to submit enrollment');
+        }
+
+        console.log('✅ Enrollment successful:', result);
 
         // Show confirmation
         displayConfirmation(enrollmentData);
@@ -605,10 +804,8 @@ async function handleSubmit(e) {
         });
         updateButtons();
 
-        // Optional: Show success notification
-        if (typeof showNotification === 'function') {
-            showNotification('Enrollment successful! Welcome to the course.', 'success');
-        }
+        // Clear any error messages
+        document.getElementById('errorMessage').classList.remove('show');
 
     } catch (error) {
         console.error('❌ Enrollment error:', error);
