@@ -59,6 +59,7 @@ document.querySelector('.sign-up-form').addEventListener('submit', async (e) => 
 
     try {
         const response = await fetch("https://jaromind-production-3060.up.railway.app/register", {
+        //const response = await fetch("http://localhost:8080/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -76,7 +77,7 @@ document.querySelector('.sign-up-form').addEventListener('submit', async (e) => 
         // console.log("Backend response:", data);
 
         if (!response.ok) {
-            showNotification(data.message || "Registration failed", "error");
+            showNotification(data.error || data.message || "Registration failed", "error");
             return;
         }
 

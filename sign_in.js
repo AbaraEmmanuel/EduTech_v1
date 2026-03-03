@@ -16,6 +16,7 @@ form.addEventListener('submit', async (e) => {
 
     try {
         const response = await fetch("https://jaromind-production-3060.up.railway.app/login", {
+        //const response = await fetch("http://localhost:8080/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
