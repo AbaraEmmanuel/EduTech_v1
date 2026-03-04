@@ -1,18 +1,27 @@
 import { showNotification } from './notification.js';
 
-const form = document.querySelector('.sign-in-form');
-const submitButton = form.querySelector('button[type="submit"]');
-const originalText = submitButton.textContent;
-
-form.addEventListener('submit', async (e) => {
-    e.preventDefault(); // Prevent page reload
+document.querySelector('.sign-in-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
     const email = e.target.email.value.trim();
     const password = e.target.password.value.trim();
 
-    // Disable button while logging in
-    submitButton.textContent = 'Signing in...';
-    submitButton.disabled = true;
+    // Frontend validation
+    if (!email) {
+        showNotification('Please enter your email address', 'error');
+        return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showNotification('Please enter a valid email address', 'error');
+        return;
+    }
+
+    if (!password) {
+        showNotification('Please enter your password', 'error');
+        return;
+    }
 
     try {
         const response = await fetch("https://jaromind-production-3060.up.railway.app/login", {
@@ -21,60 +30,90 @@ form.addEventListener('submit', async (e) => {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
         });
 
         const data = await response.json();
+        console.log("Login response:", data);
 
         if (!response.ok) {
-            showNotification(data.error || "Login failed", "error");
+            showNotification(data.error || data.message || "Login failed", "error");
             return;
         }
 
-        // --- KEY FIX: Store BOTH token and user data ---
+        // Save token and user data
         if (data.token) {
             localStorage.setItem('token', data.token);
-            
-            // Also store user data if available
-            if (data.user) {
-                localStorage.setItem('user', JSON.stringify(data.user));
-            } else if (data.id || data._id || data.email || data.name) {
-                // Create user object from response data
-                const userData = {
-                    id: data.id || data._id,
-                    _id: data._id || data.id,
-                    name: data.name || data.username || email.split('@')[0],
-                    email: data.email || email,
-                    username: data.username || email.split('@')[0],
-                    token: data.token
-                };
-                localStorage.setItem('user', JSON.stringify(userData));
-            } else {
-                // Create minimal user object
-                const userData = {
-                    id: 'user_' + Date.now(),
-                    name: email.split('@')[0],
-                    email: email,
-                    token: data.token
-                };
-                localStorage.setItem('user', JSON.stringify(userData));
+        }
+
+        if (data.user) {
+            localStorage.setItem('user', JSON.stringify(data.user));
+        }
+
+        showNotification("Login successful! Loading...", "success");
+
+        // ✅ NEW: Check if user has enrollments before redirecting
+        await checkEnrollmentsAndRedirect(data.token);
+
+    } catch (error) {
+        console.error("Login error:", error);
+        showNotification(`Error: ${error.message}`, "error");
+    }
+});
+
+// ✅ NEW FUNCTION: Check enrollments and redirect accordingly
+async function checkEnrollmentsAndRedirect(token) {
+    try {
+        console.log('🔍 Checking user enrollments...');
+        
+        // Fetch user's enrollments
+        const enrollmentResponse = await fetch("https://jaromind-production-3060.up.railway.app/enrollments", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             }
-        } else {
-            showNotification("Login succeeded but no token received", "warning");
+        });
+
+        if (!enrollmentResponse.ok) {
+            console.warn('⚠️ Could not fetch enrollments, redirecting to courses');
+            // If can't fetch enrollments, default to courses page
+            setTimeout(() => {
+                window.location.href = "courses.html";
+            }, 1500);
             return;
         }
 
-        showNotification('Sign-in successful!', 'success');
+        const enrollmentData = await enrollmentResponse.json();
+        const enrollments = enrollmentData.enrollments || [];
+        
+        console.log('📊 User has', enrollments.length, 'enrollment(s)');
 
-        setTimeout(() => {
-            window.location.href = "courses.html";
-        }, 1000);
+        // Check if user has any active enrollments
+        const hasEnrollments = enrollments.length > 0;
+
+        if (hasEnrollments) {
+            console.log('✅ User has enrollments → Redirecting to dashboard');
+            showNotification("Welcome back! Loading your dashboard...", "success");
+            setTimeout(() => {
+                window.location.href = "studendashboard.html";
+            }, 1500);
+        } else {
+            console.log('📚 User has no enrollments → Redirecting to courses');
+            showNotification("Welcome! Browse our courses to get started.", "success");
+            setTimeout(() => {
+                window.location.href = "courses.html";
+            }, 1500);
+        }
 
     } catch (error) {
-        console.error('Sign-in error:', error);
-        showNotification(`Error: ${error.message}`, 'error');
-    } finally {
-        submitButton.textContent = originalText;
-        submitButton.disabled = false;
+        console.error('❌ Error checking enrollments:', error);
+        // On error, default to courses page (safer for new users)
+        setTimeout(() => {
+            window.location.href = "courses.html";
+        }, 1500);
     }
-});
+}
