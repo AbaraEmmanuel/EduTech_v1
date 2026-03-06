@@ -278,9 +278,13 @@ body {
 }
 
 .course-img {
-  width: 100%; height: 155px;
-  object-fit: cover;
+  width: 100%;
+  height: 155px;
+  object-fit: contain; /* Changed from 'cover' to 'contain' */
+  object-position: center;
   display: block;
+  background: #f5f7fa; /* Light background for transparent images */
+  padding: 8px; /* Add some padding if needed */
 }
 
 .course-img-placeholder {

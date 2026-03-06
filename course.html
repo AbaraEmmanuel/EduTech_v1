@@ -5,6 +5,367 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JaroMind – Course</title>
   <link rel="stylesheet" href="course1.css" />
+  <style>
+    /* ── Sidebar tab system ── */
+    .sidebar-tabs {
+      display: flex;
+      border-bottom: 2px solid #f0f0f5;
+      margin-bottom: 0;
+      background: #fff;
+      border-radius: 12px 12px 0 0;
+      overflow: hidden;
+    }
+    .sidebar-tab {
+      flex: 1;
+      padding: 11px 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #9ca3af;
+      background: none;
+      border: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color .2s, border-color .2s;
+      letter-spacing: .3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    .sidebar-tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      background: #f7f8ff;
+    }
+    .sidebar-tab:hover:not(.active) { color: #374151; }
+
+    .sidebar-panel { display: none; }
+    .sidebar-panel.active { display: block; }
+
+    /* ── Quiz panel ── */
+    .quiz-list {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .quiz-card {
+      background: #f7f8ff;
+      border: 1.5px solid #e0e4ff;
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      transition: box-shadow .2s, border-color .2s;
+    }
+    .quiz-card:hover { box-shadow: 0 2px 12px rgba(102,126,234,.13); border-color: #667eea; }
+    .quiz-card-title {
+      font-weight: 700;
+      font-size: 13.5px;
+      color: #1f2937;
+      margin-bottom: 6px;
+    }
+    .quiz-meta {
+      display: flex;
+      gap: 10px;
+      font-size: 11.5px;
+      color: #6b7280;
+      flex-wrap: wrap;
+    }
+    .quiz-meta span { display: flex; align-items: center; gap: 4px; }
+    .btn-start-quiz {
+      margin-top: 10px;
+      width: 100%;
+      padding: 8px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 7px;
+      font-weight: 600;
+      font-size: 12.5px;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+    .btn-start-quiz:hover { opacity: .9; }
+    .btn-start-quiz:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ── Quiz modal ── */
+    .quiz-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .quiz-modal-overlay.open { display: flex; }
+    .quiz-modal {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 620px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      animation: slideUp .25s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .quiz-modal-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1.5px solid #f0f0f5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .quiz-modal-header h3 { font-size: 17px; font-weight: 700; color: #1f2937; margin: 0; }
+    .quiz-modal-close {
+      background: none; border: none; font-size: 22px;
+      color: #9ca3af; cursor: pointer; line-height: 1;
+    }
+    .quiz-modal-close:hover { color: #374151; }
+    .quiz-modal-body { padding: 20px 24px; }
+    .quiz-instructions {
+      background: #f0f4ff;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #374151;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+    .quiz-timer {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 16px;
+      letter-spacing: .5px;
+    }
+    .quiz-timer.warning { color: #ef4444; }
+    .question-block {
+      margin-bottom: 22px;
+    }
+    .question-text {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1f2937;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .question-number {
+      font-size: 11px;
+      font-weight: 700;
+      color: #667eea;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 4px;
+    }
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 14px;
+      background: #f9fafb;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 13.5px;
+      color: #374151;
+      cursor: pointer;
+      margin-bottom: 7px;
+      text-align: left;
+      transition: border-color .15s, background .15s;
+    }
+    .option-btn:hover:not(.locked) { border-color: #667eea; background: #f0f4ff; }
+    .option-btn.selected { border-color: #667eea; background: #f0f4ff; color: #667eea; font-weight: 600; }
+    .option-btn.correct  { border-color: #10b981; background: #ecfdf5; color: #065f46; font-weight: 600; }
+    .option-btn.wrong    { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+    .option-letter {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .option-btn.selected .option-letter { background: #667eea; color: white; }
+    .option-btn.correct  .option-letter { background: #10b981; color: white; }
+    .option-btn.wrong    .option-letter { background: #ef4444; color: white; }
+
+    .quiz-progress-bar-wrap {
+      height: 4px;
+      background: #e5e7eb;
+      border-radius: 2px;
+      margin-bottom: 18px;
+    }
+    .quiz-progress-fill {
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 2px;
+      transition: width .3s;
+    }
+
+    .quiz-modal-footer {
+      padding: 16px 24px 20px;
+      border-top: 1.5px solid #f0f0f5;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .btn-quiz-nav {
+      padding: 9px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+      border: 1.5px solid #e5e7eb;
+      background: #f9fafb;
+      color: #374151;
+      transition: background .15s;
+    }
+    .btn-quiz-nav:hover { background: #f0f0f5; }
+    .btn-quiz-submit {
+      padding: 9px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+      border: none;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      transition: opacity .2s;
+    }
+    .btn-quiz-submit:hover { opacity: .9; }
+
+    /* Quiz result */
+    .quiz-result {
+      text-align: center;
+      padding: 30px 24px;
+    }
+    .quiz-result-emoji { font-size: 52px; margin-bottom: 12px; }
+    .quiz-result-score {
+      font-size: 42px;
+      font-weight: 800;
+      color: #667eea;
+      margin-bottom: 6px;
+    }
+    .quiz-result-label {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+    .quiz-result-pass { color: #10b981; font-weight: 700; font-size: 16px; }
+    .quiz-result-fail { color: #ef4444; font-weight: 700; font-size: 16px; }
+    .btn-retry {
+      margin-top: 14px;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1.5px solid #667eea;
+      background: white;
+      color: #667eea;
+      margin-right: 8px;
+    }
+    .btn-close-result {
+      margin-top: 14px;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    /* ── Assignment panel ── */
+    .assignment-list {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .assignment-card {
+      background: #fff8f0;
+      border: 1.5px solid #fde68a;
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .assignment-card-title {
+      font-weight: 700;
+      font-size: 13.5px;
+      color: #1f2937;
+      margin-bottom: 6px;
+    }
+    .assignment-desc {
+      font-size: 12.5px;
+      color: #6b7280;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    .assignment-meta {
+      display: flex;
+      gap: 10px;
+      font-size: 11.5px;
+      color: #92400e;
+      flex-wrap: wrap;
+    }
+    .assignment-meta span { display: flex; align-items: center; gap: 4px; }
+    .assignment-type-badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 20px;
+      background: #fde68a;
+      color: #92400e;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    /* ── Empty states ── */
+    .panel-empty {
+      padding: 30px 16px;
+      text-align: center;
+      color: #9ca3af;
+      font-size: 13px;
+    }
+    .panel-empty .empty-icon { font-size: 28px; margin-bottom: 8px; }
+
+    /* ── outline card patch ── so it looks unified with tabs ── */
+    .outline-card {
+      display: flex;
+      flex-direction: column;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .outline-header { display: none !important; } /* replaced by tab */
+
+    /* ── video iframe ── */
+    .video-iframe-wrap {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+      display: none;
+    }
+    .video-iframe-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
 </head>
 <body>
 
@@ -14,7 +375,6 @@
     <div class="logo-icon">🧠</div>
     <span class="logo-text">JaroMind</span>
   </a>
-
   <div class="topbar-right">
     <button class="topbar-btn">
       <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
@@ -56,42 +416,141 @@
     <div class="video-card">
       <div class="video-lesson-title" id="currentLessonTitle">Lesson</div>
       <div class="video-wrapper">
-        <!-- Video placeholder -->
-        <div class="video-placeholder" id="videoPlaceholder">
-          <div class="play-circle" onclick="playVideo()">
-            <svg width="28" height="28" fill="white" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          </div>
-          <span id="videoLabel" style="font-size:15px;font-weight:600;color:rgba(255,255,255,0.7)">Click to play</span>
-        </div>
-        <!-- Video player -->
-        <video id="videoPlayer" controls style="display:none; width: 100%; border-radius: 12px;">
+
+        <!-- 1. Native video (for direct MP4 / hosted links) -->
+        <video id="videoPlayer" controls style="display:none; width:100%; border-radius:12px;">
           <source id="videoSource" src="" type="video/mp4">
           Your browser does not support the video tag.
         </video>
+
+        <!-- 2. YouTube / Vimeo iframe embed -->
+        <div class="video-iframe-wrap" id="videoIframeWrap">
+          <iframe id="videoIframe" src="" allowfullscreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+          </iframe>
+        </div>
+
+        <!-- 3. Placeholder (no video) -->
+        <div class="video-placeholder" id="videoPlaceholder">
+          <div class="play-circle">
+            <svg width="28" height="28" fill="white" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <span id="videoLabel" style="font-size:15px;font-weight:600;color:rgba(255,255,255,0.7)">No video for this lesson</span>
+        </div>
+
       </div>
       <div class="video-caption" id="videoCaption">Select a lesson from the outline to begin.</div>
-      
-      <!-- Mark Complete Button (shows when no video) -->
-      <button id="markCompleteBtn" onclick="markCurrentLessonComplete()" 
-        style="display: none; margin-top: 1rem; padding: 0.75rem 1.5rem; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%;">
+
+      <!-- Mark Complete (shown only when no video) -->
+      <button id="markCompleteBtn" onclick="markCurrentLessonComplete()"
+        style="display:none; margin-top:1rem; padding:.75rem 1.5rem; background:#10b981; color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer; width:100%;">
         ✓ Mark Lesson as Complete
       </button>
     </div>
 
-    <!-- OUTLINE SIDEBAR -->
+    <!-- SIDEBAR -->
     <div class="outline-card">
-      <div class="outline-header">Course Outline</div>
-      <ul class="outline-list" id="outlineList">
-        <!-- Lessons will be loaded here -->
-      </ul>
-      <div class="outline-footer" id="lessonsCompleted">Lessons Completed: – / –</div>
+
+      <!-- Tab row -->
+      <div class="sidebar-tabs">
+        <button class="sidebar-tab active" data-panel="outline">
+          📋 Outline
+        </button>
+        <button class="sidebar-tab" data-panel="quizzes" id="quizzesTabBtn">
+          🧩 Quizzes <span id="quizBadge" style="display:none; background:#667eea; color:white; border-radius:20px; padding:1px 7px; font-size:10px; margin-left:2px;"></span>
+        </button>
+        <button class="sidebar-tab" data-panel="assignments" id="assignmentsTabBtn">
+          📝 Tasks <span id="assignmentBadge" style="display:none; background:#f59e0b; color:white; border-radius:20px; padding:1px 7px; font-size:10px; margin-left:2px;"></span>
+        </button>
+      </div>
+
+      <!-- Panel: Outline -->
+      <div class="sidebar-panel active" id="panel-outline">
+        <ul class="outline-list" id="outlineList"></ul>
+        <div class="outline-footer" id="lessonsCompleted">Lessons Completed: – / –</div>
+      </div>
+
+      <!-- Panel: Quizzes -->
+      <div class="sidebar-panel" id="panel-quizzes">
+        <div class="quiz-list" id="quizList">
+          <div class="panel-empty">
+            <div class="empty-icon">🧩</div>
+            No quizzes yet
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel: Assignments -->
+      <div class="sidebar-panel" id="panel-assignments">
+        <div class="assignment-list" id="assignmentList">
+          <div class="panel-empty">
+            <div class="empty-icon">📝</div>
+            No assignments yet
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /outline-card -->
+  </div><!-- /course-layout -->
+</div><!-- /page -->
+
+<!-- ═══════════════════════════════════════════
+     QUIZ MODAL
+════════════════════════════════════════════ -->
+<div class="quiz-modal-overlay" id="quizModalOverlay">
+  <div class="quiz-modal" id="quizModal">
+
+    <div class="quiz-modal-header">
+      <h3 id="quizModalTitle">Quiz</h3>
+      <button class="quiz-modal-close" id="quizModalClose">✕</button>
+    </div>
+
+    <!-- Start screen -->
+    <div id="quizStartScreen" class="quiz-modal-body">
+      <div class="quiz-instructions" id="quizInstructionsText"></div>
+      <div style="display:flex; gap:14px; flex-wrap:wrap; font-size:13px; color:#6b7280; margin-bottom:8px;">
+        <span>⏱ <span id="quizStartDuration"></span> minutes</span>
+        <span>✅ Pass: <span id="quizStartPass"></span>%</span>
+        <span>❓ <span id="quizStartCount"></span> questions</span>
+      </div>
+      <div class="quiz-modal-footer" style="border:none; padding:16px 0 0;">
+        <button class="btn-quiz-submit" id="beginQuizBtn">Begin Quiz →</button>
+      </div>
+    </div>
+
+    <!-- Question screen -->
+    <div id="quizQuestionScreen" style="display:none;">
+      <div class="quiz-modal-body">
+        <div class="quiz-timer" id="quizTimer"></div>
+        <div class="quiz-progress-bar-wrap">
+          <div class="quiz-progress-fill" id="quizProgressFill" style="width:0%"></div>
+        </div>
+        <div id="quizQuestionBody"></div>
+      </div>
+      <div class="quiz-modal-footer">
+        <button class="btn-quiz-nav" id="quizPrevBtn">← Prev</button>
+        <button class="btn-quiz-nav" id="quizNextBtn">Next →</button>
+        <button class="btn-quiz-submit" id="quizSubmitBtn" style="display:none;">Submit Quiz</button>
+      </div>
+    </div>
+
+    <!-- Result screen -->
+    <div id="quizResultScreen" style="display:none;">
+      <div class="quiz-result">
+        <div class="quiz-result-emoji" id="resultEmoji"></div>
+        <div class="quiz-result-score" id="resultScore"></div>
+        <div class="quiz-result-label" id="resultLabel"></div>
+        <div id="resultVerdict"></div>
+        <div style="margin-top:20px;">
+          <button class="btn-retry" id="retryQuizBtn">↺ Retry</button>
+          <button class="btn-close-result" id="closeResultBtn">Done</button>
+        </div>
+      </div>
     </div>
 
   </div>
 </div>
 
-<!-- Load course JavaScript -->
 <script src="course.js"></script>
-
 </body>
 </html>

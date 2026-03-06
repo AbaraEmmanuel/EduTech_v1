@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book a Tutor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="booking.css"/>
+</head>
+<body>
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">📚</div>
+      <span class="logo-text">LearnUp</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="#">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" href="#">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        My Courses
+      </a>
+      <a class="nav-item active" href="#">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        Tutors
+      </a>
+      <a class="nav-item" href="#">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Schedule
+      </a>
+      <a class="nav-item" href="#">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Progress
+      </a>
+      <a class="nav-item" href="#">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+        Settings
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="nav-item">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Log Out
+      </div>
+    </div>
+  </aside>
+
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- ── MAIN ── -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <button class="topbar-btn">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      </button>
+      <div class="topbar-avatar">JD</div>
+    </div>
+
+    <!-- Page -->
+    <div class="page">
+
+      <!-- Page Header -->
+      <div class="page-header">
+        <button class="back-btn">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>
+        </button>
+        <div class="page-title">
+          <h1>Book a Tutor</h1>
+          <p>Find and schedule a session with your perfect tutor</p>
+        </div>
+      </div>
+
+      <!-- Steps -->
+      <div class="steps">
+        <div class="step active" id="step1">
+          <div class="step-circle">1</div>
+          <span class="step-label">Choose Tutor</span>
+        </div>
+        <div class="step-line" id="line1"></div>
+        <div class="step pending" id="step2">
+          <div class="step-circle">2</div>
+          <span class="step-label">Pick Time</span>
+        </div>
+        <div class="step-line" id="line2"></div>
+        <div class="step pending" id="step3">
+          <div class="step-circle">3</div>
+          <span class="step-label">Confirm</span>
+        </div>
+      </div>
+
+      <!-- Booking Layout -->
+      <div class="booking-layout">
+
+        <!-- LEFT: Tutor Selection -->
+        <div class="left-col">
+
+          <!-- Search & Filter -->
+          <div class="search-bar">
+            <div class="search-input-wrap">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              <input class="search-input" type="text" placeholder="Search tutors by name or subject…" oninput="filterTutors(this.value)"/>
+            </div>
+            <button class="filter-btn">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+              Filter
+            </button>
+          </div>
+
+          <!-- Subject Tags -->
+          <div class="subject-tags" id="subjectTags">
+            <button class="tag active" onclick="setTag(this, 'All')">All</button>
+            <button class="tag" onclick="setTag(this, 'Maths')">Maths</button>
+            <button class="tag" onclick="setTag(this, 'Physics')">Physics</button>
+            <button class="tag" onclick="setTag(this, 'Chemistry')">Chemistry</button>
+            <button class="tag" onclick="setTag(this, 'Biology')">Biology</button>
+            <button class="tag" onclick="setTag(this, 'English')">English</button>
+            <button class="tag" onclick="setTag(this, 'Computer Science')">Computer Sci</button>
+          </div>
+
+          <!-- Tutor List (populated by JS) -->
+          <div class="tutors-list" id="tutorsList"></div>
+
+        </div>
+
+        <!-- RIGHT: Booking Summary -->
+        <div class="booking-summary" id="summaryPanel">
+
+          <!-- Session Details Panel -->
+          <div class="panel">
+            <div class="panel-head">Session Details</div>
+            <div class="panel-body">
+
+              <div id="noTutorMsg" class="empty-state">
+                <div class="icon">👆</div>
+                <p>Select a tutor to<br>start booking</p>
+              </div>
+
+              <div id="sessionDetails" style="display:none;">
+
+                <div class="selected-tutor-mini">
+                  <div class="mini-avatar" id="miniAvatar">🧑‍🏫</div>
+                  <div>
+                    <div class="mini-name" id="miniName">—</div>
+                    <div class="mini-sub" id="miniSub">—</div>
+                  </div>
+                </div>
+
+                <div class="section-label">Session Type</div>
+                <div class="session-types" style="margin-bottom:20px;">
+                  <button class="session-type selected" onclick="selectSession(this, '1:1')">
+                    <div class="session-type-icon">🎯</div>
+                    <div class="session-type-label">1-on-1</div>
+                    <div class="session-type-sub">Private</div>
+                  </button>
+                  <button class="session-type" onclick="selectSession(this, 'Group')">
+                    <div class="session-type-icon">👥</div>
+                    <div class="session-type-label">Group</div>
+                    <div class="session-type-sub">Up to 4</div>
+                  </button>
+                  <button class="session-type" onclick="selectSession(this, 'Workshop')">
+                    <div class="session-type-icon">🏫</div>
+                    <div class="session-type-label">Workshop</div>
+                    <div class="session-type-sub">6–12 pax</div>
+                  </button>
+                </div>
+
+                <div class="section-label">Pick a Date</div>
+                <div class="calendar-header">
+                  <button class="cal-nav" onclick="changeMonth(-1)">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+                  </button>
+                  <span class="cal-month" id="calMonth">March 2026</span>
+                  <button class="cal-nav" onclick="changeMonth(1)">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                  </button>
+                </div>
+                <div class="cal-grid" id="calGrid"></div>
+
+                <div class="section-label" style="margin-top:18px;">Available Times</div>
+                <div class="time-grid" id="timeGrid"></div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Cost Panel -->
+          <div class="panel" id="costPanel" style="display:none;">
+            <div class="panel-head">Cost Summary</div>
+            <div class="panel-body">
+              <div class="cost-row">
+                <span id="costLabel">1-on-1 session (60 min)</span>
+                <span id="costBase">$0</span>
+              </div>
+              <div class="cost-row">
+                <span>Platform fee</span>
+                <span>$2.00</span>
+              </div>
+              <div class="cost-row">
+                <span>Promo code</span>
+                <span style="color:#16a34a;">–$5.00</span>
+              </div>
+              <div class="cost-row total">
+                <span>Total</span>
+                <span class="amount" id="costTotal">$0</span>
+              </div>
+              <button class="btn-confirm" onclick="confirmBooking()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Confirm Booking
+              </button>
+              <div class="guarantee">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Free cancellation up to 24h before
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SUCCESS MODAL ── -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-modal">
+      <div class="success-icon">🎉</div>
+      <h2>Booking Confirmed!</h2>
+      <p>Your session has been booked. You'll receive a confirmation email with the session details.</p>
+      <div class="success-details">
+        <div class="success-detail-row">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          <span id="successTutor">Tutor</span>
+        </div>
+        <div class="success-detail-row">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span id="successDate">Date</span>
+        </div>
+        <div class="success-detail-row">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span id="successTime">Time</span>
+        </div>
+      </div>
+      <button class="btn-confirm" onclick="closeSuccess()">Back to Dashboard</button>
+    </div>
+  </div>
+
+  <script src="booking.js"></script>
+</body>
+</html>
