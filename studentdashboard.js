@@ -3,8 +3,8 @@
 // ================================================
 
 // API Configuration
-//const API_BASE_URL = 'http://localhost:8080';
-const API_BASE_URL = 'https://jaromind-production-3060.up.railway.app';
+const API_BASE_URL = 'http://localhost:8080';
+//const API_BASE_URL = 'https://jaromind-production-3060.up.railway.app';
 
 console.log('🚀 Dashboard initialized');
 console.log('🔗 API URL:', API_BASE_URL);
@@ -370,19 +370,28 @@ function renderTutorPanel() {
             <div class="tutor-text">
                 <h3>Your Tutor</h3>
                 <p>${userTutor.name}</p>
-                <button class="btn-secondary" style="margin-top:12px" onclick="location.href='tutor.html?id=${userTutor.id}'">
+                <button 
+                    class="btn-secondary" 
+                    style="margin-top:12px" 
+                    onclick="goToBooking()"
+                >
                     Contact Tutor
                 </button>
             </div>
             <div class="tutor-img">👨‍🏫</div>
+
         `;
     } else {
         // No tutor assigned - show CTA (marketing!)
         tutorPanel.innerHTML = `
-            <div class="tutor-text">
+           <div class="tutor-text">
                 <h3>Need a Tutor?</h3>
                 <p>Get personalized help from expert tutors.</p>
-                <button class="btn-secondary" style="margin-top:12px" onclick="location.href='tutor.html'">
+                <button 
+                    class="btn-secondary" 
+                    style="margin-top:12px" 
+                    onclick="goToBooking()"
+                >
                     Find a Tutor
                 </button>
             </div>
@@ -586,6 +595,19 @@ window.dashboardDebug = {
         }
     }
 };
+
+function goToBooking(e) {
+  if (e) e.preventDefault();
+
+  // If the student already has a tutor assigned, go straight to booking
+  if (user && user.tutorId) {
+    window.location.href = `booking.html?tutor=${user.tutorId}`;
+    return;
+  }
+
+  // Otherwise send them to the tutors directory
+  window.location.href = 'booking.html';
+}
 
 console.log('✅ Dashboard.js loaded');
 console.log('💡 Debug tools: window.dashboardDebug');

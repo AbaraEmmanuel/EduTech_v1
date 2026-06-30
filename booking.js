@@ -1,148 +1,211 @@
 /* ─────────────────────────────────────────
    booking.js  –  Tutor Booking Page Logic
+   Fully connected to Jaromind Backend API
 ───────────────────────────────────────── */
 
-// ── DATA ──────────────────────────────────
+// ── CONFIG ────────────────────────────────
 
-const tutors = [
-  {
-    id: 1,
-    name: 'Dr. Sarah Mitchell',
-    field: 'Mathematics & Statistics',
-    emoji: '👩‍🏫',
-    subjects: ['Maths'],
-    rate: 45,
-    rating: 4.9,
-    reviews: 124,
-    sessions: 340,
-    online: true,
-    tags: ['Calculus', 'Algebra', 'Stats'],
-  },
-  {
-    id: 2,
-    name: 'James Okonkwo',
-    field: 'Physics & Engineering',
-    emoji: '👨‍🔬',
-    subjects: ['Physics'],
-    rate: 40,
-    rating: 4.8,
-    reviews: 89,
-    sessions: 215,
-    online: true,
-    tags: ['Mechanics', 'Thermodynamics', 'Waves'],
-  },
-  {
-    id: 3,
-    name: 'Priya Sharma',
-    field: 'Chemistry & Biology',
-    emoji: '👩‍🔬',
-    subjects: ['Chemistry', 'Biology'],
-    rate: 38,
-    rating: 4.7,
-    reviews: 67,
-    sessions: 180,
-    online: false,
-    tags: ['Organic Chem', 'Cell Biology'],
-  },
-  {
-    id: 4,
-    name: 'Tom Fletcher',
-    field: 'Computer Science',
-    emoji: '👨‍💻',
-    subjects: ['Computer Science'],
-    rate: 50,
-    rating: 5.0,
-    reviews: 203,
-    sessions: 420,
-    online: true,
-    tags: ['Python', 'Algorithms', 'Data Structures'],
-  },
-  {
-    id: 5,
-    name: 'Amara Diallo',
-    field: 'English Literature',
-    emoji: '👩‍🏫',
-    subjects: ['English'],
-    rate: 32,
-    rating: 4.6,
-    reviews: 55,
-    sessions: 140,
-    online: false,
-    tags: ['Essay Writing', 'Poetry', 'Comprehension'],
-  },
-  {
-    id: 6,
-    name: 'Wei Chen',
-    field: 'Mathematics & Physics',
-    emoji: '🧑‍🏫',
-    subjects: ['Maths', 'Physics'],
-    rate: 42,
-    rating: 4.9,
-    reviews: 178,
-    sessions: 390,
-    online: true,
-    tags: ['Pure Maths', 'Optics', 'Calculus'],
-  },
-];
 
-const timeSlots = [
-  '8:00 AM','9:00 AM','10:00 AM','11:00 AM',
-  '12:00 PM','1:00 PM','2:00 PM','3:00 PM',
-  '4:00 PM','5:00 PM','6:00 PM','7:00 PM',
-];
+//const API_BASE = 'https://jaromind-production-3060.up.railway.app';
+const API_BASE = 'http://localhost:8080'; // Uncomment for local development
 
-const unavailableSlots = ['8:00 AM', '12:00 PM', '3:00 PM'];
 
-const avatarColors = ['#dbeafe','#dcfce7','#fef3c7','#ede9fe','#fce7f3','#f0fdf4'];
+// Read JWT from wherever your app stores it (localStorage key must match your auth flow)
+function getAuthToken() {
+  return localStorage.getItem('token') || localStorage.getItem('authToken') || '';
+}
+
+function authHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${getAuthToken()}`,
+  };
+}
 
 // ── STATE ─────────────────────────────────
 
+let tutors             = [];      // Loaded from API
 let selectedTutor      = null;
 let selectedDate       = null;
 let selectedTime       = null;
 let selectedSessionType = '1:1';
-let currentMonth       = new Date(2026, 2, 1); // March 2026
+let currentMonth       = new Date();
 let activeTag          = 'All';
 let searchQuery        = '';
+let availableSlots     = [];      // Loaded from API when date is picked
+let isLoadingTutors    = false;
+let isLoadingSlots     = false;
+let isSubmitting       = false;
 
-// ── HELPERS ───────────────────────────────
+// ── AVATAR COLOURS (cosmetic, client-side only) ───────────────────────────────
 
-function avatarBg(id) {
-  return avatarColors[(id - 1) % avatarColors.length];
+const avatarColors = ['#dbeafe','#dcfce7','#fef3c7','#ede9fe','#fce7f3','#f0fdf4'];
+
+function avatarBg(index) {
+  return avatarColors[index % avatarColors.length];
 }
+
+// ── SVG HELPERS ───────────────────────────
 
 function starSVG() {
   return `<svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
 }
-
 function calSVG() {
   return `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`;
 }
-
 function dotSVG() {
   return `<svg fill="currentColor" viewBox="0 0 24 24" width="10" height="10"><circle cx="12" cy="12" r="10"/></svg>`;
 }
+function spinnerSVG() {
+  return `<svg class="spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
+}
 
-// ── RENDER TUTORS ─────────────────────────
+// ── API CALLS ─────────────────────────────
+
+/**
+ * Fetch tutors from the backend.
+ * Applies subject and search filters server-side.
+ */
+async function fetchTutors() {
+  isLoadingTutors = true;
+  renderTutorsSkeleton();
+
+  const params = new URLSearchParams();
+  if (activeTag !== 'All') params.set('subject', activeTag);
+  if (searchQuery)         params.set('search', searchQuery);
+
+  try {
+    const res = await fetch(`${API_BASE}/tutors?${params.toString()}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    tutors = data.tutors || [];
+  } catch (err) {
+    console.error('Failed to fetch tutors:', err);
+    tutors = [];
+    showTutorError('Could not load tutors. Please check your connection.');
+    return;
+  } finally {
+    isLoadingTutors = false;
+  }
+
+  renderTutors();
+}
+
+/**
+ * Fetch availability slots for the selected tutor on the selected date.
+ * Called every time selectedDate changes (after a tutor is chosen).
+ */
+async function fetchAvailability() {
+  if (!selectedTutor || !selectedDate) return;
+
+  isLoadingSlots = true;
+  renderTimeSlotsLoading();
+
+  const dateStr = formatDateForAPI(selectedDate); // "YYYY-MM-DD"
+
+  try {
+    const res = await fetch(
+      `${API_BASE}/tutors/${selectedTutor.tutorId}/availability?date=${dateStr}`
+    );
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    // data.slots = [{ slot: "9:00 AM", available: true }, ...]
+    availableSlots = data.slots || [];
+  } catch (err) {
+    console.error('Failed to fetch availability:', err);
+    availableSlots = [];
+  } finally {
+    isLoadingSlots = false;
+  }
+
+  renderTimeSlots();
+}
+
+/**
+ * Submit the booking to the backend.
+ */
+async function submitBooking() {
+  if (isSubmitting) return;
+
+  // Guard: must be logged in
+  if (!getAuthToken()) {
+    showToast('Please log in to book a session.', 'error');
+    return;
+  }
+
+  if (!selectedTutor)  { showToast('Please select a tutor.', 'error');      return; }
+  if (!selectedDate)   { showToast('Please pick a date.', 'error');          return; }
+  if (!selectedTime)   { showToast('Please choose a time slot.', 'error');   return; }
+
+  isSubmitting = true;
+  setConfirmBtnLoading(true);
+
+  const payload = {
+    tutorId:       selectedTutor.tutorId,
+    sessionType:   selectedSessionType,
+    sessionDate:   formatDateForAPI(selectedDate),  // "YYYY-MM-DD"
+    timeSlot:      selectedTime,
+    studentName:   getUserName(),   // pulled from token / local storage
+    studentEmail:  getUserEmail(),
+    paymentMethod: 'card',          // extend with a UI picker if needed
+  };
+
+  try {
+    const res = await fetch(`${API_BASE}/bookings`, {
+      method:  'POST',
+      headers: authHeaders(),
+      body:    JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      // Show backend error message (e.g. "This time slot is already booked")
+      showToast(data.error || 'Booking failed. Please try again.', 'error');
+      return;
+    }
+
+    // ✅ Success — show confirmation modal with real booking data
+    showSuccessModal(data.booking);
+
+    // Refresh availability so the booked slot disappears immediately
+    await fetchAvailability();
+
+  } catch (err) {
+    console.error('Booking submission failed:', err);
+    showToast('Network error. Please try again.', 'error');
+  } finally {
+    isSubmitting = false;
+    setConfirmBtnLoading(false);
+  }
+}
+
+// ── RENDER: TUTOR LIST ────────────────────
+
+function renderTutorsSkeleton() {
+  const list = document.getElementById('tutorsList');
+  list.innerHTML = [1,2,3].map(() => `
+    <div class="tutor-card" style="pointer-events:none; opacity:.55;">
+      <div class="tutor-avatar" style="background:#e5e7eb;">&nbsp;</div>
+      <div class="tutor-info">
+        <div style="height:14px;background:#e5e7eb;border-radius:6px;width:55%;margin-bottom:8px;"></div>
+        <div style="height:11px;background:#f3f4f6;border-radius:6px;width:35%;"></div>
+      </div>
+    </div>`).join('');
+}
+
+function showTutorError(msg) {
+  document.getElementById('tutorsList').innerHTML = `
+    <div class="empty-state">
+      <div class="icon">⚠️</div>
+      <p>${msg}</p>
+    </div>`;
+}
 
 function renderTutors() {
   const list = document.getElementById('tutorsList');
-  let filtered = tutors;
 
-  if (activeTag !== 'All') {
-    filtered = filtered.filter(t => t.subjects.includes(activeTag));
-  }
-
-  if (searchQuery) {
-    const q = searchQuery.toLowerCase();
-    filtered = filtered.filter(t =>
-      t.name.toLowerCase().includes(q) ||
-      t.field.toLowerCase().includes(q) ||
-      t.tags.some(tag => tag.toLowerCase().includes(q))
-    );
-  }
-
-  if (filtered.length === 0) {
+  if (tutors.length === 0) {
     list.innerHTML = `
       <div class="empty-state">
         <div class="icon">🔍</div>
@@ -151,48 +214,50 @@ function renderTutors() {
     return;
   }
 
-  list.innerHTML = filtered.map(t => `
-    <div class="tutor-card ${selectedTutor?.id === t.id ? 'selected' : ''}"
-         onclick="selectTutor(${t.id})"
-         id="tutor-${t.id}">
+  list.innerHTML = tutors.map((t, index) => `
+    <div class="tutor-card ${selectedTutor?.tutorId === t.tutorId ? 'selected' : ''}"
+         onclick="selectTutor('${t.tutorId}')"
+         id="tutor-${t.tutorId}">
 
-      <div class="tutor-avatar" style="background:${avatarBg(t.id)};">
-        ${t.emoji}
-        ${t.online ? '<div class="online-dot"></div>' : ''}
+      <div class="tutor-avatar" style="background:${avatarBg(index)};">
+        ${t.avatarUrl
+          ? `<img src="${t.avatarUrl}" alt="${t.name}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">`
+          : '🧑‍🏫'}
+        ${t.isOnline ? '<div class="online-dot"></div>' : ''}
       </div>
 
       <div class="tutor-info">
         <div class="tutor-top">
           <div>
             <div class="tutor-name">${t.name}</div>
-            <div class="tutor-field">${t.field}</div>
+            <div class="tutor-field">${(t.subjects || []).join(' & ')}</div>
           </div>
-          <div class="tutor-price">$${t.rate}<span>/hr</span></div>
+          <div class="tutor-price">$${t.hourlyRate}<span>/hr</span></div>
         </div>
 
         <div class="tutor-stats">
           <div class="stat gold">
             ${starSVG()}
-            ${t.rating} (${t.reviews} reviews)
+            ${t.rating.toFixed(1)} (${t.reviewCount} reviews)
           </div>
           <div class="stat">
             ${calSVG()}
-            ${t.sessions} sessions
+            ${t.sessionCount} sessions
           </div>
-          <div class="stat" style="color:${t.online ? '#16a34a' : '#9ca3af'}">
+          <div class="stat" style="color:${t.isOnline ? '#16a34a' : '#9ca3af'}">
             ${dotSVG()}
-            ${t.online ? 'Online now' : 'Offline'}
+            ${t.isOnline ? 'Online now' : 'Offline'}
           </div>
         </div>
 
         <div class="tutor-tags">
-          ${t.tags.map(tag => `<span class="tutor-tag">${tag}</span>`).join('')}
+          ${(t.tags || []).map(tag => `<span class="tutor-tag">${tag}</span>`).join('')}
         </div>
       </div>
 
-      <button class="select-btn ${selectedTutor?.id === t.id ? 'chosen' : ''}"
-              onclick="event.stopPropagation(); selectTutor(${t.id})">
-        ${selectedTutor?.id === t.id ? '✓ Selected' : 'Select'}
+      <button class="select-btn ${selectedTutor?.tutorId === t.tutorId ? 'chosen' : ''}"
+              onclick="event.stopPropagation(); selectTutor('${t.tutorId}')">
+        ${selectedTutor?.tutorId === t.tutorId ? '✓ Selected' : 'Select'}
       </button>
     </div>
   `).join('');
@@ -200,21 +265,35 @@ function renderTutors() {
 
 // ── SELECT TUTOR ──────────────────────────
 
-function selectTutor(id) {
-  selectedTutor = tutors.find(t => t.id === id);
+function selectTutor(tutorId) {
+  selectedTutor = tutors.find(t => t.tutorId === tutorId);
+  if (!selectedTutor) return;
+
   renderTutors();
 
-  document.getElementById('noTutorMsg').style.display    = 'none';
+  document.getElementById('noTutorMsg').style.display     = 'none';
   document.getElementById('sessionDetails').style.display = 'block';
   document.getElementById('costPanel').style.display      = 'block';
 
-  document.getElementById('miniAvatar').textContent = selectedTutor.emoji;
-  document.getElementById('miniName').textContent   = selectedTutor.name;
-  document.getElementById('miniSub').textContent    = selectedTutor.field;
+  // Avatar: real image or emoji fallback
+  const avatarEl = document.getElementById('miniAvatar');
+  avatarEl.innerHTML = selectedTutor.avatarUrl
+    ? `<img src="${selectedTutor.avatarUrl}" alt="${selectedTutor.name}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`
+    : '🧑‍🏫';
+
+  document.getElementById('miniName').textContent = selectedTutor.name;
+  document.getElementById('miniSub').textContent  = (selectedTutor.subjects || []).join(' & ');
 
   updateCost();
   renderCalendar();
-  renderTimeSlots();
+
+  // If a date was already chosen, immediately fetch availability for new tutor
+  if (selectedDate) {
+    fetchAvailability();
+  } else {
+    renderTimeSlots(); // Show default empty state
+  }
+
   updateSteps(2);
 }
 
@@ -224,12 +303,15 @@ function setTag(el, tag) {
   document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   activeTag = tag;
-  renderTutors();
+  fetchTutors(); // Re-fetch from API with new subject filter
 }
 
+// Debounced so we don't fire on every keystroke
+let searchDebounce = null;
 function filterTutors(val) {
   searchQuery = val;
-  renderTutors();
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(() => fetchTutors(), 350);
 }
 
 // ── SESSION TYPE ──────────────────────────
@@ -245,7 +327,9 @@ function selectSession(el, type) {
 
 function renderCalendar() {
   const grid  = document.getElementById('calGrid');
-  const today = new Date(2026, 2, 6); // fixed "today" for demo
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   const year  = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
 
@@ -259,16 +343,14 @@ function renderCalendar() {
 
   let html = dayLabels.map(d => `<div class="cal-day-label">${d}</div>`).join('');
 
-  // Trailing days from previous month
   for (let i = firstDay - 1; i >= 0; i--) {
     html += `<button class="cal-day other-month disabled">${prevDays - i}</button>`;
   }
 
-  // Current month days
   for (let d = 1; d <= daysInMonth; d++) {
     const date      = new Date(year, month, d);
     const isPast    = date < today;
-    const isToday   = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+    const isToday   = date.getTime() === today.getTime();
     const isSelected = selectedDate &&
                        selectedDate.getDate()     === d &&
                        selectedDate.getMonth()    === month &&
@@ -288,7 +370,13 @@ function renderCalendar() {
 }
 
 function changeMonth(dir) {
-  currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + dir, 1);
+  // Don't allow navigating to past months
+  const proposed = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + dir, 1);
+  const thisMonth = new Date();
+  thisMonth.setDate(1); thisMonth.setHours(0,0,0,0);
+  if (proposed < thisMonth) return;
+
+  currentMonth = proposed;
   renderCalendar();
 }
 
@@ -296,22 +384,48 @@ function selectDate(y, m, d) {
   selectedDate = new Date(y, m, d);
   selectedTime = null;
   renderCalendar();
-  renderTimeSlots();
   updateCost();
-  updateSteps(3);
+  updateSteps(selectedTutor ? 3 : 2);
+
+  // Fetch real availability from backend
+  fetchAvailability();
 }
 
 // ── TIME SLOTS ────────────────────────────
 
+function renderTimeSlotsLoading() {
+  const grid = document.getElementById('timeGrid');
+  grid.innerHTML = `
+    <div style="grid-column:1/-1; text-align:center; padding:16px; color:var(--text-muted); font-size:13px;">
+      ${spinnerSVG()} Loading slots…
+    </div>`;
+}
+
 function renderTimeSlots() {
   const grid = document.getElementById('timeGrid');
-  grid.innerHTML = timeSlots.map(t => {
-    const isUnavail  = unavailableSlots.includes(t);
-    const isSelected = selectedTime === t;
+
+  if (!selectedDate) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1; text-align:center; padding:12px; color:var(--text-muted); font-size:13px;">
+        Pick a date to see available times
+      </div>`;
+    return;
+  }
+
+  if (availableSlots.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1; text-align:center; padding:12px; color:var(--text-muted); font-size:13px;">
+        No slots available for this date
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = availableSlots.map(({ slot, available }) => {
+    const isSelected = selectedTime === slot;
     let cls = 'time-slot';
-    if (isUnavail)  cls += ' unavailable';
-    if (isSelected) cls += ' selected';
-    return `<button class="${cls}" onclick="selectTime('${t}')">${t}</button>`;
+    if (!available)  cls += ' unavailable';
+    if (isSelected)  cls += ' selected';
+    return `<button class="${cls}" onclick="selectTime('${slot}')">${slot}</button>`;
   }).join('');
 }
 
@@ -327,8 +441,8 @@ function updateCost() {
   if (!selectedTutor) return;
 
   const multipliers = { '1:1': 1, 'Group': 0.6, 'Workshop': 0.4 };
-  const base  = selectedTutor.rate * (multipliers[selectedSessionType] ?? 1);
-  const total = Math.max(0, base + 2 - 5);
+  const base  = selectedTutor.hourlyRate * (multipliers[selectedSessionType] ?? 1);
+  const total = Math.max(0, base + 2 - 5); // +$2 platform fee, -$5 promo
 
   document.getElementById('costLabel').textContent = `${selectedSessionType} session (60 min)`;
   document.getElementById('costBase').textContent  = `$${base.toFixed(2)}`;
@@ -350,27 +464,112 @@ function updateSteps(active) {
 
 // ── CONFIRM BOOKING ───────────────────────
 
+// Called by the Confirm Booking button in the HTML
 function confirmBooking() {
-  if (!selectedTutor) { alert('Please select a tutor.'); return; }
-  if (!selectedDate)  { alert('Please pick a date.');    return; }
-  if (!selectedTime)  { alert('Please choose a time slot.'); return; }
+  submitBooking(); // Hands off to the async API function
+}
 
-  document.getElementById('successTutor').textContent =
-    `${selectedTutor.name} · ${selectedSessionType} Session`;
+function showSuccessModal(booking) {
+  // booking comes from the real API response (models.TutorBooking)
+  const tutorName  = selectedTutor?.name || '—';
+  const dateStr    = selectedDate
+    ? selectedDate.toLocaleDateString('en-US', {
+        weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
+      })
+    : booking?.sessionDate || '—';
 
-  document.getElementById('successDate').textContent =
-    selectedDate.toLocaleDateString('en-US', {
-      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
-    });
-
-  document.getElementById('successTime').textContent =
-    `${selectedTime} · 60 minutes`;
-
+  document.getElementById('successTutor').textContent = `${tutorName} · ${selectedSessionType} Session`;
+  document.getElementById('successDate').textContent  = dateStr;
+  document.getElementById('successTime').textContent  = `${booking?.timeSlot || selectedTime} · 60 minutes`;
   document.getElementById('successOverlay').classList.add('show');
 }
 
 function closeSuccess() {
   document.getElementById('successOverlay').classList.remove('show');
+}
+
+// ── CONFIRM BUTTON LOADING STATE ──────────
+
+function setConfirmBtnLoading(loading) {
+  const btn = document.querySelector('.btn-confirm');
+  if (!btn) return;
+  if (loading) {
+    btn.disabled = true;
+    btn.innerHTML = `${spinnerSVG()} Confirming…`;
+  } else {
+    btn.disabled = false;
+    btn.innerHTML = `
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      Confirm Booking`;
+  }
+}
+
+// ── TOAST NOTIFICATION ────────────────────
+
+function showToast(message, type = 'info') {
+  // Remove any existing toast
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+
+  const colors = {
+    error:   { bg: '#fef2f2', border: '#fca5a5', text: '#991b1b' },
+    success: { bg: '#f0fdf4', border: '#86efac', text: '#166534' },
+    info:    { bg: '#eff6ff', border: '#93c5fd', text: '#1e40af' },
+  };
+  const c = colors[type] || colors.info;
+
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.style.cssText = `
+    position:fixed; bottom:24px; right:24px; z-index:300;
+    background:${c.bg}; border:1.5px solid ${c.border}; color:${c.text};
+    padding:14px 20px; border-radius:10px; font-size:14px; font-weight:600;
+    box-shadow:0 4px 20px rgba(0,0,0,0.1); max-width:320px;
+    animation:fadeSlideUp .25s ease;
+  `;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  setTimeout(() => toast.remove(), 4000);
+}
+
+// ── SPINNER CSS ───────────────────────────
+// Injected once so booking.css stays clean
+
+(function injectSpinnerStyle() {
+  if (document.getElementById('spin-style')) return;
+  const style = document.createElement('style');
+  style.id = 'spin-style';
+  style.textContent = `
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin { animation: spin .8s linear infinite; display:inline-block; vertical-align:middle; }
+  `;
+  document.head.appendChild(style);
+})();
+
+// ── USER INFO HELPERS ─────────────────────
+// Reads name/email from localStorage (adjust keys to match your auth flow)
+
+function getUserName() {
+  return localStorage.getItem('userName')
+      || localStorage.getItem('name')
+      || 'Student';
+}
+
+function getUserEmail() {
+  return localStorage.getItem('userEmail')
+      || localStorage.getItem('email')
+      || '';
+}
+
+// ── DATE HELPER ───────────────────────────
+
+function formatDateForAPI(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`; // "YYYY-MM-DD"
 }
 
 // ── SIDEBAR (mobile) ──────────────────────
@@ -387,5 +586,6 @@ function closeSidebar() {
 
 // ── INIT ──────────────────────────────────
 
-renderTutors();
+// Kick off with real data from the backend
+fetchTutors();
 renderCalendar();

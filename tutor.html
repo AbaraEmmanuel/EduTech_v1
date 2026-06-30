@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Become a Tutor – Jaromind</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="booktutor.css"/>
+</head>
+<body>
+
+  <!-- ── NAVBAR ── -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar-left">
+      <a href="/" class="name">🎓 Jaromind</a>
+    </div>
+    <div class="navbar-right">
+      <a href="/login" class="button_login">Sign In</a>
+      <a href="/register" class="button-neon">Get Started</a>
+    </div>
+  </nav>
+
+  <!-- ── HERO BANNER ── -->
+  <section class="apply-hero">
+    <div class="apply-hero-content">
+      <div class="apply-badge">🌍 Join 44,000+ Tutors Worldwide</div>
+      <h1>Share Your Knowledge.<br><span class="gradient-text">Earn On Your Terms.</span></h1>
+      <p>Apply in under 10 minutes. Get reviewed in 3–5 business days. Start teaching students globally.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>800K+</strong><span>Active Students</span></div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat"><strong>120+</strong><span>Subjects</span></div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat"><strong>$550</strong><span>Top Weekly Earnings</span></div>
+      </div>
+    </div>
+    <div class="apply-hero-visual">
+      <div class="floating-card fc1">⭐ 4.9 Rating</div>
+      <div class="floating-card fc2">📚 Math Tutor</div>
+      <div class="floating-card fc3">💰 $45/hr</div>
+      <div class="hero-avatar-ring">
+        <div class="hero-avatar">👩‍🏫</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MAIN APPLICATION WRAPPER ── -->
+  <main class="apply-main">
+
+    <!-- Progress Bar -->
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <span class="progress-label" id="progressLabel">Step 1 of 8 — Basic Information</span>
+        <span class="progress-pct" id="progressPct">12%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:12%"></div>
+      </div>
+      <div class="step-dots">
+        <div class="step-dot active" data-step="1" title="Basic Info"></div>
+        <div class="step-dot" data-step="2" title="Subjects"></div>
+        <div class="step-dot" data-step="3" title="Certifications"></div>
+        <div class="step-dot" data-step="4" title="Education"></div>
+        <div class="step-dot" data-step="5" title="Profile"></div>
+        <div class="step-dot" data-step="6" title="Intro Video"></div>
+        <div class="step-dot" data-step="7" title="Availability"></div>
+        <div class="step-dot" data-step="8" title="Rate & Submit"></div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         STEP 1 — BASIC INFORMATION
+    ════════════════════════════════════════ -->
+    <section class="step-panel active" id="step1">
+      <div class="step-inner">
+        <div class="step-head">
+          <div class="step-icon">👤</div>
+          <div>
+            <h2>Basic Information</h2>
+            <p>Tell us a little about yourself to get started.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-group">
+            <label class="field-label">First Name <span class="req">*</span></label>
+            <input type="text" class="field-input" id="firstName" placeholder="e.g. Amara"/>
+            <span class="field-hint">Use your real first name only — no last names.</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Last Name <span class="req">*</span></label>
+            <input type="text" class="field-input" id="lastName" placeholder="e.g. Diallo"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Email Address <span class="req">*</span></label>
+            <input type="email" class="field-input" id="email" placeholder="you@example.com"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Phone Number <span class="req">*</span></label>
+            <input type="tel" class="field-input" id="phone" placeholder="+234 800 000 0000"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Country of Origin <span class="req">*</span></label>
+            <select class="field-input" id="country">
+              <option value="">Select your country...</option>
+              <option>Nigeria</option><option>Ghana</option><option>Kenya</option>
+              <option>South Africa</option><option>United Kingdom</option>
+              <option>United States</option><option>Canada</option>
+              <option>India</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Gender</label>
+            <select class="field-input" id="gender">
+              <option value="">Prefer not to say</option>
+              <option>Male</option><option>Female</option><option>Non-binary</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Profile Photo -->
+        <div class="upload-section">
+          <h3 class="upload-title">📸 Profile Photo</h3>
+          <p class="upload-desc">Use a clear, professional-looking photo showing your friendly face. No logos, sunglasses, or group photos.</p>
+          <div class="upload-zone" id="photoZone" onclick="document.getElementById('photoInput').click()">
+            <div class="upload-zone-inner" id="photoPreview">
+              <div class="upload-icon">📷</div>
+              <p>Click to upload or drag & drop</p>
+              <span>JPG, PNG — Max 5MB</span>
+            </div>
+          </div>
+          <input type="file" id="photoInput" accept="image/*" hidden onchange="previewPhoto(this)"/>
+        </div>
+
+        <!-- Tips Card -->
+        <div class="tip-card">
+          <div class="tip-icon">💡</div>
+          <div>
+            <strong>Photo tips for faster approval:</strong>
+            <ul>
+              <li>Face clearly visible, well-lit background</li>
+              <li>Professional attire — dress as you would for a lesson</li>
+              <li>Smile! Students choose tutors they feel comfortable with</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Age confirmation -->
+        <label class="checkbox-row">
+          <input type="checkbox" id="ageConfirm" class="check-input"/>
+          <span class="check-custom"></span>
+          <span>I confirm I am at least <strong>18 years old</strong></span>
+        </label>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="termsConfirm" class="check-input"/>
+          <span class="check-custom"></span>
+          <span>I agree to the <a href="#" class="link">Terms of Service</a> and <a href="#" class="link">Privacy Policy</a></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         STEP 2 — SUBJECTS & LANGUAGES
+    ════════════════════════════════════════ -->
+    <section class="step-panel" id="step2">
+      <div class="step-inner">
+        <div class="step-head">
+          <div class="step-icon">📚</div>
+          <div>
+            <h2>Subjects & Languages</h2>
+            <p>What will you teach? Select all that apply.</p>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Primary Subject <span class="req">*</span></label>
+          <select class="field-input" id="primarySubject">
+            <option value="">Choose your main subject...</option>
+            <optgroup label="Languages">
+              <option>English</option><option>French</option><option>Spanish</option>
+              <option>Mandarin</option><option>Arabic</option><option>Yoruba</option>
+              <option>Igbo</option><option>Hausa</option>
+            </optgroup>
+            <optgroup label="Sciences">
+              <option>Mathematics</option><option>Physics</option><option>Chemistry</option>
+              <option>Biology</option><option>Computer Science</option>
+            </optgroup>
+            <optgroup label="Humanities">
+              <option>History</option><option>Geography</option><option>Literature</option>
+              <option>Economics</option><option>Civic Education</option>
+            </optgroup>
+            <optgroup label="Professional">
+              <option>Programming & Coding</option><option>Data Science</option>
+              <option>Business & Finance</option><option>Music</option><option>Art & Design</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Additional Subjects</label>
+          <p class="field-hint">Click to add more subjects you can teach.</p>
+          <div class="tag-picker" id="subjectTagPicker">
+            <div class="tag-list" id="subjectTagList">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Student Levels You Teach <span class="req">*</span></label>
+          <div class="checkbox-grid" id="levelsGrid">
+            <label class="check-card"><input type="checkbox" value="Primary School"/> Primary School</label>
+            <label class="check-card"><input type="checkbox" value="JSS"/> Junior Secondary</label>
+            <label class="check-card"><input type="checkbox" value="SSS"/> Senior Secondary</label>
+            <label class="check-card"><input type="checkbox" value="University"/> University</label>
+            <label class="check-card"><input type="checkbox" value="Adult"/> Adult Learners</label>
+            <label class="check-card"><input type="checkbox" value="Professional"/> Professionals</label>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Languages You Speak <span class="req">*</span></label>
+          <div id="languageRows">
+            <div class="language-row">
+              <select class="field-input lang-select">
+                <option>English</option><option>French</option><option>Spanish</option>
+                <option>Yoruba</option><option>Igbo</option><option>Hausa</option>
+                <option>Arabic</option><option>Mandarin</option>
+              </select>
+              <select class="field-input level-select">
+                <option>Native</option><option>Fluent</option><option>Advanced</option>
+                <option>Intermediate</option><option>Basic</option>
+              </select>
+              <button class="remove-row-btn" onclick="removeLanguageRow(this)" title="Remove">✕</button>
+            </div>
+          </div>
+          <button class="add-row-btn" onclick="addLanguageRow()">+ Add another language</button>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Years of Teaching Experience <span class="req">*</span></label>
+          <select class="field-input" id="yearsExp">
+            <option value="">Select...</option>
+            <option>Less than 1 year</option><option>1–2 years</option>
+            <option>3–5 years</option><option>6–10 years</option><option>10+ years</option>
+          </select>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-icon">💡</div>
+          <div>
+            <strong>Subject demand tip:</strong> Maths, Sciences, and English are in highest demand. Listing multiple subjects increases your chances of being booked.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         STEP 3 — CERTIFICATIONS
+    ════════════════════════════════════════ -->
+    <section class="step-panel" id="step3">
+      <div class="step-inner">
+        <div class="step-head">
+          <div class="step-icon">🏅</div>
+          <div>
+            <h2>Teaching Certifications</h2>
+            <p>Certifications build trust and increase your approval chances.</p>
+          </div>
+        </div>
+
+        <label class="checkbox-row" id="noCertRow">
+          <input type="checkbox" id="noCert" class="check-input" onchange="toggleCertSection(this)"/>
+          <span class="check-custom"></span>
+          <span>I don't have a teaching certificate yet</span>
+        </label>
+
+        <div id="certSection">
+          <div class="cert-list" id="certList">
+            <div class="cert-entry" id="certEntry0">
+              <div class="form-grid">
+                <div class="field-group">
+                  <label class="field-label">Certificate Name <span class="req">*</span></label>
+                  <input type="text" class="field-input" placeholder="e.g. TEFL, CELTA, B.Ed, WAEC Teaching Cert"/>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Issuing Institution <span class="req">*</span></label>
+                  <input type="text" class="field-input" placeholder="e.g. University of Lagos"/>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Year Obtained</label>
+                  <input type="number" class="field-input" placeholder="e.g. 2020" min="1970" max="2025"/>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Upload Certificate</label>
+                  <div class="mini-upload" onclick="this.querySelector('input').click()">
+                    <span id="certFileName0">📎 Click to upload PDF or image</span>
+                    <input type="file" hidden accept=".pdf,.jpg,.png" onchange="showFileName(this, 'certFileName0')"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="add-row-btn" onclick="addCertEntry()">+ Add another certification</button>
+        </div>
+
+        <div class="tip-card green">
+          <div class="tip-icon">✅</div>
+          <div>
+            <strong>Accepted certifications:</strong> TEFL, CELTA, DELTA, TESOL, NCE, B.Ed, PGDE, and university degrees in your subject area are all welcomed.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         STEP 4 — EDUCATION
+    ════════════════════════════════════════ -->
+    <section class="step-panel" id="step4">
+      <div class="step-inner">
+        <div class="step-head">
+          <div class="step-icon">🎓</div>
+          <div>
+            <h2>Educational Background</h2>
+            <p>Share your academic credentials to strengthen your profile.</p>
+          </div>
+        </div>
+
+        <div class="edu-list" id="eduList">
+          <div class="edu-entry">
+            <div class="form-grid">
+              <div class="field-group">
+                <label class="field-label">Degree / Qualification <span class="req">*</span></label>
+                <select class="field-input">
+                  <option value="">Select degree level...</option>
+                  <option>WAEC / SSCE</option><option>OND</option><option>HND</option>
+                  <option>Bachelor's Degree (B.Sc / B.A / B.Ed)</option>
+                  <option>Master's Degree (M.Sc / M.A)</option><option>PhD / Doctorate</option>
+                  <option>Professional Certification</option><option>Other</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Field of Study <span class="req">*</span></label>
+                <input type="text" class="field-input" placeholder="e.g. Mathematics Education"/>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Institution <span class="req">*</span></label>
+                <input type="text" class="field-input" placeholder="e.g. University of Ibadan"/>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Graduation Year</label>
+                <input type="number" class="field-input" placeholder="e.g. 2018" min="1970" max="2025"/>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="add-row-btn" onclick="addEduEntry()">+ Add another degree</button>
+
+        <div class="tip-card">
+          <div class="tip-icon">💡</div>
+          <div>Tutors with listed degrees get <strong>40% more profile views</strong>. Even if your degree isn't directly related to your subject, it still shows commitment to education.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         STEP 5 — PROFILE DESCRIPTION
+    ════════════════════════════════════════ -->
+    <section class="step-panel" id="step5">
+      <div class="step-inner">
+        <div class="step-head">
+          <div class="step-icon">✍️</div>
+          <div>
+            <h2>Profile Description</h2>
+            <p>This is your pitch to students — make it engaging and personal.</p>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Profile Headline <span class="req">*</span></label>
+          <input type="text" class="field-input" id="headline" maxlength="80"
+                 placeholder="e.g. Certified Maths Tutor | 5 Years Experience | WAEC & JAMB Specialist"
+                 oninput="updateHeadlineCount(this)"/>
+          <div class="char-row">
+            <span class="field-hint">Mention your years of experience and speciality.</span>
+            <span class="char-count" id="headlineCount">0/80</span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">About You <span class="req">*</span></label>
+          <div class="textarea-wrap">
+            <textarea class="field-textarea" id="bio" rows="10" maxlength="2000"
+                      placeholder="Introduce yourself, your teaching style, experience, and what students can expect from your lessons. Minimum 400 characters."
+                      oninput="updateBioCount(this)"></textarea>
+            <div class="textarea-footer">
+              <span class="bio-status" id="bioStatus">Write at least 400 characters</span>
+              <span class="char-count" id="bioCount">0 / 2000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Writing guide accordion -->
+        <div class="accordion" onclick="toggleAccordion(this)">
+          <div class="accordion-header">
+            <span>📝 How to write a great profile description</span>
+            <span class="accordion-arrow">▼</span>
+          </div>
+          <div class="accordion-body">
+            <ol class="guide-list">
+              <li><strong>Introduce yourself</strong> — Your name (first only), where you're from, and why you love teaching.</li>
+              <li><strong>Your experience</strong> — Years taught, types of students, exam boards covered (WAEC, JAMB, IELTS…).</li>
+              <li><strong>Teaching style</strong> — Are you patient? Structured? Practical? Tell students what makes you different.</li>
+              <li><strong>Call to action</strong> — End with an encouraging message inviting students to book a trial lesson.</li>
+            </ol>
+            <div class="guide-dont">
+              <strong>❌ Do NOT include:</strong> Phone numbers, emails, WhatsApp handles, social media links, or your last name.
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-preview-box" id="profilePreview">
+          <div class="pp-avatar" id="ppAvatar">👤</div>
+          <div class="pp-content">
+            <div class="pp-name" id="ppName">Your Name</div>
+            <div class="pp-headline" id="ppHeadline">Your headline will appear here…</div>
+            <div class="pp-bio" id="ppBio">Your description will appear here…</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         STEP 6 — INTRO VIDEO
+    ════════════════════════════════════════ -->
+    <section class="step-panel" id="step6">
+      <div class="step-inner">
+        <div class="step-head">
+          <div class="step-icon">🎬</div>
+          <div>
+            <h2>Introduction Video</h2>
+            <p>Tutors with intro videos get <strong>3× more bookings</strong>. Keep it natural and 1–2 minutes long.</p>
+          </div>
+        </div>
+
+        <div class="video-tabs">
+          <button class="vtab active" onclick="switchVideoTab(this, 'upload')">Upload Video</button>
+          <button class="vtab" onclick="switchVideoTab(this, 'url')">Paste URL</button>
+        </div>
+
+        <div id="videoUploadTab">
+          <div class="upload-zone" id="videoZone" onclick="document.getElementById('videoInput').click()">
+            <div class="upload-zone-inner" id="videoPreview">
+              <div class="upload-icon">🎥</div>
+              <p>Click to upload your intro video</p>
+              <span>MP4, MOV — Max 100MB — 1–3 minutes</span>
+            </div>
+          </div>
+          <input type="file" id="videoInput" accept="video/*" hidden onchange="previewVideo(this)"/>
+        </div>
+
+        <div id="videoUrlTab" style="display:none;">
+          <div class="field-group">
+            <label class="field-label">Video URL (YouTube or Loom)</label>
+            <input type="url" class="field-input" id="videoUrl" placeholder="https://youtube.com/watch?v=..."/>
+          </div>
+        </div>
+
+        <!-- Video guidelines -->
+        <div class="video-guide-grid">
+          <div class="vg-card do">
+            <h4>✅ DO</h4>
+            <ul>
+              <li>Record in a quiet, well-lit room</li>
+              <li>Speak clearly and naturally — avoid scripts</li>
+              <li>Show your personality and enthusiasm</li>
+              <li>Mention your subject, experience & teaching style</li>
+              <li>End with a warm invitation to book a lesson</li>
+            </ul>
+          </div>
+          <div class="vg-card dont">
+            <h4>❌ DON'T</h4>
+            <ul>
+              <li>Share phone numbers or social media handles</li>
+              <li>Mention your last name</li>
+              <li>Read from a script word-for-word</li>
+              <li>Use a shaky or blurry camera</li>
+              <li>Have loud background noise or music</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-icon">💡</div>
+          <div>
+            <strong>Script guide:</strong> Try saying — <em>"Hi! I'm [First Name], a [subject] tutor with [X] years of experience. I love helping students [specific goal]. My lessons are [style description]. I'd love to help you — let's book a trial session!"</em>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         STEP 7 — AVAILABILITY
+    ════════════════════════════════════════ -->
+    <section class="step-panel" id="step7">
+      <div class="step-inner">
+        <div class="step-head">
+          <div class="step-icon">📅</div>
+          <div>
+            <h2>Your Availability</h2>
+            <p>Set when you're available to teach. You can update this anytime.</p>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Your Timezone <span class="req">*</span></label>
+          <select class="field-input" id="timezone">
+            <option value="WAT">West Africa Time (WAT) — Lagos, Abuja</option>
+            <option value="EAT">East Africa Time (EAT) — Nairobi</option>
+            <option value="SAST">South Africa Standard Time (SAST)</option>
+            <option value="GMT">GMT — London</option>
+            <option value="EST">Eastern Standard Time (EST) — New York</option>
+            <option value="CST">Central Standard Time (CST)</option>
+            <option value="IST">India Standard Time (IST)</option>
+            <option value="CET">Central European Time (CET)</option>
+          </select>
+        </div>
+
+        <!-- Availability Grid -->
+        <div class="avail-grid-wrap">
+          <div class="avail-grid" id="availGrid">
+            <!-- Built by JS -->
+          </div>
+        </div>
+
+        <div class="avail-summary" id="availSummary">
+          <span class="avail-count" id="availCount">0 slots selected</span>
+          <span class="avail-hint">Tutors with 30+ weekly slots get priority in search results.</span>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Session Duration</label>
+          <div class="radio-row">
+            <label class="radio-card"><input type="radio" name="duration" value="30"/> 30 min</label>
+            <label class="radio-card"><input type="radio" name="duration" value="60" checked/> 60 min</label>
+            <label class="radio-card"><input type="radio" name="duration" value="90"/> 90 min</label>
+          </div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-icon">💡</div>
+          <div>Set at least <strong>30 hours of availability per week</strong> when starting out to attract your first students faster. You can always adjust later.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════
+         STEP 8 — HOURLY RATE & SUBMIT
+    ════════════════════════════════════════ -->
+    <section class="step-panel" id="step8">
+      <div class="step-inner">
+        <div class="step-head">
+          <div class="step-icon">💰</div>
+          <div>
+            <h2>Set Your Hourly Rate</h2>
+            <p>You're in control. Adjust your rate at any time.</p>
+          </div>
+        </div>
+
+        <!-- Rate Slider -->
+        <div class="rate-card">
+          <div class="rate-display">
+            <span class="currency">$</span>
+            <span class="rate-value" id="rateValue">20</span>
+            <span class="rate-unit">/hr</span>
+          </div>
+          <input type="range" class="rate-slider" id="rateSlider"
+                 min="5" max="100" value="20" step="1"
+                 oninput="updateRate(this.value)"/>
+          <div class="rate-range-labels">
+            <span>$5</span>
+            <span>$100</span>
+          </div>
+        </div>
+
+        <!-- Earnings Preview -->
+        <div class="earnings-preview">
+          <h3>📊 Estimated Weekly Earnings</h3>
+          <div class="earnings-grid">
+            <div class="earn-card">
+              <div class="earn-label">5 lessons/week</div>
+              <div class="earn-amount" id="earn5">$85</div>
+              <div class="earn-note">After platform fee</div>
+            </div>
+            <div class="earn-card featured">
+              <div class="earn-label">10 lessons/week</div>
+              <div class="earn-amount" id="earn10">$134</div>
+              <div class="earn-note">After platform fee</div>
+            </div>
+            <div class="earn-card">
+              <div class="earn-label">20 lessons/week</div>
+              <div class="earn-amount" id="earn20">$268</div>
+              <div class="earn-note">After platform fee</div>
+            </div>
+          </div>
+          <p class="earn-disclaimer">* Platform takes 33% commission on subsequent lessons (18% after 200 hours). First trial lesson is 100% commission.</p>
+        </div>
+
+        <div class="tip-card green">
+          <div class="tip-icon">🚀</div>
+          <div>
+            <strong>New tutor tip:</strong> Starting at <strong>$10–$15/hr</strong> helps you get your first students quickly and build reviews. You can raise your rate once you have 5+ reviews.
+          </div>
+        </div>
+
+        <!-- Final Review Summary -->
+        <div class="review-summary" id="reviewSummary">
+          <h3>🔍 Application Summary</h3>
+          <div class="review-grid" id="reviewGrid">
+            <!-- Populated by JS on step 8 enter -->
+          </div>
+        </div>
+
+        <!-- Agreement -->
+        <label class="checkbox-row">
+          <input type="checkbox" id="finalAgree" class="check-input"/>
+          <span class="check-custom"></span>
+          <span>I confirm all information provided is accurate and I agree to Jaromind's <a href="#" class="link">Tutor Terms</a>.</span>
+        </label>
+
+        <!-- Submit -->
+        <button class="btn-submit" id="submitBtn" onclick="submitApplication()">
+          <span id="submitBtnText">🚀 Submit Application</span>
+        </button>
+        <p class="submit-note">Your profile will be reviewed within <strong>3–5 business days</strong>. You'll receive an email with your application status.</p>
+      </div>
+    </section>
+
+    <!-- Step Navigation -->
+    <div class="step-nav">
+      <button class="nav-btn back-btn" id="backBtn" onclick="prevStep()" style="display:none;">← Back</button>
+      <button class="nav-btn next-btn" id="nextBtn" onclick="nextStep()">Continue →</button>
+    </div>
+
+  </main>
+
+  <!-- ── SUCCESS MODAL ── -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-modal">
+      <div class="success-lottie">🎉</div>
+      <h2>Application Submitted!</h2>
+      <p>Thank you for applying to become a Jaromind tutor. Our team will review your profile within <strong>3–5 business days</strong>.</p>
+      <div class="success-steps">
+        <div class="ss-item"><span class="ss-icon">📧</span> Check your email for a confirmation</div>
+        <div class="ss-item"><span class="ss-icon">⏳</span> Review takes 3–5 business days</div>
+        <div class="ss-item"><span class="ss-icon">✅</span> Once approved, students can find and book you</div>
+      </div>
+      <a href="/" class="btn-submit" style="text-decoration:none; text-align:center; display:block;">Back to Home</a>
+    </div>
+  </div>
+
+  <script src="booktutor.js"></script>
+</body>
+</html>

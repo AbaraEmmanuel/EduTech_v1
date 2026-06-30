@@ -2,7 +2,8 @@
 // COURSE PAGE - API INTEGRATION
 // ================================================
 
-const API_BASE_URL = 'https://jaromind-production-3060.up.railway.app';
+//const API_BASE_URL = 'https://jaromind-production-3060.up.railway.app';
+const API_BASE_URL = 'localhost:8080'; // For local development
 
 console.log('🚀 Course page initialized');
 
