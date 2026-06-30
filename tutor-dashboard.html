@@ -8,6 +8,246 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="tutor-dashboard.css" />
+  <style>
+    /* ── Minimal inline styles for modal positioning only ── */
+    #settingsModal,
+    #lessonModal,
+    #studentModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    #settingsModal > div,
+    #lessonModal > div,
+    #studentModal > div {
+      background: var(--surface, #ffffff);
+      border-radius: var(--r, 14px);
+      padding: 32px;
+      width: 100%;
+      max-width: 480px;
+      margin: 16px;
+      font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg, 0 8px 24px rgba(15, 30, 70, 0.14));
+      border: 1px solid var(--border, #e4edf7);
+    }
+
+    #studentModal > div {
+      max-width: 500px;
+    }
+
+    #settingsModal h2,
+    #lessonModal h2,
+    #studentModal h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-family: var(--font-display, 'Fraunces', serif);
+    }
+
+    #settingsModal .modal-sub,
+    #lessonModal .modal-sub,
+    #studentModal .modal-sub {
+      font-size: 13px;
+      color: var(--muted, #7d8fa9);
+      margin-bottom: 24px;
+    }
+
+    .modal-field {
+      margin-bottom: 16px;
+    }
+
+    .modal-field label {
+      font-size: 13px;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text, #111827);
+    }
+
+    .modal-field input,
+    .modal-field textarea,
+    .modal-field select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border, #e4edf7);
+      border-radius: var(--r-sm, 9px);
+      font-size: 14px;
+      outline: none;
+      font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+      box-sizing: border-box;
+      background: var(--surface, #ffffff);
+      color: var(--text, #111827);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .modal-field input:focus,
+    .modal-field textarea:focus,
+    .modal-field select:focus {
+      border-color: var(--accent, #2563eb);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .modal-field textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .modal-actions .btn-cancel {
+      padding: 10px 20px;
+      border: 1px solid var(--border, #e4edf7);
+      border-radius: var(--r-sm, 9px);
+      background: var(--surface, #ffffff);
+      font-size: 14px;
+      cursor: pointer;
+      font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+      color: var(--text-2, #374151);
+      transition: background 0.2s;
+    }
+
+    .modal-actions .btn-cancel:hover {
+      background: var(--bg, #f0f4fb);
+    }
+
+    .modal-actions .btn-save {
+      padding: 10px 20px;
+      border: none;
+      border-radius: var(--r-sm, 9px);
+      background: var(--accent, #2563eb);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .modal-actions .btn-save:hover {
+      background: var(--accent-dark, #1d4ed8);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .modal-actions .btn-save:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .modal-msg {
+      font-size: 13px;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    .modal-msg.success {
+      color: var(--green, #16a34a);
+    }
+
+    .modal-msg.error {
+      color: var(--rose, #e11d48);
+    }
+
+    .modal-hint {
+      font-size: 11px;
+      color: var(--muted, #7d8fa9);
+      margin-top: 4px;
+    }
+
+    .modal-hint a {
+      color: var(--accent, #2563eb);
+      text-decoration: none;
+    }
+
+    .modal-hint a:hover {
+      text-decoration: underline;
+    }
+
+    /* Dark mode for modals */
+    body.dark-mode #settingsModal > div,
+    body.dark-mode #lessonModal > div,
+    body.dark-mode #studentModal > div {
+      background: #1a2332;
+      color: #e8edf5;
+      border-color: #2a3344;
+    }
+
+    body.dark-mode .modal-field label {
+      color: #e8edf5;
+    }
+
+    body.dark-mode .modal-field input,
+    body.dark-mode .modal-field textarea,
+    body.dark-mode .modal-field select {
+      background: #10161e;
+      border-color: #2a3344;
+      color: #e8edf5;
+    }
+
+    body.dark-mode .modal-field input:focus,
+    body.dark-mode .modal-field textarea:focus,
+    body.dark-mode .modal-field select:focus {
+      border-color: #2563eb;
+    }
+
+    body.dark-mode .modal-actions .btn-cancel {
+      background: #10161e;
+      border-color: #2a3344;
+      color: #e8edf5;
+    }
+
+    body.dark-mode .modal-actions .btn-cancel:hover {
+      background: #1a2332;
+    }
+
+    body.dark-mode .modal-sub {
+      color: #9aa4b8;
+    }
+
+    body.dark-mode #settingsModal h2,
+    body.dark-mode #lessonModal h2,
+    body.dark-mode #studentModal h2 {
+      color: #e8edf5;
+    }
+
+    body.dark-mode .modal-hint {
+      color: #7a8499;
+    }
+
+    @media (max-width: 480px) {
+      #settingsModal > div,
+      #lessonModal > div,
+      #studentModal > div {
+        padding: 20px;
+        margin: 12px;
+      }
+
+      .modal-actions {
+        flex-direction: column;
+      }
+
+      .modal-actions .btn-cancel,
+      .modal-actions .btn-save {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -74,16 +314,7 @@
           <span class="sb-item-label">My Students</span>
         </a>
 
-        <a href="#" class="sb-item" data-page="messages">
-          <span class="sb-item-icon">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-          </span>
-          <span class="sb-item-label">Messages</span>
-        </a>
-
-        <a href="#" class="sb-item" data-page="calendar">
+        <a href="#" class="sb-item" data-page="lessons">
           <span class="sb-item-icon">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <rect x="3" y="4" width="18" height="18" rx="2"/>
@@ -91,7 +322,16 @@
               <line x1="3" y1="10" x2="21" y2="10"/>
             </svg>
           </span>
-          <span class="sb-item-label">Calendar</span>
+          <span class="sb-item-label">Lessons</span>
+        </a>
+
+        <a href="#" class="sb-item" data-page="messages">
+          <span class="sb-item-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </span>
+          <span class="sb-item-label">Messages</span>
         </a>
 
         <a href="#" class="sb-item" data-page="payments">
@@ -108,34 +348,24 @@
       <div class="sb-section">
         <div class="sb-label">Grow</div>
 
-        <a href="#" class="sb-item" data-page="statistics">
-          <span class="sb-item-icon">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
-              <line x1="6" y1="20" x2="6" y2="14"/>
-            </svg>
-          </span>
-          <span class="sb-item-label">Statistics</span>
-        </a>
-
-        <a href="#" class="sb-item" data-page="find">
-          <span class="sb-item-icon">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8"/>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-          </span>
-          <span class="sb-item-label">Find Students</span>
-        </a>
-
-        <a href="#" class="sb-item" data-page="materials">
+        <a href="#" class="sb-item" data-page="resources">
           <span class="sb-item-icon">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <polyline points="14,2 14,8 20,8"/>
             </svg>
           </span>
-          <span class="sb-item-label">Materials</span>
+          <span class="sb-item-label">Resources</span>
+        </a>
+
+        <a href="#" class="sb-item" data-page="analytics">
+          <span class="sb-item-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+          </span>
+          <span class="sb-item-label">Analytics</span>
         </a>
       </div>
     </nav>
@@ -152,27 +382,6 @@
 
     <!-- Footer -->
     <div class="sb-footer">
-      <a href="#" class="sb-item">
-        <span class="sb-item-icon">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M2 12h2M20 12h2"/>
-          </svg>
-        </span>
-        <span class="sb-item-label">footer</span>
-      </a>
-
-      <a href="#" class="sb-item">
-        <span class="sb-item-icon">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-            <line x1="12" y1="17" x2="12.01" y2="17"/>
-          </svg>
-        </span>
-        <span class="sb-item-label">Help Center</span>
-      </a>
-
       <button class="sb-item sb-signout" onclick="signOut()">
         <span class="sb-item-icon">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -225,167 +434,7 @@
 
     <!-- Scrollable content -->
     <main class="content" id="dashContent">
-
-      <!-- Profile strip -->
-      <div class="profile-strip" id="profileStrip" style="display:none">
-        <div class="profile-av" id="profileInit">–</div>
-        <div class="profile-info">
-          <div class="profile-name" id="profileName">–</div>
-          <div class="profile-meta">
-            <span class="meta-chip"><strong id="profileSubjects">–</strong></span>
-            <span class="meta-chip">⭐ <strong id="profileRating">–</strong> <span id="profileReviews"></span></span>
-            <span class="meta-chip">🎓 <strong id="profileSessions">–</strong> sessions</span>
-            <span class="meta-chip">💰 <strong id="profileRate">–</strong>/hr</span>
-          </div>
-        </div>
-        <div class="profile-badge" id="profileOnline">
-          <span class="online-dot"></span> Online
-        </div>
-      </div>
-
-      <!-- ── Stats row ── -->
-      <div class="stats-grid">
-
-        <div class="stat-card c-blue">
-          <div class="stat-icon">
-            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <rect x="3" y="4" width="18" height="18" rx="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-          </div>
-          <div class="stat-label">Today's Lessons</div>
-          <div class="stat-val" id="statToday">
-            <span class="skel skel-val"></span>
-          </div>
-          <div class="stat-hint" id="statTodayHint">Loading…</div>
-          <div class="stat-bar"></div>
-        </div>
-
-        <div class="stat-card c-green">
-          <div class="stat-icon">
-            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12,6 12,12 16,14"/>
-            </svg>
-          </div>
-          <div class="stat-label">Total Sessions</div>
-          <div class="stat-val" id="statSessions">
-            <span class="skel skel-val"></span>
-          </div>
-          <div class="stat-hint">All time</div>
-          <div class="stat-bar"></div>
-        </div>
-
-        <div class="stat-card c-amber">
-          <div class="stat-icon">
-            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-            </svg>
-          </div>
-          <div class="stat-label">My Rating</div>
-          <div class="stat-val" id="statRating">
-            <span class="skel skel-val"></span>
-          </div>
-          <div class="stat-hint" id="statReviews">Loading…</div>
-          <div class="stat-bar"></div>
-        </div>
-
-        <div class="stat-card c-rose">
-          <div class="stat-icon">
-            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <line x1="12" y1="1" x2="12" y2="23"/>
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-            </svg>
-          </div>
-          <div class="stat-label">Hourly Rate</div>
-          <div class="stat-val" id="statRate">
-            <span class="skel skel-val"></span>
-          </div>
-          <div class="stat-hint">Per session hour</div>
-          <div class="stat-bar"></div>
-        </div>
-
-      </div>
-      <!-- /stats-grid -->
-
-      <!-- ── Main grid ── -->
-      <div class="main-grid">
-
-        <!-- Today's bookings -->
-        <div class="card card-today">
-          <div class="card-head">
-            <span class="card-title">Today's Bookings</span>
-            <a href="#" class="card-link">View All →</a>
-          </div>
-          <div id="todayLessons">
-            <div class="lesson skel-lesson"><span class="skel skel-row"></span></div>
-            <div class="lesson skel-lesson"><span class="skel skel-row"></span></div>
-          </div>
-        </div>
-
-        <!-- Upcoming bookings -->
-        <div class="card card-upcoming">
-          <div class="card-head">
-            <span class="card-title">Upcoming Bookings</span>
-            <a href="#" class="card-link">View All →</a>
-          </div>
-          <div id="upcomingLessons">
-            <div class="lesson skel-lesson"><span class="skel skel-row"></span></div>
-            <div class="lesson skel-lesson"><span class="skel skel-row"></span></div>
-            <div class="lesson skel-lesson"><span class="skel skel-row"></span></div>
-          </div>
-        </div>
-
-        <!-- Chart -->
-        <div class="card card-chart">
-          <div class="card-head">
-            <span class="card-title">Session Activity</span>
-            <div class="toggle-group">
-              <button class="toggle-btn active" onclick="setMode('sessions',this)">Sessions</button>
-              <button class="toggle-btn" onclick="setMode('earnings',this)">Earnings</button>
-            </div>
-          </div>
-          <div class="chart-wrap">
-            <canvas id="chart"></canvas>
-          </div>
-          <div class="period-row">
-            <button class="period-btn active" onclick="setPeriod('week',this)">Week</button>
-            <button class="period-btn" onclick="setPeriod('month',this)">Month</button>
-          </div>
-        </div>
-
-        <!-- Messages -->
-        <div class="card card-messages">
-          <div class="card-head">
-            <span class="card-title">Messages</span>
-            <span class="coming-soon-badge">Coming soon</span>
-          </div>
-          <div class="msg-placeholder">
-            <div class="msg-placeholder-icon">💬</div>
-            <p>Messaging will appear here once the endpoint is live.</p>
-          </div>
-          <button class="btn-primary btn-disabled" disabled>Go to Inbox</button>
-        </div>
-
-        <!-- Resources -->
-        <div class="card card-resources">
-          <div class="card-head">
-            <span class="card-title">Teaching Resources</span>
-          </div>
-          <ul class="res-list">
-            <li><span class="res-dot"></span>Grammar worksheets</li>
-            <li><span class="res-dot"></span>Conversation topics</li>
-            <li><span class="res-dot"></span>IELTS materials</li>
-            <li><span class="res-dot"></span>Business English packs</li>
-            <li><span class="res-dot"></span>Vocabulary builders</li>
-          </ul>
-          <button class="btn-outline">Browse Materials</button>
-        </div>
-
-      </div>
-      <!-- /main-grid -->
-
+      <!-- Dynamic content rendered here -->
     </main>
     <!-- /content -->
 
@@ -402,51 +451,101 @@
   <button class="toast-close" onclick="hideToast()" aria-label="Dismiss">✕</button>
 </div>
 
-<div id="settingsModal" style="
-  display:none; position:fixed; inset:0; z-index:200;
-  background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
-  <div style="
-    background:#fff; border-radius:16px; padding:32px;
-    width:100%; max-width:460px; margin:16px;
-    font-family: 'Plus Jakarta Sans', sans-serif;">
-    <h2 style="font-size:18px; font-weight:700; margin-bottom:6px;">Profile Settings</h2>
-    <p style="font-size:13px; color:#6b7280; margin-bottom:24px;">
-      Add your Calendly link so students can book sessions with you directly.
-    </p>
+<!-- ══════════════════════════════
+     MODALS
+═════════════════════════════════ -->
 
-    <label style="font-size:13px; font-weight:600; display:block; margin-bottom:6px;">
-      Your Calendly URL
-    </label>
-    <input
-      type="url"
-      id="calendlyInput"
-      placeholder="https://calendly.com/your-name/session"
-      style="
-        width:100%; padding:10px 14px; border:1px solid #d1d5db;
-        border-radius:8px; font-size:14px; outline:none;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        margin-bottom:8px;"
-    />
-    <p style="font-size:12px; color:#9ca3af; margin-bottom:24px;">
-      Don't have one? Sign up free at
-      <a href="https://calendly.com" target="_blank" style="color:#2563eb;">calendly.com</a>,
-      create a "Tutoring Session" event, then paste the link above.
-    </p>
+<!-- Settings Modal -->
+<div id="settingsModal">
+  <div>
+    <h2>Profile Settings</h2>
+    <p class="modal-sub">Update your profile information and rates</p>
 
-    <div style="display:flex; gap:10px; justify-content:flex-end;">
-      <button onclick="closeSettings()" style="
-        padding:10px 20px; border:1px solid #d1d5db; border-radius:8px;
-        background:#fff; font-size:14px; cursor:pointer;">
-        Cancel
-      </button>
-      <button onclick="saveCalendlyLink()" id="saveSettingsBtn" style="
-        padding:10px 20px; border:none; border-radius:8px;
-        background:#2563eb; color:#fff; font-size:14px;
-        font-weight:600; cursor:pointer;">
-        Save
-      </button>
+    <form id="settingsForm" onsubmit="saveProfileSettings(event)">
+      <div class="modal-field">
+        <label for="settingsName">Display Name</label>
+        <input type="text" id="settingsName" placeholder="Your full name" />
+      </div>
+
+      <div class="modal-field">
+        <label for="settingsSubjects">Subjects (comma separated)</label>
+        <input type="text" id="settingsSubjects" placeholder="Mathematics, Physics, English" />
+      </div>
+
+      <div class="modal-field">
+        <label for="settingsRate">Hourly Rate ($)</label>
+        <input type="number" id="settingsRate" placeholder="50" step="0.01" min="0" />
+      </div>
+
+      <div class="modal-field">
+        <label for="settingsBio">Bio / About You</label>
+        <textarea id="settingsBio" rows="3" placeholder="Tell students about yourself..."></textarea>
+      </div>
+
+      <div class="modal-field">
+        <label for="settingsCalendly">Calendly URL</label>
+        <input type="url" id="settingsCalendly" placeholder="https://calendly.com/your-name/session" />
+        <p class="modal-hint">Sign up free at <a href="https://calendly.com" target="_blank">calendly.com</a></p>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeSettings()">Cancel</button>
+        <button type="submit" class="btn-save" id="settingsSaveBtn">Save Changes</button>
+      </div>
+    </form>
+    <p class="modal-msg" id="settingsMsg"></p>
+  </div>
+</div>
+
+<!-- Lesson Modal -->
+<div id="lessonModal">
+  <div>
+    <h2>Schedule Lesson</h2>
+    <p class="modal-sub">Add a new session to your calendar</p>
+
+    <form id="lessonForm" onsubmit="saveLesson(event)">
+      <div class="modal-field">
+        <label for="lessonStudent">Student Name</label>
+        <input type="text" id="lessonStudent" placeholder="Student name" required />
+      </div>
+
+      <div class="modal-field">
+        <label for="lessonDate">Date</label>
+        <input type="date" id="lessonDate" required />
+      </div>
+
+      <div class="modal-field">
+        <label for="lessonTime">Time Slot</label>
+        <input type="text" id="lessonTime" placeholder="10:00 AM - 11:00 AM" required />
+      </div>
+
+      <div class="modal-field">
+        <label for="lessonType">Session Type</label>
+        <select id="lessonType">
+          <option value="1:1">1:1 Session</option>
+          <option value="Group">Group Session</option>
+          <option value="Trial">Trial Session</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeLessonModal()">Cancel</button>
+        <button type="submit" class="btn-save">Add Lesson</button>
+      </div>
+    </form>
+    <p class="modal-msg" id="lessonMsg"></p>
+  </div>
+</div>
+
+<!-- Student Detail Modal -->
+<div id="studentModal">
+  <div>
+    <div id="studentDetailContent">
+      <!-- Dynamic content -->
     </div>
-    <p id="settingsMsg" style="font-size:13px; margin-top:12px; text-align:center;"></p>
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="btn-cancel" onclick="closeStudentModal()" style="width:100%;">Close</button>
+    </div>
   </div>
 </div>
 
