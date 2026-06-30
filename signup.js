@@ -59,7 +59,7 @@ document.querySelector('.sign-up-form').addEventListener('submit', async (e) => 
 
     try {
         const response = await fetch("https://jaromind-production-3060.up.railway.app/register", {
-        //const response = await fetch("https://jaromind.onrender.com./register", {
+        //const response = await fetch("https://jaromind.onrender.com/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    JM TUTORS — TUTOR DASHBOARD JAVASCRIPT
-   Connects to: https://jaromind.onrender.com.
+   Connects to: https://jaromind.onrender.com
    Endpoints used:
      GET /tutors/:id          → profile, stats
      GET /bookings            → today + upcoming lessons, chart data
@@ -11,7 +11,7 @@
 /* ════════════════════════════════════
    1. CONFIG & SESSION
 ════════════════════════════════════ */
-const API_BASE = 'https://jaromind.onrender.com.';
+const API_BASE = 'https://jaromind.onrender.com';
 
 const SESSION = {
   token:   localStorage.getItem('jm_tutor_token'),

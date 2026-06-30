@@ -3,7 +3,7 @@
 // ================================================
 
 // API Configuration
-const API_BASE_URL = 'https://jaromind.onrender.com.';
+const API_BASE_URL = 'https://jaromind.onrender.com';
 //const API_BASE_URL = 'https://jaromind-production-3060.up.railway.app';
 
 console.log('🚀 Dashboard initialized');

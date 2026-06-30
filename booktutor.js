@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    JM TUTORS — BOOKING PAGE JAVASCRIPT
-   API Base: https://jaromind.onrender.com.
+   API Base: https://jaromind.onrender.com
    Endpoints:
      GET  /tutors?subject=&search=&isOnline=  → tutor list
      GET  /tutors/:id/availability?date=       → time slots
@@ -15,7 +15,7 @@
 /* ════════════════════════════════════
    1. CONFIG
 ════════════════════════════════════ */
-const API_BASE = 'https://jaromind.onrender.com.';
+const API_BASE = 'https://jaromind.onrender.com';
 
 /* ════════════════════════════════════
    2. STATE

@@ -1,4 +1,4 @@
-const API_BASE = 'https://jaromind.onrender.com.';
+const API_BASE = 'https://jaromind.onrender.com';
 
 document.querySelector('.sign-in-form').addEventListener('submit', async (e) => {
   e.preventDefault();
