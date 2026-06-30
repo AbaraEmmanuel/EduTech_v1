@@ -7,7 +7,7 @@
 
 
 //const API_BASE = 'https://jaromind-production-3060.up.railway.app';
-const API_BASE = 'http://localhost:8080'; // Uncomment for local development
+const API_BASE = 'https://jaromind.onrender.com.'; // Uncomment for local development
 
 
 // Read JWT from wherever your app stores it (localStorage key must match your auth flow)

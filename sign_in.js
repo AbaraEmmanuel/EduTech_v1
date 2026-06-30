@@ -2,7 +2,7 @@
 import { showNotification } from './notification.js';
 
 // Set your API base URL (change to production when ready)
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = 'https://jaromind.onrender.com.';
 // const BASE_URL = 'https://jaromind-production-3060.up.railway.app';
 
 document.querySelector('.sign-in-form').addEventListener('submit', async (e) => {
